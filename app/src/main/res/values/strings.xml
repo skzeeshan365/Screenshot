@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Screenshot</string>
+
+    <string name="accessibility_service_description">
+        To enable seamless screenshot capture, grant accessibility permission. This allows us to enhance your experience by offering features like easy screenshot sharing and more.\n\n
+       Follow these steps:\n
+    1. Click on GRANT PERMISSION.\n
+    2. Select Installed apps/similar setting in Accessibility settings.\n
+    3. Find and select Screenshot App.\n
+    4. Turn on the switch to grant permission.\n\n
+        Accessibility permission is required for seamless screenshot capture.
+        We do not collect any data;\nthis permission is solely for the mentioned purposes.
+    </string>
+    <string name="accessibility_service_settings_description">
+        To enable seamless screenshot capture, grant accessibility permission. This allows us to enhance your experience by offering features like easy screenshot sharing and more.\n\n
+       Follow these steps:\n\n
+        Accessibility permission is required for seamless screenshot capture.
+        We do not collect any data;\nthis permission is solely for the mentioned purposes.
+    </string>
+    <string name="thanks_note">Thanks for choosing Screenshot to make the most of your app experience!</string>
+    <string name="enable">Enable</string>
+    <string name="service_enabled">Service enabled</string>
+    <string name="service_disabled">Service not enabled</string>
+    <string name="local_screenshot_1">Capturing</string>
+    <string name="silent_screenshot_label">Silent screenshot</string>
+    <string name="screenshot_label">Screenshot</string>
+    <string name="title_activity_main">MainActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="title_home">Home</string>
+    <string name="title_silent_screenshots">Silent screenshots</string>
+    <string name="title_settings">Settings</string>
+
+</resources>

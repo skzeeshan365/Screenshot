@@ -1,0 +1,29 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.AppAccessibility" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="colorPrimaryDark">@color/PrimaryColor</item>
+        <item name="colorAccent">@color/AccentColor</item>
+        <item name="colorPrimary">@color/PrimaryColorNight</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="actionMenuTextColor">@color/AccentColor</item>
+        <item name="actionBarTheme">@style/MyActionBar</item>
+    </style>
+
+    <style name="MyActionBar" parent="@style/ThemeOverlay.MaterialComponents.ActionBar">
+        <item name="android:background">@color/PrimaryColor</item>
+    </style>
+
+    <style name="AppTheme.FullScreenDialog" parent="Theme.MaterialComponents.Light.Dialog">
+        <item name="colorPrimaryDark">@color/PrimaryColor</item>
+        <item name="colorAccent">@color/AccentColor</item>
+        <item name="colorPrimary">@color/PrimaryColor</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="actionMenuTextColor">@color/AccentColor</item>
+    </style>
+
+    <style name="Slide">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
+</resources>
