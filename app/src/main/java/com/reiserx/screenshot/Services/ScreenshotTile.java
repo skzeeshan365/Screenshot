@@ -10,6 +10,7 @@ import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.widget.Toast;
 
+import com.reiserx.screenshot.Activities.MainActivity;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 
@@ -34,8 +35,8 @@ public class ScreenshotTile extends TileService {
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.postDelayed(() -> accessibilityService.instance.takeScreenshots(), 1000);
             } else {
-                Toast.makeText(this, "Accessibility service is not enabled", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                Toast.makeText(this, "Accessibility service is not enabled.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }

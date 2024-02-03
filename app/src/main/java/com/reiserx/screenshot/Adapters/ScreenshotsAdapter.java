@@ -1,20 +1,24 @@
 package com.reiserx.screenshot.Adapters;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.IntentSenderRequest;
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -22,10 +26,12 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.R;
+import com.reiserx.screenshot.Utils.SaveBitmap;
 import com.reiserx.screenshot.databinding.ImageLayoutBinding;
 import com.stfalcon.imageviewer.StfalconImageViewer;
-import com.stfalcon.imageviewer.listeners.OnImageChangeListener;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.ImagesViewHolder> {
@@ -33,14 +39,24 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
     Context context;
     List<Screenshots> data;
 
-    FloatingActionButton shareFAB, saveFAB;
+    FloatingActionButton shareFAB, deleteFAB;
     ExtendedFloatingActionButton mAddFab;
-    TextView shareFAB_Text, saveFAB_Text;
+    TextView shareFAB_Text, deleteFAB_Text;
     Boolean isAllFabsVisible;
     Screenshots temp;
+    StfalconImageViewer stfalconImageViewer;
 
-    public ScreenshotsAdapter(Context context) {
+    public static int SILENT_SCREENSHOT = 1;
+    public static int DEFAULT_SCREENSHOT = 2;
+
+    private int SCREENSHOT_TYPE = 0;
+
+    ActivityResultLauncher<IntentSenderRequest> deleteResultLauncher;
+
+    public ScreenshotsAdapter(Context context, int SCREENSHOT_TYPE, ActivityResultLauncher<IntentSenderRequest> deleteResultLauncher) {
         this.context = context;
+        this.SCREENSHOT_TYPE = SCREENSHOT_TYPE;
+        this.deleteResultLauncher = deleteResultLauncher;
     }
 
     public void setData(List<Screenshots> data) {
@@ -70,7 +86,7 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
             View customView = inflater.inflate(R.layout.image_viewer_overlay, null, false);
             customViewOps(customView);
             temp = data.get(position);
-            new StfalconImageViewer.Builder<>(context, data, (imageView, imageUrl) -> {
+            stfalconImageViewer = new StfalconImageViewer.Builder<>(context, data, (imageView, imageUrl) -> {
                 Glide.with(context).load(imageUrl.getFilename()).into(imageView);
             })
                     .withStartPosition(position)
@@ -105,14 +121,14 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
     void customViewOps(View view) {
         mAddFab = view.findViewById(R.id.add_fab);
         shareFAB = view.findViewById(R.id.share_image_fab);
-        saveFAB = view.findViewById(R.id.save_file_fab);
+        deleteFAB = view.findViewById(R.id.delete_file_fab);
         shareFAB_Text = view.findViewById(R.id.share_image_text);
-        saveFAB_Text = view.findViewById(R.id.save_image_text);
+        deleteFAB_Text = view.findViewById(R.id.delete_image_text);
 
         shareFAB.setVisibility(View.GONE);
-        saveFAB.setVisibility(View.GONE);
+        deleteFAB.setVisibility(View.GONE);
         shareFAB_Text.setVisibility(View.GONE);
-        saveFAB_Text.setVisibility(View.GONE);
+        deleteFAB_Text.setVisibility(View.GONE);
 
         isAllFabsVisible = false;
 
@@ -121,18 +137,18 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
         mAddFab.setOnClickListener(view13 -> {
             if (!isAllFabsVisible) {
                 shareFAB.show();
-                saveFAB.show();
+                deleteFAB.show();
                 shareFAB_Text.setVisibility(View.VISIBLE);
-                saveFAB_Text.setVisibility(View.VISIBLE);
+                deleteFAB_Text.setVisibility(View.VISIBLE);
 
                 mAddFab.extend();
 
                 isAllFabsVisible = true;
             } else {
                 shareFAB.hide();
-                saveFAB.hide();
+                deleteFAB.hide();
                 shareFAB_Text.setVisibility(View.GONE);
-                saveFAB_Text.setVisibility(View.GONE);
+                deleteFAB_Text.setVisibility(View.GONE);
 
                 mAddFab.shrink();
 
@@ -140,15 +156,37 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
             }
         });
         shareFAB.setOnClickListener(view1 -> shareImage(temp));
-        saveFAB.setOnClickListener(view12 -> saveImage());
+        deleteFAB.setOnClickListener(view12 -> saveImage());
     }
 
     void saveImage() {
-        Toast.makeText(context, "save", Toast.LENGTH_SHORT).show();
+        if (SCREENSHOT_TYPE == 1) {
+            AlertDialog.Builder alert = new AlertDialog.Builder(context);
+            alert.setTitle("Delete screenshot");
+            alert.setMessage("Are you sure you want to delete this screenshot?");
+            alert.setPositiveButton("delete", (dialogInterface, i) -> {
+            if (temp.getFile().delete()) {
+                data.remove(temp);
+                stfalconImageViewer.close();
+                notifyDataSetChanged();
+            }
+            });
+            alert.setNegativeButton("cancel", null);
+            alert.show();
+        } else if (SCREENSHOT_TYPE == 2) {
+                ArrayList<Uri> arrayList = new ArrayList<>();
+                arrayList.add(Uri.parse(temp.getFile().getAbsolutePath()));
+                SaveBitmap.deleteScreenshotDCIM(context, arrayList, deleteResultLauncher);
+        }
     }
 
     void shareImage(Screenshots screenshots) {
-        Uri imgUri = Uri.parse(screenshots.getFile().getAbsolutePath());
+        Uri imgUri;
+
+        if (SCREENSHOT_TYPE == 1)
+            imgUri = FileProvider.getUriForFile(context, "com.reiserx.screenshot.fileprovider", screenshots.getFile());
+        else
+            imgUri = FileProvider.getUriForFile(context, "com.reiserx.screenshot.fileprovider", screenshots.getFile());
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.setType("image/*");
@@ -159,10 +197,13 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
             // Start the activity with a chooser
             context.startActivity(Intent.createChooser(shareIntent, "Share this with"));
         } catch (ActivityNotFoundException e) {
-            Log.d("gsfsfsfs", e.toString());
             // Handle case where no suitable app is installed
             // or the user cancels the operation
             e.printStackTrace();
         }
+    }
+
+    public void closeImageViewer() {
+        stfalconImageViewer.close();
     }
 }

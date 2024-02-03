@@ -45,7 +45,7 @@
         app:layout_constraintTop_toTopOf="@+id/share_image_fab" />
     <!--Floating action button for add person-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/save_file_fab"
+        android:id="@+id/delete_file_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
@@ -55,16 +55,16 @@
         app:layout_constraintBottom_toTopOf="@+id/share_image_fab"
         app:layout_constraintEnd_toEndOf="@+id/share_image_fab"
         app:layout_constraintStart_toStartOf="@+id/share_image_fab"
-        app:srcCompat="@drawable/baseline_save_24"
+        app:srcCompat="@drawable/baseline_delete_24"
         app:tint="@color/white" />
     <!--Action name text for the add person button-->
     <TextView
-        android:id="@+id/save_image_text"
+        android:id="@+id/delete_image_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text="Save screenshot"
-        app:layout_constraintBottom_toBottomOf="@+id/save_file_fab"
-        app:layout_constraintEnd_toStartOf="@+id/save_file_fab"
-        app:layout_constraintTop_toTopOf="@+id/save_file_fab" />
+        android:text="Delete screenshot"
+        app:layout_constraintBottom_toBottomOf="@+id/delete_file_fab"
+        app:layout_constraintEnd_toStartOf="@+id/delete_file_fab"
+        app:layout_constraintTop_toTopOf="@+id/delete_file_fab" />
 </androidx.constraintlayout.widget.ConstraintLayout>

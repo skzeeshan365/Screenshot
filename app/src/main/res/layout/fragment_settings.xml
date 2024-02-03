@@ -4,15 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="12dp"
-    android:paddingRight="12dp"
     tools:context=".Activities.ui.settings.SettingsFragment">
 
     <View
         android:id="@+id/divider"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginTop="8dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -20,10 +17,14 @@
         app:layout_constraintTop_toBottomOf="@+id/switch_holder" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout2"
+        android:id="@+id/default_storage_holder"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView">
@@ -32,9 +33,8 @@
             android:id="@+id/default_storage_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:text="Default storage"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -45,10 +45,8 @@
             android:id="@+id/default_storage_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
-            android:text="DCIM/Screenshots"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,8 +57,9 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="16dp"
-        android:text="STORAGE_LOCATIONS"
+        android:text="STORAGE LOCATIONS"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider" />
@@ -78,8 +77,12 @@
         <Switch
             android:id="@+id/switch1"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:clickable="false"
+            android:paddingStart="12dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="20dp"
             android:text="Accessibility Service"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -95,23 +98,26 @@
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/default_storage_holder" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/silent_storage_holder"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
+        app:layout_constraintTop_toBottomOf="@+id/default_storage_holder">
 
         <TextView
             android:id="@+id/inapp_storage_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:text="In-app"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -122,9 +128,8 @@
             android:id="@+id/inapp_storage_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:text="Silent screenshots"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Services.accessibilityService;
+import com.reiserx.screenshot.Utils.BuildConfig;
 import com.reiserx.screenshot.Utils.ButtonDesign;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 import com.reiserx.screenshot.databinding.FragmentAboutBinding;
@@ -55,7 +56,9 @@ public class FragmentAbout extends DialogFragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.imageView6.setOnClickListener(view1 -> {
+        binding.textView39.setText(BuildConfig.getVersionName(requireContext()));
+
+        binding.btnDismiss.setOnClickListener(view1 -> {
           dismiss();
         });
 

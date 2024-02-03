@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-
 
     <application
         android:name=".Utils.BaseApplication"
@@ -19,6 +19,9 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.AppAccessibility"
         tools:targetApi="34">
+        <activity
+            android:name=".Activities.CropActivity"
+            android:exported="false" />
         <activity
             android:name=".Activities.MainActivity"
             android:exported="true"
@@ -54,7 +57,6 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
-
         <service
             android:name=".Services.ScreenshotSilentTile"
             android:exported="true"
@@ -68,12 +70,12 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="your.package.file-provider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:authorities="com.reiserx.screenshot.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
+                android:resource="@xml/file_paths" />
         </provider>
     </application>
 

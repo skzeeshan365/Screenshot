@@ -8,14 +8,15 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     defaultConfig {
         applicationId = "com.reiserx.screenshot"
         minSdk = 30
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.0.0"
+        versionCode = 4
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,6 +46,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("com.github.stfalcon-studio:StfalconImageViewer:v1.0.1")
+    implementation("com.github.yalantis:ucrop:2.2.8-native")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

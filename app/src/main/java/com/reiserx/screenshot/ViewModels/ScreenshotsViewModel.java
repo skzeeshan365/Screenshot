@@ -10,20 +10,30 @@ import com.reiserx.screenshot.Repositories.ScreenshotsRepository;
 
 import java.util.List;
 
-public class ScreenshotsViewModel extends ViewModel implements ScreenshotsRepository.OnGetScreenshotsComplete, ScreenshotsRepository.OnGetSilentScreenshotsComplete {
+public class ScreenshotsViewModel extends ViewModel implements
+        ScreenshotsRepository.OnGetScreenshotsComplete,
+        ScreenshotsRepository.OnGetSilentScreenshotsComplete,
+        ScreenshotsRepository.OnGetFilesComplete {
     private final ScreenshotsRepository screenshotsRepository;
 
     private final MutableLiveData<List<Screenshots>> ItemMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Screenshots>> ItemSilentMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<String>> ItemFilesMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> ErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> ErrorSilentMutableLiveData = new MutableLiveData<>();
+
+    private final MutableLiveData<String> ErrorFilesMutableLiveData = new MutableLiveData<>();
 
     public MutableLiveData<List<Screenshots>> getItemMutableLiveData() {
         return ItemMutableLiveData;
     }
     public MutableLiveData<List<Screenshots>> getSilentItemMutableLiveData() {
         return ItemSilentMutableLiveData;
+    }
+
+    public MutableLiveData<List<String>> getFilesMutableLiveData() {
+        return ItemFilesMutableLiveData;
     }
 
     public MutableLiveData<String> getErrorMutableLiveData() {
@@ -33,8 +43,12 @@ public class ScreenshotsViewModel extends ViewModel implements ScreenshotsReposi
         return ErrorSilentMutableLiveData;
     }
 
+    public MutableLiveData<String> getErrorFilesMutableLiveData() {
+        return ErrorFilesMutableLiveData;
+    }
+
     public ScreenshotsViewModel() {
-        screenshotsRepository = new ScreenshotsRepository(this, this);
+        screenshotsRepository = new ScreenshotsRepository(this, this, this);
     }
 
     public void getScreenshots(Context context, int limit) {
@@ -43,6 +57,10 @@ public class ScreenshotsViewModel extends ViewModel implements ScreenshotsReposi
 
     public void getScreenshotsInApp(Context context) {
         screenshotsRepository.getScreenshotsInApp(context);
+    }
+
+    public void getDCIMDirectory() {
+        screenshotsRepository.getDCIMDirectory();
     }
 
     @Override
@@ -63,5 +81,15 @@ public class ScreenshotsViewModel extends ViewModel implements ScreenshotsReposi
     @Override
     public void onSilentFailure(String error) {
         ErrorSilentMutableLiveData.setValue(error);
+    }
+
+    @Override
+    public void onFilesSuccess(List<String> fileList) {
+        ItemFilesMutableLiveData.setValue(fileList);
+    }
+
+    @Override
+    public void onFilesFailure(String error) {
+        ErrorFilesMutableLiveData.setValue(error);
     }
 }

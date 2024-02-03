@@ -17,6 +17,19 @@
         Accessibility permission is required for seamless screenshot capture.
         We do not collect any data;\nthis permission is solely for the mentioned purposes.
     </string>
+
+    <string name="consent_text">
+        We utilize the Android Accessibility API to empower users with a seamless one-tap screenshot capture experience. This feature enhances accessibility, ensuring quick and efficient screenshot functionality.\n\n
+
+Our app does not collect any user data through the Accessibility API. Screenshots taken using this feature are stored locally on your device, and no information is transmitted to our servers.\n\n
+
+The Accessibility API is employed solely for the core purpose of capturing screenshots with a single tap. No user data is involved in this process, When you use this feature, the app captures and saves the screenshot directly on your device, ensuring a private and personalized experience without any data leaving your control..\n\n
+
+In our commitment to transparency, we want to assure you that our app does not engage in any data collection using the Accessibility API. Your privacy is paramount, and we prioritize clarity in explaining the functionality of our app.\n\n
+
+Your trust is important to us. Our app is designed to enhance your screenshot experience without compromising your privacy. Rest assured that no data is collected or transmitted when using the Accessibility API for one-tap screenshot capture.\n\n
+        By clicking "Agree", you agree to allow our app to use the Android Accessibility API for the purpose of capturing screenshots with enhanced accessibility features
+    </string>
     <string name="thanks_note">Thanks for choosing Screenshot to make the most of your app experience!</string>
     <string name="enable">Enable</string>
     <string name="service_enabled">Service enabled</string>
@@ -34,5 +47,7 @@
     <string name="title_home">Home</string>
     <string name="title_silent_screenshots">Silent screenshots</string>
     <string name="title_settings">Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

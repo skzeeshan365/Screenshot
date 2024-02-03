@@ -6,4 +6,6 @@
     <external-path
         name="saved_images"
         path="MyImagesToShare" />
+    <files-path name="images" path="Screenshots/" />
+    <external-path name="dcim" path="DCIM/" />
 </paths>

@@ -1,15 +1,17 @@
 package com.reiserx.screenshot.Activities.ui.silent_screenshots;
 
+import static com.reiserx.screenshot.Adapters.ScreenshotsAdapter.SILENT_SCREENSHOT;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -28,7 +30,7 @@ public class SilentScreenshotsFragment extends Fragment {
     ScreenshotsAdapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        viewModel = new ViewModelProvider(requireActivity()).get(ScreenshotsViewModel.class);
+        viewModel = new ViewModelProvider((ViewModelStoreOwner) requireContext().getApplicationContext()).get(ScreenshotsViewModel.class);
 
         binding = FragmentSilentScreenshotsBinding.inflate(inflater, container, false);
 
@@ -44,7 +46,7 @@ public class SilentScreenshotsFragment extends Fragment {
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL));
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         binding.rec.setLayoutManager(new GridLayoutManager(requireContext(), 2));
-        adapter = new ScreenshotsAdapter(requireContext());
+        adapter = new ScreenshotsAdapter(requireContext(), SILENT_SCREENSHOT, null);
         binding.rec.setAdapter(adapter);
 
         binding.rec.setVisibility(View.GONE);
@@ -67,5 +69,11 @@ public class SilentScreenshotsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewModel.getScreenshotsInApp(getContext());
     }
 }
