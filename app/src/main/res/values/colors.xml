@@ -6,4 +6,8 @@
     <color name="PrimaryColorNight">#E1E1E1</color>
     <color name="SecondaryColor">#333333</color>
     <color name="AccentColor">#919191</color>
+    <color name="image_tint">#575757</color>
+    <color name="image_done_tint">#00CE7A</color>
+    <color name="layout_background">#FFFFFF</color>
+    <color name="fab_color">#FFFFFF</color>
 </resources>
