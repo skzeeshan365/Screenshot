@@ -1,8 +1,8 @@
 package com.reiserx.screenshot.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.reiserx.screenshot.R;
 

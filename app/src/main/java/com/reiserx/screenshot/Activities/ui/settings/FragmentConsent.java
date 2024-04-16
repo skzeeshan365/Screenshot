@@ -1,27 +1,20 @@
 package com.reiserx.screenshot.Activities.ui.settings;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.os.BuildCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.reiserx.screenshot.Interfaces.OnConsentDismissListener;
 import com.reiserx.screenshot.R;
-import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.BuildConfig;
 import com.reiserx.screenshot.Utils.ButtonDesign;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
-import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
-import com.reiserx.screenshot.databinding.FragmentAboutBinding;
 import com.reiserx.screenshot.databinding.FragmentConsentBinding;
 public class FragmentConsent extends DialogFragment {
 

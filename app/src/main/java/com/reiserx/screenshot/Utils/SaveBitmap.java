@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.service.autofill.SavedDatasetsInfo;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,7 +20,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.reiserx.screenshot.Activities.ui.settings.FileFragment;
-import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
 
 import java.io.File;

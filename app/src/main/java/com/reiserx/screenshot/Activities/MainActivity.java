@@ -1,23 +1,16 @@
 package com.reiserx.screenshot.Activities;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.reiserx.screenshot.Activities.ui.settings.FileFragment;
 import com.reiserx.screenshot.R;
+import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +22,10 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        DataStoreHelper dataStoreHelper = new DataStoreHelper();
+        if (dataStoreHelper.getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null).equals("null"))
+            dataStoreHelper.putStringValue(FileFragment.DEFAULT_STORAGE_KEY, "Screenshots");
 
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration
                 .Builder(R.id.navigation_home,

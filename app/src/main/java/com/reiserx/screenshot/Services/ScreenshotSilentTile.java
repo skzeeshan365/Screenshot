@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.drawable.Icon;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.widget.Toast;

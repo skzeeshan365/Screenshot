@@ -36,6 +36,7 @@ Your trust is important to us. Our app is designed to enhance your screenshot ex
     <string name="service_disabled">Service not enabled</string>
     <string name="local_screenshot_1">Capturing</string>
     <string name="silent_screenshot_label">Silent screenshot</string>
+    <string name="selected_screenshot_label">Snap screenshot</string>
     <string name="screenshot_label">Screenshot</string>
     <string name="title_activity_main">MainActivity</string>
     <!-- Strings used for fragments for navigation -->

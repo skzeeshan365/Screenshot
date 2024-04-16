@@ -1,7 +1,5 @@
 package com.reiserx.screenshot.Models;
 
-import android.net.Uri;
-
 import java.io.File;
 
 public class Screenshots {

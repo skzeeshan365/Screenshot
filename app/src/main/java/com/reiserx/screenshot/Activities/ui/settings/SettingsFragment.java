@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
-import com.reiserx.screenshot.databinding.FragmentFileBinding;
 import com.reiserx.screenshot.databinding.FragmentSettingsBinding;
 
 public class SettingsFragment extends Fragment {
@@ -43,9 +42,7 @@ public class SettingsFragment extends Fragment {
                 AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
                 alert.setTitle("Consent required");
                 alert.setMessage("You have not agreed to consent required for accessibility service\nPlease click on consent to open consent dialog.");
-                alert.setPositiveButton("consent", (dialogInterface, i) -> {
-                    FragmentConsent.display(requireActivity().getSupportFragmentManager());
-                });
+                alert.setPositiveButton("consent", (dialogInterface, i) -> FragmentConsent.display(requireActivity().getSupportFragmentManager()));
                 alert.setNegativeButton("cancel", null);
                 alert.show();
             }
@@ -55,9 +52,7 @@ public class SettingsFragment extends Fragment {
 
         binding.defaultStorageHolder.setOnClickListener(view12 -> {
             FileFragment fileFragment = FileFragment.display(requireActivity().getSupportFragmentManager());
-            FileFragment.setOnFileDismissListener(fileFragment, voids -> {
-                binding.defaultStorageValue.setText(FileFragment.PRIMARY_DEFAULT_STORAGE.concat("/".concat(new DataStoreHelper().getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null))));
-            });
+            FileFragment.setOnFileDismissListener(fileFragment, voids -> binding.defaultStorageValue.setText(FileFragment.PRIMARY_DEFAULT_STORAGE.concat("/".concat(new DataStoreHelper().getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null)))));
         });
     }
 

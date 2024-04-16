@@ -15,11 +15,9 @@
 
     <style name="AppTheme.FullScreenDialog" parent="Theme.MaterialComponents.Light.Dialog">
         <item name="colorPrimaryDark">@color/PrimaryColor</item>
-        <item name="colorAccent">@color/AccentColor</item>
         <item name="colorPrimary">@color/PrimaryColor</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@android:color/white</item>
-        <item name="actionMenuTextColor">@color/AccentColor</item>
     </style>
 
     <style name="Slide">

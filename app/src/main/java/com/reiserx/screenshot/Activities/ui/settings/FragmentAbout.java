@@ -2,16 +2,13 @@ package com.reiserx.screenshot.Activities.ui.settings;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.os.BuildCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
