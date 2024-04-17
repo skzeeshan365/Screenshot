@@ -4,6 +4,8 @@ import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONS
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_KEY;
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,6 +55,28 @@ public class SettingsFragment extends Fragment {
         binding.defaultStorageHolder.setOnClickListener(view12 -> {
             FileFragment fileFragment = FileFragment.display(requireActivity().getSupportFragmentManager());
             FileFragment.setOnFileDismissListener(fileFragment, voids -> binding.defaultStorageValue.setText(FileFragment.PRIMARY_DEFAULT_STORAGE.concat("/".concat(new DataStoreHelper().getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null)))));
+        });
+
+        binding.rate.setOnClickListener(view13 -> {
+            String appUrl = "https://play.google.com/store/apps/details?id=com.reiserx.screenshot";
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(appUrl));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            try {
+                startActivity(intent);
+            } catch (android.content.ActivityNotFoundException e) {
+                // If no app can handle the Intent, do nothing or handle the error as needed
+            }
+        });
+
+        binding.website.setOnClickListener(view14 -> {
+            String url = "https://reiserx.com";
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            try {
+                startActivity(intent);
+            } catch (android.content.ActivityNotFoundException e) {
+                // Handle the exception if the device does not have a web browser installed
+            }
         });
     }
 
