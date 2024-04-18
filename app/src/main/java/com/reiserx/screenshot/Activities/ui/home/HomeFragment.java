@@ -7,7 +7,12 @@ import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONS
 import static com.reiserx.screenshot.Adapters.ScreenshotsAdapter.DEFAULT_SCREENSHOT;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -27,6 +32,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -182,7 +188,6 @@ public class HomeFragment extends Fragment {
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
                 boolean allPermissionsGranted = true;
 
-                // Check if all requested permissions are granted
                 for (Boolean granted : result.values()) {
                     if (!granted) {
                         allPermissionsGranted = false;
@@ -191,18 +196,23 @@ public class HomeFragment extends Fragment {
                 }
 
                 if (allPermissionsGranted) {
-                    // All permissions are granted, you can now execute your code
-                    // Call the method or perform actions that need permission here
                     performActionsOnPermissionsGranted();
                 } else {
-                    // Permissions were not granted, handle accordingly
-                    // You may display a message or take appropriate action
-                    // based on your application's requirements
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                    alert.setTitle("Permission denied");
+                    alert.setMessage("Please grant necessary permission to continue");
+                    alert.setPositiveButton("ok", (dialogInterface, i) -> {
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", requireActivity().getPackageName(), null);
+                        intent.setData(uri);
+                        startActivity(intent);
+                    });
+                    alert.setCancelable(false);
+                    alert.show();
                 }
             });
 
 
-    // Add this method to perform actions when permissions are granted
     private void performActionsOnPermissionsGranted() {
         if (CONSENT_GRANTED) {
             isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(getContext());
