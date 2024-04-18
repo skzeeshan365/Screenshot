@@ -1,38 +1,22 @@
 package com.reiserx.screenshot.Adapters;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.IntentSenderRequest;
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.ContextThemeWrapper;
-import androidx.core.content.FileProvider;
 import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.reiserx.screenshot.Activities.ui.home.GalleryFragment;
 import com.reiserx.screenshot.Models.ScreenshotLabels;
-import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
-import com.reiserx.screenshot.Utils.SaveBitmap;
 import com.reiserx.screenshot.databinding.ImageLabelLayoutBinding;
-import com.reiserx.screenshot.databinding.ImageLayoutBinding;
-import com.stfalcon.imageviewer.StfalconImageViewer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ScreenshotLabelsAdapter extends RecyclerView.Adapter<ScreenshotLabelsAdapter.ImagesViewHolder> {

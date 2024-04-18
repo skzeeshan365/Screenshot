@@ -1,16 +1,12 @@
 package com.reiserx.screenshot.Activities.ui.home;
 
 import static android.app.Activity.RESULT_OK;
-import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_AGREE;
-import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_KEY;
-import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_REJECT;
 import static com.reiserx.screenshot.Adapters.ScreenshotsAdapter.DEFAULT_SCREENSHOT;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,22 +24,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.reiserx.screenshot.Activities.MainActivity;
-import com.reiserx.screenshot.Activities.ui.settings.FragmentAbout;
-import com.reiserx.screenshot.Activities.ui.settings.FragmentConsent;
-import com.reiserx.screenshot.Adapters.ScreenshotLabelsAdapter;
 import com.reiserx.screenshot.Adapters.ScreenshotsAdapter;
 import com.reiserx.screenshot.Models.Screenshots;
-import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
-import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
 import com.reiserx.screenshot.databinding.FragmentGalleryBinding;
-import com.reiserx.screenshot.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
 

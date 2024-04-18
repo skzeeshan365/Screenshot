@@ -106,7 +106,7 @@ public class SaveBitmap {
 
     private String generateFilename(String package_name) {
         long timestamp = System.currentTimeMillis();
-        return "Screenshot" + timestamp + "_" + package_name + ".png";
+        return "Screenshot_" + timestamp + "_" + package_name + ".png";
     }
 
     public static void deleteScreenshotDCIM(Context context, ArrayList<Uri> arrayList, ActivityResultLauncher<IntentSenderRequest> deleteResultLauncher) {

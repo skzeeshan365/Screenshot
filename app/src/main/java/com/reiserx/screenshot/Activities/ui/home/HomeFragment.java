@@ -1,25 +1,22 @@
 package com.reiserx.screenshot.Activities.ui.home;
 
-import static android.app.Activity.RESULT_OK;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_AGREE;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_KEY;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_REJECT;
-import static com.reiserx.screenshot.Adapters.ScreenshotsAdapter.DEFAULT_SCREENSHOT;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,23 +29,14 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import android.provider.Settings;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
 import com.reiserx.screenshot.Activities.ui.settings.FragmentAbout;
 import com.reiserx.screenshot.Activities.ui.settings.FragmentConsent;
 import com.reiserx.screenshot.Adapters.ScreenshotLabelsAdapter;
-import com.reiserx.screenshot.Adapters.ScreenshotsAdapter;
 import com.reiserx.screenshot.Models.Screenshots;
-import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
-import com.reiserx.screenshot.databinding.FragmentGalleryBinding;
 import com.reiserx.screenshot.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
