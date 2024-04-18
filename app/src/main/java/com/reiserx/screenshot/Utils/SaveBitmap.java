@@ -19,6 +19,7 @@ import androidx.activity.result.IntentSenderRequest;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 
+import com.reiserx.screenshot.Activities.ui.home.GalleryFragment;
 import com.reiserx.screenshot.Activities.ui.settings.FileFragment;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
 
@@ -92,8 +93,10 @@ public class SaveBitmap {
 
                 Toast.makeText(context, "Screenshot saved in DCIM/"+dataStoreHelper.getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null), Toast.LENGTH_LONG).show();
 
-                if (BaseApplication.getInstance().isMyActivityInForeground())
-                    viewModel.getScreenshots(context);
+                if (BaseApplication.getInstance().isMyActivityInForeground()) {
+                    Toast.makeText(context, String.valueOf(dataStoreHelper.getStringValue(GalleryFragment.SCREENSHOT_LABEL, null)), Toast.LENGTH_LONG).show();
+                    viewModel.getScreenshots(context, dataStoreHelper.getStringValue(GalleryFragment.SCREENSHOT_LABEL, null));
+                }
             } catch (Exception e) {
                 Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
             }
@@ -103,7 +106,7 @@ public class SaveBitmap {
 
     private String generateFilename(String package_name) {
         long timestamp = System.currentTimeMillis();
-        return timestamp + "_" + package_name + ".png";
+        return "Screenshot" + timestamp + "_" + package_name + ".png";
     }
 
     public static void deleteScreenshotDCIM(Context context, ArrayList<Uri> arrayList, ActivityResultLauncher<IntentSenderRequest> deleteResultLauncher) {

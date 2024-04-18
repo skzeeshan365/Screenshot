@@ -10,6 +10,11 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -19,25 +24,20 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
+import com.reiserx.screenshot.Activities.MainActivity;
 import com.reiserx.screenshot.Activities.ui.settings.FragmentAbout;
 import com.reiserx.screenshot.Activities.ui.settings.FragmentConsent;
 import com.reiserx.screenshot.Adapters.ScreenshotLabelsAdapter;
 import com.reiserx.screenshot.Adapters.ScreenshotsAdapter;
 import com.reiserx.screenshot.Models.Screenshots;
-import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
@@ -47,13 +47,13 @@ import com.reiserx.screenshot.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
 
-public class HomeFragment extends Fragment {
+public class GalleryFragment extends Fragment {
 
-    private FragmentHomeBinding binding;
+    private FragmentGalleryBinding binding;
     private ScreenshotsViewModel viewModel;
 
     ArrayList<Screenshots> data;
-    ScreenshotLabelsAdapter adapter;
+    ScreenshotsAdapter adapter;
 
     public static String[] storage_permissions = {
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -66,28 +66,26 @@ public class HomeFragment extends Fragment {
 
     DataStoreHelper dataStoreHelper;
 
-    static boolean CONSENT_GRANTED = false;
+    public static String SCREENSHOT_LABEL = "SCREENSHOT_LABEL";
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        viewModel = new ViewModelProvider((ViewModelStoreOwner) requireContext().getApplicationContext()).get(ScreenshotsViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ScreenshotsViewModel.class);
 
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        binding = FragmentGalleryBinding.inflate(inflater, container, false);
         dataStoreHelper = new DataStoreHelper();
-        dataStoreHelper.putBooleanValue("isAccessibility", false);
-
-        int consent = dataStoreHelper.getIntValue(CONSENT_KEY, 0);
-        if (consent == CONSENT_AGREE) {
-            consent_agreed();
-            CONSENT_GRANTED = true;
-        } else if (consent == CONSENT_REJECT) {
-            consent_reject();
-            CONSENT_GRANTED = false;
-        } else {
-            consent();
+        if (((AppCompatActivity)requireActivity()).getSupportActionBar() != null) {
+            String title = dataStoreHelper.getStringValue(SCREENSHOT_LABEL, null);
+            if (title.equals("null"))
+                ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("All screenshots");
+            else
+                ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(title);
         }
+        consent_agreed();
         return binding.getRoot();
     }
+
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -97,19 +95,19 @@ public class HomeFragment extends Fragment {
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL));
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         binding.rec.setLayoutManager(new GridLayoutManager(requireContext(), 2));
-        adapter = new ScreenshotLabelsAdapter(requireContext(), NavHostFragment.findNavController(HomeFragment.this));
+        adapter = new ScreenshotsAdapter(requireContext(), DEFAULT_SCREENSHOT, deleteResultLauncher);
         binding.rec.setAdapter(adapter);
 
         binding.rec.setVisibility(View.GONE);
         binding.progHolder.setVisibility(View.GONE);
 
-        viewModel.getItemLabelsMutableLiveData().observe(getViewLifecycleOwner(), ItemList -> {
+        viewModel.getItemMutableLiveData().observe(getViewLifecycleOwner(), ItemList -> {
             binding.rec.setVisibility(View.VISIBLE);
             binding.progHolder.setVisibility(View.GONE);
             adapter.setData(ItemList);
             adapter.notifyItemChanged(0);
         });
-        viewModel.getErrorLabelsMutableLiveData().observe(getViewLifecycleOwner(), error -> {
+        viewModel.getErrorMutableLiveData().observe(getViewLifecycleOwner(), error -> {
             binding.textView9.setText(error);
             binding.rec.setVisibility(View.GONE);
             binding.progHolder.setVisibility(View.VISIBLE);
@@ -117,39 +115,9 @@ public class HomeFragment extends Fragment {
     }
 
     void consent_agreed() {
-        isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(getContext());
         if (isPermissionGranted()) {
-            viewModel.getScreenshotLabels(getContext());
-            if (!isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class)) {
-                dataStoreHelper.putBooleanValue("isAccessibility", true);
-                FragmentAbout.display(requireActivity().getSupportFragmentManager());
-            }
-        } else
-            requestPermissionLauncher.launch(permissions());
-    }
-
-    void consent() {
-        FragmentConsent fragmentConsent = FragmentConsent.display(requireActivity().getSupportFragmentManager());
-        FragmentConsent.setOnConsentDismissListener(fragmentConsent, consentResult -> {
-            // Handle the consent result as needed
-            if (consentResult == FragmentConsent.CONSENT_AGREE) {
-                consent_agreed();
-                CONSENT_GRANTED = true;
-            } else if (consentResult == FragmentConsent.CONSENT_REJECT) {
-                consent_reject();
-                CONSENT_GRANTED = false;
-            } else {
-                consent_reject();
-                CONSENT_GRANTED = false;
-            }
-        });
-    }
-
-    void consent_reject() {
-        if (isPermissionGranted())
-            viewModel.getScreenshotLabels(getContext());
-        else
-            requestPermissionLauncher.launch(permissions());
+            viewModel.getScreenshots(getContext(), dataStoreHelper.getStringValue(SCREENSHOT_LABEL, null));
+        }
     }
 
     @Override
@@ -167,7 +135,6 @@ public class HomeFragment extends Fragment {
         }
         return true;
     }
-
     public static String[] permissions() {
         String[] p;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -178,39 +145,17 @@ public class HomeFragment extends Fragment {
         return p;
     }
 
-    private final ActivityResultLauncher<String[]> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
-                boolean allPermissionsGranted = true;
-
-                // Check if all requested permissions are granted
-                for (Boolean granted : result.values()) {
-                    if (!granted) {
-                        allPermissionsGranted = false;
-                        break;
+    ActivityResultLauncher<IntentSenderRequest> deleteResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartIntentSenderForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == RESULT_OK){
+                        Toast.makeText(getContext(), "Screenshot deleted.", Toast.LENGTH_SHORT).show();
+                        adapter.closeImageViewer();
+                        viewModel.getScreenshots(getContext(), dataStoreHelper.getStringValue(SCREENSHOT_LABEL, null));
                     }
                 }
-
-                if (allPermissionsGranted) {
-                    // All permissions are granted, you can now execute your code
-                    // Call the method or perform actions that need permission here
-                    performActionsOnPermissionsGranted();
-                } else {
-                    // Permissions were not granted, handle accordingly
-                    // You may display a message or take appropriate action
-                    // based on your application's requirements
-                }
-            });
-
-
-    // Add this method to perform actions when permissions are granted
-    private void performActionsOnPermissionsGranted() {
-        if (CONSENT_GRANTED) {
-            isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(getContext());
-            if (!isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class)) {
-                dataStoreHelper.putBooleanValue("isAccessibility", true);
-                FragmentAbout.display(requireActivity().getSupportFragmentManager());
             }
-        }
-        viewModel.getScreenshotLabels(getContext());
-    }
+    );
 }

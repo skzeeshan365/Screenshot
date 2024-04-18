@@ -7,6 +7,7 @@ import android.os.Looper;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.reiserx.screenshot.Models.ScreenshotLabels;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.Repositories.ScreenshotsRepository;
 
@@ -15,17 +16,20 @@ import java.util.List;
 public class ScreenshotsViewModel extends ViewModel implements
         ScreenshotsRepository.OnGetScreenshotsComplete,
         ScreenshotsRepository.OnGetSilentScreenshotsComplete,
-        ScreenshotsRepository.OnGetFilesComplete {
+        ScreenshotsRepository.OnGetFilesComplete,
+        ScreenshotsRepository.OnGetLabelsComplete{
     private final ScreenshotsRepository screenshotsRepository;
 
     private final MutableLiveData<List<Screenshots>> ItemMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Screenshots>> ItemSilentMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<String>> ItemFilesMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<ScreenshotLabels>> ItemLabelsMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> ErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> ErrorSilentMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> ErrorFilesMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> ErrorLabelsMutableLiveData = new MutableLiveData<>();
 
     public MutableLiveData<List<Screenshots>> getItemMutableLiveData() {
         return ItemMutableLiveData;
@@ -36,6 +40,10 @@ public class ScreenshotsViewModel extends ViewModel implements
 
     public MutableLiveData<List<String>> getFilesMutableLiveData() {
         return ItemFilesMutableLiveData;
+    }
+
+    public MutableLiveData<List<ScreenshotLabels>> getItemLabelsMutableLiveData() {
+        return ItemLabelsMutableLiveData;
     }
 
     public MutableLiveData<String> getErrorMutableLiveData() {
@@ -49,13 +57,17 @@ public class ScreenshotsViewModel extends ViewModel implements
         return ErrorFilesMutableLiveData;
     }
 
-    public ScreenshotsViewModel() {
-        screenshotsRepository = new ScreenshotsRepository(this, this, this);
+    public MutableLiveData<String> getErrorLabelsMutableLiveData() {
+        return ErrorLabelsMutableLiveData;
     }
 
-    public void getScreenshots(Context context) {
+    public ScreenshotsViewModel() {
+        screenshotsRepository = new ScreenshotsRepository(this,this, this, this);
+    }
+
+    public void getScreenshots(Context context, String label) {
         new Thread(() -> {
-            screenshotsRepository.getScreenshots(context);
+            screenshotsRepository.getScreenshots(context, label);
         }).start();
     }
 
@@ -65,6 +77,10 @@ public class ScreenshotsViewModel extends ViewModel implements
 
     public void getDCIMDirectory() {
         screenshotsRepository.getDCIMDirectory();
+    }
+
+    public void getScreenshotLabels(Context context) {
+        screenshotsRepository.getScreenshotLabels(context);
     }
 
     @Override
@@ -101,5 +117,21 @@ public class ScreenshotsViewModel extends ViewModel implements
     @Override
     public void onFilesFailure(String error) {
         ErrorFilesMutableLiveData.setValue(error);
+    }
+
+    @Override
+    public void onLabelsSuccess(List<ScreenshotLabels> labelsList) {
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(() -> {
+            ItemLabelsMutableLiveData.setValue(labelsList);
+        });
+    }
+
+    @Override
+    public void onLabelsFailure(String error) {
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(() -> {
+            ErrorMutableLiveData.setValue(error);
+        });
     }
 }

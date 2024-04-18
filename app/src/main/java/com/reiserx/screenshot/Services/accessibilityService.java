@@ -91,7 +91,7 @@ public class accessibilityService extends AccessibilityService {
                             Bitmap bitmap = Bitmap.wrapHardwareBuffer(screenshotResult.getHardwareBuffer(), screenshotResult.getColorSpace());
 
                             SaveBitmap saveBitmap = new SaveBitmap(bitmap, accessibilityService.this);
-                            saveBitmap.saveDataLocalDCIM(getCurrentForegroundApp());
+                            saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
                         }
 
                         @Override
@@ -180,7 +180,7 @@ public class accessibilityService extends AccessibilityService {
                             closeSelection();
 
                             SaveBitmap saveBitmap = new SaveBitmap(croppedBitmap, accessibilityService.this);
-                            saveBitmap.saveDataLocalDCIM(getCurrentForegroundApp());
+                            saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
                         }
 
                         @Override
