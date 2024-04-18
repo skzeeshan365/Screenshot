@@ -3,16 +3,23 @@ package com.reiserx.screenshot.Activities.ui.settings;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_AGREE;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_KEY;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.reiserx.screenshot.Services.accessibilityService;
@@ -78,6 +85,35 @@ public class SettingsFragment extends Fragment {
                 // Handle the exception if the device does not have a web browser installed
             }
         });
+
+        binding.notificationHolder.setOnClickListener(view15 -> {
+            if (binding.notificationSwitch.isChecked()) {
+                if (accessibilityService.instance != null) {
+                    accessibilityService.instance.cancelNotification(8724);
+                    binding.notificationSwitch.setChecked(false);
+                }
+            } else {
+                if (binding.switch1.isChecked()) {
+                    if (Build.VERSION.SDK_INT >= 33) {
+                        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+                        } else {
+                            accessibilityService.instance.sendNotification("Capture", "Click to capture screenshot", 8724);
+                            binding.notificationSwitch.setChecked(true);
+                        }
+                    } else {
+                        accessibilityService.instance.sendNotification("Capture", "Click to capture screenshot", 8724);
+                        binding.notificationSwitch.setChecked(true);
+                    }
+                } else {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                    alert.setTitle("Accessibility service is not Active");
+                    alert.setMessage("You have not enabled accessibility service\nPlease enable it then try again.");
+                    alert.setPositiveButton("OK", null);
+                    alert.show();
+                }
+            }
+        });
     }
 
     @Override
@@ -94,7 +130,17 @@ public class SettingsFragment extends Fragment {
 
     void refreshAccessibilityPermission() {
         isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(getContext());
-
         binding.switch1.setChecked(isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class));
+        if (binding.switch1.isChecked()) {
+            binding.notificationSwitch.setChecked(accessibilityService.instance.isNotificationActive(8724));
+        }
     }
+
+    ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+        if (isGranted) {
+            // Permission is granted, proceed with your task
+        } else {
+            // Permission is denied, handle accordingly
+        }
+    });
 }

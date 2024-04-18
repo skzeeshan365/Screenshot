@@ -2,12 +2,23 @@ package com.reiserx.screenshot.Services;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Build;
+import android.service.notification.StatusBarNotification;
+import android.util.Log;
 import android.view.Display;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -17,7 +28,10 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.reiserx.screenshot.Activities.CaptureActivity;
 import com.reiserx.screenshot.Activities.ui.IconCropView;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.SaveBitmap;
@@ -29,7 +43,6 @@ public class accessibilityService extends AccessibilityService {
     public static accessibilityService instance;
     private WindowManager windowManager;
     private IconCropView selectionRectView;
-
 
     @Override
     protected void onServiceConnected() {
@@ -46,6 +59,21 @@ public class accessibilityService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
+        if (accessibilityEvent.getEventType() == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) {
+            Log.d(TAG, "1");
+            if ("com.reiserx.screenshot".equals(String.valueOf(accessibilityEvent.getPackageName()))) {
+                Log.d(TAG, "2");
+                if (accessibilityEvent.getParcelableData() instanceof Notification) {
+                    Log.d(TAG, "3");
+                    Notification notification = (Notification) accessibilityEvent.getParcelableData();
+                    if (notification.getChannelId().equals("capture_screenshot_channel")) {
+                        Log.d(TAG, "4");
+                        Toast.makeText(this, "sdfdsfdsfds", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        }
+
         if (String.valueOf(accessibilityEvent.getPackageName()).equals("com.android.systemui")) {
             if (String.valueOf(accessibilityEvent.getContentDescription()).trim().equals("Back")) {
                 closeSelection();
@@ -63,24 +91,24 @@ public class accessibilityService extends AccessibilityService {
     public void takeScreenshots() {
         try {
             Toast.makeText(this, getString(R.string.local_screenshot_1), Toast.LENGTH_SHORT).show();
-                takeScreenshot(Display.DEFAULT_DISPLAY,
-                        getApplicationContext().getMainExecutor(), new TakeScreenshotCallback() {
-                            @Override
-                            public void onSuccess(@NonNull ScreenshotResult screenshotResult) {
-                                Bitmap bitmap = Bitmap.wrapHardwareBuffer(screenshotResult.getHardwareBuffer(), screenshotResult.getColorSpace());
+            takeScreenshot(Display.DEFAULT_DISPLAY,
+                    getApplicationContext().getMainExecutor(), new TakeScreenshotCallback() {
+                        @Override
+                        public void onSuccess(@NonNull ScreenshotResult screenshotResult) {
+                            Bitmap bitmap = Bitmap.wrapHardwareBuffer(screenshotResult.getHardwareBuffer(), screenshotResult.getColorSpace());
 
-                                SaveBitmap saveBitmap = new SaveBitmap(bitmap, accessibilityService.this);
-                                saveBitmap.saveDataLocalDCIM();
-                            }
+                            SaveBitmap saveBitmap = new SaveBitmap(bitmap, accessibilityService.this);
+                            saveBitmap.saveDataLocalDCIM();
+                        }
 
-                            @Override
-                            public void onFailure(int i) {
-                                Toast.makeText(accessibilityService.this, "Capture failed " + i, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        @Override
+                        public void onFailure(int i) {
+                            Toast.makeText(accessibilityService.this, "Capture failed " + i, Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
         } catch (Exception e) {
-            Toast.makeText(this, "An error occurred: "+e, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "An error occurred: " + e, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -103,7 +131,7 @@ public class accessibilityService extends AccessibilityService {
                     });
 
         } catch (Exception e) {
-            Toast.makeText(this, "An error occurred: "+e, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "An error occurred: " + e, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -167,13 +195,16 @@ public class accessibilityService extends AccessibilityService {
                     });
 
         } catch (Exception e) {
-            Toast.makeText(this, "An error occurred: "+e, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "An error occurred: " + e, Toast.LENGTH_SHORT).show();
         }
     }
 
     private Bitmap cropScreenshot(Bitmap fullBitmap, Rect cropRect) {
         int statusBarHeight = getStatusBarHeight();
         int navigationBarHeight = getNavigationBarHeight();
+
+        Log.d(TAG, String.valueOf(navigationBarHeight));
+        Log.d(TAG, String.valueOf(statusBarHeight));
 
         int borderWidth = 5;
 
@@ -222,5 +253,52 @@ public class accessibilityService extends AccessibilityService {
             windowManager.removeView(selectionRectView);
             selectionRectView = null;
         }
+    }
+
+    public void sendNotification(String title, String content, int id) {
+        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        String channel_id = "capture_screenshot_channel";
+
+        @SuppressLint("WrongConstant")
+        NotificationChannel notificationChannel = new NotificationChannel(channel_id, "Capture screenshot", NotificationManager.IMPORTANCE_MIN);
+        notificationChannel.setDescription("service");
+
+        notificationManager.createNotificationChannel(notificationChannel);
+
+        Intent transparentIntent = new Intent(this, CaptureActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, transparentIntent, PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder notify_bulder = new NotificationCompat.Builder(this, channel_id);
+        notify_bulder
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.drawable.baseline_crop_square_24)
+                .setContentText(content)
+                .setContentTitle(title)
+                .setPriority(NotificationManager.IMPORTANCE_MIN)
+                .setContentInfo("info")
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(false);
+
+        notificationManager.notify(id, notify_bulder.build());
+    }
+
+    public void cancelNotification(int id) {
+        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(id);
+    }
+
+    public boolean isNotificationActive(int notificationId) {
+        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        StatusBarNotification[] activeNotifications = notificationManager.getActiveNotifications();
+
+        for (StatusBarNotification notification : activeNotifications) {
+            if (notification.getId() == notificationId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

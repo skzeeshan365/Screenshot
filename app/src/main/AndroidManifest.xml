@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
@@ -9,7 +10,6 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
-
 
     <application
         android:name=".Utils.BaseApplication"
@@ -22,6 +22,10 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.AppAccessibility"
         tools:targetApi="34">
+        <activity
+            android:name=".Activities.CaptureActivity"
+            android:theme="@style/Theme.Transparent"
+            android:exported="false" />
         <activity
             android:name=".Activities.CropActivity"
             android:exported="false" />
@@ -70,7 +74,6 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
-
         <service
             android:name=".Services.ScreenshotSelectedTile"
             android:exported="true"
