@@ -65,11 +65,16 @@ public class SaveBitmap {
         }
     }
 
-    public void saveDataLocalDCIM() {
+    public void saveDataLocalDCIM(String package_name) {
         // Use MediaStore for Android 10 and above
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.RELATIVE_PATH, "DCIM/"+dataStoreHelper.getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null));
         values.put(MediaStore.Images.Media.IS_PENDING, 1);
+
+        if (package_name != null) {
+            String filename = generateFilename(package_name);
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, filename);
+        }
 
         Uri uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
@@ -88,12 +93,17 @@ public class SaveBitmap {
                 Toast.makeText(context, "Screenshot saved in DCIM/"+dataStoreHelper.getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null), Toast.LENGTH_LONG).show();
 
                 if (BaseApplication.getInstance().isMyActivityInForeground())
-                    viewModel.getScreenshots(context, 100);
+                    viewModel.getScreenshots(context);
             } catch (Exception e) {
                 Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
             }
         } else
             Toast.makeText(context, "An error occurred", Toast.LENGTH_SHORT).show();
+    }
+
+    private String generateFilename(String package_name) {
+        long timestamp = System.currentTimeMillis();
+        return timestamp + "_" + package_name + ".png";
     }
 
     public static void deleteScreenshotDCIM(Context context, ArrayList<Uri> arrayList, ActivityResultLauncher<IntentSenderRequest> deleteResultLauncher) {

@@ -48,7 +48,6 @@ public class HomeFragment extends Fragment {
     private ScreenshotsViewModel viewModel;
 
     ArrayList<Screenshots> data;
-    ArrayList<String> images;
     ScreenshotsAdapter adapter;
 
     public static String[] storage_permissions = {
@@ -90,7 +89,6 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         data = new ArrayList<>();
-        images = new ArrayList<>();
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL));
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         binding.rec.setLayoutManager(new GridLayoutManager(requireContext(), 2));
@@ -103,9 +101,6 @@ public class HomeFragment extends Fragment {
         viewModel.getItemMutableLiveData().observe(getViewLifecycleOwner(), ItemList -> {
             binding.rec.setVisibility(View.VISIBLE);
             binding.progHolder.setVisibility(View.GONE);
-            for (Screenshots screenshot : ItemList) {
-                images.add(screenshot.getFilename());
-            }
             adapter.setData(ItemList);
             adapter.notifyItemChanged(0);
         });
@@ -119,7 +114,7 @@ public class HomeFragment extends Fragment {
     void consent_agreed() {
         isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(getContext());
         if (isPermissionGranted()) {
-            viewModel.getScreenshots(getContext(), 100);
+                viewModel.getScreenshots(getContext());
             if (!isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class)) {
                 dataStoreHelper.putBooleanValue("isAccessibility", true);
                 FragmentAbout.display(requireActivity().getSupportFragmentManager());
@@ -148,7 +143,7 @@ public class HomeFragment extends Fragment {
 
     void consent_reject() {
         if (isPermissionGranted())
-            viewModel.getScreenshots(getContext(), 100);
+            viewModel.getScreenshots(getContext());
         else
             requestPermissionLauncher.launch(permissions());
     }
@@ -211,7 +206,7 @@ public class HomeFragment extends Fragment {
                 FragmentAbout.display(requireActivity().getSupportFragmentManager());
             }
         }
-        viewModel.getScreenshots(getContext(), 100);
+        viewModel.getScreenshots(getContext());
     }
 
     ActivityResultLauncher<IntentSenderRequest> deleteResultLauncher = registerForActivityResult(
@@ -222,7 +217,7 @@ public class HomeFragment extends Fragment {
                     if (result.getResultCode() == RESULT_OK){
                         Toast.makeText(getContext(), "Screenshot deleted.", Toast.LENGTH_SHORT).show();
                         adapter.closeImageViewer();
-                        viewModel.getScreenshots(getContext(), 100);
+                        viewModel.getScreenshots(getContext());
                     }
                 }
             }

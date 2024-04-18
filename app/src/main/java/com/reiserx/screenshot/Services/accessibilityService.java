@@ -16,15 +16,22 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewTreeObserver;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,6 +42,7 @@ import com.reiserx.screenshot.Activities.CaptureActivity;
 import com.reiserx.screenshot.Activities.ui.IconCropView;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.SaveBitmap;
+import com.reiserx.screenshot.Utils.getLabelFromPackage;
 
 import java.util.concurrent.Executor;
 
@@ -59,21 +67,6 @@ public class accessibilityService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
-        if (accessibilityEvent.getEventType() == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) {
-            Log.d(TAG, "1");
-            if ("com.reiserx.screenshot".equals(String.valueOf(accessibilityEvent.getPackageName()))) {
-                Log.d(TAG, "2");
-                if (accessibilityEvent.getParcelableData() instanceof Notification) {
-                    Log.d(TAG, "3");
-                    Notification notification = (Notification) accessibilityEvent.getParcelableData();
-                    if (notification.getChannelId().equals("capture_screenshot_channel")) {
-                        Log.d(TAG, "4");
-                        Toast.makeText(this, "sdfdsfdsfds", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        }
-
         if (String.valueOf(accessibilityEvent.getPackageName()).equals("com.android.systemui")) {
             if (String.valueOf(accessibilityEvent.getContentDescription()).trim().equals("Back")) {
                 closeSelection();
@@ -98,7 +91,7 @@ public class accessibilityService extends AccessibilityService {
                             Bitmap bitmap = Bitmap.wrapHardwareBuffer(screenshotResult.getHardwareBuffer(), screenshotResult.getColorSpace());
 
                             SaveBitmap saveBitmap = new SaveBitmap(bitmap, accessibilityService.this);
-                            saveBitmap.saveDataLocalDCIM();
+                            saveBitmap.saveDataLocalDCIM(getCurrentForegroundApp());
                         }
 
                         @Override
@@ -153,15 +146,22 @@ public class accessibilityService extends AccessibilityService {
             windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         }
         if (selectionRectView == null) {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+            Display display = displayManager.getDisplay(Display.DEFAULT_DISPLAY);
+            display.getRealMetrics(displayMetrics);
             WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT, 0, getNavigationBarHeight(),
                     WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
                             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
-                            WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
+                            WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH |
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                     PixelFormat.TRANSLUCENT);
+
+
             selectionRectView = new IconCropView(this);
             windowManager.addView(selectionRectView, params);
         }
@@ -176,16 +176,11 @@ public class accessibilityService extends AccessibilityService {
                         public void onSuccess(@NonNull ScreenshotResult screenshotResult) {
                             Bitmap bitmap = Bitmap.wrapHardwareBuffer(screenshotResult.getHardwareBuffer(), screenshotResult.getColorSpace());
 
-                            Rect adjustedRect = new Rect(rect);
-                            int[] location = new int[2];
-                            selectionRectView.getLocationOnScreen(location);
-                            adjustedRect.offset(-location[0], -location[1]);
-
-                            Bitmap croppedBitmap = cropScreenshot(bitmap, adjustedRect);
+                            Bitmap croppedBitmap = cropScreenshot(bitmap, rect);
                             closeSelection();
 
                             SaveBitmap saveBitmap = new SaveBitmap(croppedBitmap, accessibilityService.this);
-                            saveBitmap.saveDataLocalDCIM();
+                            saveBitmap.saveDataLocalDCIM(getCurrentForegroundApp());
                         }
 
                         @Override
@@ -200,36 +195,18 @@ public class accessibilityService extends AccessibilityService {
     }
 
     private Bitmap cropScreenshot(Bitmap fullBitmap, Rect cropRect) {
-        int statusBarHeight = getStatusBarHeight();
         int navigationBarHeight = getNavigationBarHeight();
 
-        Log.d(TAG, String.valueOf(navigationBarHeight));
-        Log.d(TAG, String.valueOf(statusBarHeight));
-
-        int borderWidth = 5;
+        int borderWidth = 2;
 
         int cropLeft = Math.max(0, cropRect.left + borderWidth);
-        int cropTop = Math.max(0, cropRect.top + statusBarHeight);
-
-        int cropTopMain = Math.max(0, cropRect.top + statusBarHeight + navigationBarHeight);
-
-        int cropRight = Math.min(fullBitmap.getWidth(), cropRect.right - borderWidth);
-        int cropBottom = Math.min(fullBitmap.getHeight() - navigationBarHeight, cropRect.bottom);
+        int cropTop = cropRect.top + navigationBarHeight + borderWidth;
+        int cropRight = Math.min(fullBitmap.getWidth(), cropRect.right - borderWidth);;
 
         int cropWidth = Math.max(0, cropRight - cropLeft);
-        int cropHeight = Math.max(0, cropBottom - cropTop);
+        int cropHeight = Math.max(0, cropRect.height() - borderWidth*2);
 
-        return Bitmap.createBitmap(fullBitmap, cropLeft, cropTopMain, cropWidth, cropHeight);
-    }
-
-
-    public int getStatusBarHeight() {
-        int statusBarHeight = 0;
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
-        }
-        return statusBarHeight;
+        return Bitmap.createBitmap(fullBitmap, cropLeft, cropTop, cropWidth, cropHeight);
     }
 
     public boolean hasSoftNavigationBar() {
@@ -300,5 +277,27 @@ public class accessibilityService extends AccessibilityService {
         }
 
         return false;
+    }
+
+    private String getCurrentForegroundApp() {
+        AccessibilityNodeInfo rootInActiveWindow = getRootInActiveWindow();
+        if (rootInActiveWindow == null) {
+            Log.d(TAG, "1");
+            return null;
+        }
+        AccessibilityNodeInfo currentNode = rootInActiveWindow;
+        while (currentNode != null) {
+            if (currentNode.getPackageName() != null) {
+                String packageName = currentNode.getPackageName().toString();
+                rootInActiveWindow.recycle();
+                return packageName;
+            }
+            AccessibilityNodeInfo parent = currentNode.getParent();
+            currentNode.recycle();
+            currentNode = parent;
+        }
+
+        rootInActiveWindow.recycle();
+        return null;
     }
 }

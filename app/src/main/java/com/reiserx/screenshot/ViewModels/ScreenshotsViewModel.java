@@ -1,6 +1,8 @@
 package com.reiserx.screenshot.ViewModels;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -51,8 +53,10 @@ public class ScreenshotsViewModel extends ViewModel implements
         screenshotsRepository = new ScreenshotsRepository(this, this, this);
     }
 
-    public void getScreenshots(Context context, int limit) {
-        screenshotsRepository.getScreenshots(context, limit);
+    public void getScreenshots(Context context) {
+        new Thread(() -> {
+            screenshotsRepository.getScreenshots(context);
+        }).start();
     }
 
     public void getScreenshotsInApp(Context context) {
@@ -65,12 +69,18 @@ public class ScreenshotsViewModel extends ViewModel implements
 
     @Override
     public void onSuccess(List<Screenshots> parentItemList) {
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(() -> {
         ItemMutableLiveData.setValue(parentItemList);
+        });
     }
 
     @Override
     public void onFailure(String error) {
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(() -> {
         ErrorMutableLiveData.setValue(error);
+        });
     }
 
     @Override

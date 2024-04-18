@@ -40,38 +40,40 @@ public class IconCropView extends RelativeLayout {
     }
 
     private void init() {
-        rect = new Rect(100, 100, 400, 400);
+        rect = new Rect(200, 500, 900, 900);
         paint = new Paint();
         paint.setColor(Color.parseColor("#F0EBE3"));
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(5);
+        paint.setStrokeWidth(2);
 
         setBackgroundColor(Color.parseColor("#80000000"));
 
         ImageView closeIcon = new ImageView(getContext());
-        closeIcon.setImageResource(R.drawable.ic_baseline_close_24); // Replace with your close icon drawable
+        closeIcon.setImageResource(R.drawable.ic_baseline_close_24);
         LayoutParams closeIconParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         closeIconParams.addRule(ALIGN_PARENT_TOP);
-        closeIconParams.addRule(ALIGN_PARENT_RIGHT);
-        closeIcon.setPadding(16, 16, 16, 16); // Adjust padding as needed
+        closeIconParams.addRule(ALIGN_PARENT_LEFT);
+        closeIcon.setPadding(16, 16, 16, 16);
+        closeIconParams.setMargins(8, 8, 8, 8);
         closeIcon.setOnClickListener(v -> closeSelection());
         addView(closeIcon, closeIconParams);
 
         button = new Button(getContext());
         button.setText("Capture");
-        button.setTextColor(Color.parseColor("#F6F5F2"));
+        button.setTextSize(14);
         button.setBackgroundColor(getContext().getColor(R.color.PrimaryColor));
         LayoutParams buttonParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        buttonParams.addRule(ALIGN_PARENT_BOTTOM);
-        buttonParams.addRule(CENTER_HORIZONTAL);
+        buttonParams.addRule(ALIGN_PARENT_TOP);
+        buttonParams.addRule(ALIGN_PARENT_RIGHT);
+        buttonParams.setMargins(8, 8, 16, 8);
         addView(button, buttonParams);
 
         ButtonDesign buttonDesign = new ButtonDesign(getContext());
-        buttonDesign.setButtonOutline(button);
+        buttonDesign.setButtonOutlineLight(button);
 
         button.setOnClickListener(view -> {
             if (accessibilityService.instance != null) {
-                buttonDesign.buttonFill(button);
+                buttonDesign.buttonFillLight(button);
                 accessibilityService.instance.captureSelectedArea(rect);
             } else {
                 Toast.makeText(getContext(), "Failed to capture, Accessibility service is disabled.", Toast.LENGTH_SHORT).show();

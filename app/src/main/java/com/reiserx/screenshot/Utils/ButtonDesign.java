@@ -24,4 +24,14 @@ public class ButtonDesign {
         button.setBackground(context.getDrawable(R.drawable.button_filled));
         button.setTextColor(Color.parseColor("#FFFFFF"));
     }
+
+    public void setButtonOutlineLight(Button button) {
+        button.setBackground(context.getDrawable(R.drawable.button_outline_light));
+        button.setTextColor(context.getColor(R.color.PrimaryColor));
+    }
+
+    public void buttonFillLight(Button button) {
+        button.setBackground(context.getDrawable(R.drawable.button_filled_light));
+        button.setTextColor(Color.parseColor("#FFFFFF"));
+    }
 }

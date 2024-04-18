@@ -31,36 +31,28 @@ public class ScreenshotsRepository {
         dataStoreHelper = new DataStoreHelper();
     }
 
-    public void getScreenshots(Context context, int limit) {
+    public void getScreenshots(Context context) {
         List<Screenshots> imagePaths = new ArrayList<>();
 
-        // Define the URI for the Screenshot folder
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
-        // Specify the columns to retrieve
         String[] projection = {
                 MediaStore.Images.Media.DATA
         };
 
-        // Specify the selection criteria
         String selection = MediaStore.Images.Media.DATA + " like ?";
         String[] selectionArgs = new String[]{"%/DCIM/"+dataStoreHelper.getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null)+"/%"};
 
-        // Specify the sort order by date
         String sortOrder = MediaStore.Images.Media.DATE_ADDED + " DESC";
 
-        // Execute the query using ContentResolver
         ContentResolver contentResolver = context.getContentResolver();
         try (Cursor cursor = contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)) {
             if (cursor != null) {
                 int dataColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 
-                // Iterate through the cursor to get image paths
-                int count = 0;
-                while (cursor.moveToNext() && count < limit) {
+                while (cursor.moveToNext()) {
                     String imagePath = cursor.getString(dataColumnIndex);
                     imagePaths.add(new Screenshots(imagePath));
-                    count++;
                 }
 
                 if (imagePaths.isEmpty())
