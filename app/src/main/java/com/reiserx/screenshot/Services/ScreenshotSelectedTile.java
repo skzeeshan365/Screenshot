@@ -15,6 +15,9 @@ import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 
 public class ScreenshotSelectedTile extends TileService {
+
+    public static boolean TILE_ADDED = false;
+
     @Override
     public void onTileAdded() {
         if (ScreenshotSelectedTile.this.getQsTile() != null) {
@@ -23,6 +26,7 @@ public class ScreenshotSelectedTile extends TileService {
             tile.setLabel(getString(R.string.selected_screenshot_label));
             tile.setState(Tile.STATE_INACTIVE);
             tile.updateTile();
+            TILE_ADDED = true;
         }
     }
 
@@ -55,5 +59,11 @@ public class ScreenshotSelectedTile extends TileService {
         intent.setData(Uri.parse("package:" + getPackageName()));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    @Override
+    public void onTileRemoved() {
+        super.onTileRemoved();
+        TILE_ADDED = false;
     }
 }

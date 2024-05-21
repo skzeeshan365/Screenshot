@@ -25,7 +25,14 @@
         android:id="@+id/navigation_settings"
         android:name="com.reiserx.screenshot.Activities.ui.settings.SettingsFragment"
         android:label="@string/title_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_navigation_settings_to_navigation_quick_settings"
+            app:destination="@id/navigation_quick_settings" />
+        <action
+            android:id="@+id/action_navigation_settings_to_fragmentSensor"
+            app:destination="@id/fragmentSensor" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_gallery"
@@ -36,4 +43,19 @@
             android:id="@+id/action_navigation_gallery_to_navigation_home"
             app:destination="@id/navigation_home" />
     </fragment>
+
+    <fragment
+        android:id="@+id/navigation_quick_settings"
+        android:name="com.reiserx.screenshot.Activities.ui.settings.QuickSettingsFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_quick_settings">
+        <action
+            android:id="@+id/action_navigation_quick_settings_to_navigation_settings"
+            app:destination="@id/navigation_settings" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentSensor"
+        android:name="com.reiserx.screenshot.Activities.ui.settings.FragmentSensor"
+        android:label="fragment_sensor"
+        tools:layout="@layout/fragment_sensor" />
 </navigation>

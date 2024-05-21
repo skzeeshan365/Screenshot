@@ -1,5 +1,8 @@
 package com.reiserx.screenshot.Services;
 
+import static com.reiserx.screenshot.Activities.ui.settings.FragmentSensor.SCREENSHOT_TYPE_KEY;
+import static com.reiserx.screenshot.Activities.ui.settings.FragmentSensor.SHAKE_COUNT;
+
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.SuppressLint;
@@ -13,6 +16,10 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
@@ -33,16 +40,24 @@ import androidx.core.app.NotificationCompat;
 import com.reiserx.screenshot.Activities.CaptureActivity;
 import com.reiserx.screenshot.Activities.ui.IconCropView;
 import com.reiserx.screenshot.R;
+import com.reiserx.screenshot.Utils.DataStoreHelper;
+import com.reiserx.screenshot.Utils.PhoneUtil;
 import com.reiserx.screenshot.Utils.SaveBitmap;
+import com.reiserx.screenshot.Utils.ScreenUtil;
+import com.reiserx.screenshot.Utils.ShakeDetector;
 import com.reiserx.screenshot.Utils.getLabelFromPackage;
 
 import java.util.concurrent.Executor;
 
-public class accessibilityService extends AccessibilityService {
+public class accessibilityService extends AccessibilityService implements SensorEventListener {
     static String TAG = "AccessibilityTest";
     public static accessibilityService instance;
     private WindowManager windowManager;
     private IconCropView selectionRectView;
+    SensorManager sensorManager;
+    private SensorManager shakeSensorManager;
+    private ShakeDetector shakeDetector;
+    Sensor accelerometer;
 
     @Override
     protected void onServiceConnected() {
@@ -193,7 +208,7 @@ public class accessibilityService extends AccessibilityService {
 
         int cropLeft = Math.max(0, cropRect.left + borderWidth);
         int cropTop = cropRect.top + navigationBarHeight + borderWidth;
-        int cropRight = Math.min(fullBitmap.getWidth(), cropRect.right - borderWidth);;
+        int cropRight = Math.min(fullBitmap.getWidth(), cropRect.right - borderWidth);
 
         int cropWidth = Math.max(0, cropRight - cropLeft);
         int cropHeight = Math.max(0, cropRect.height() - borderWidth*2);
@@ -247,6 +262,7 @@ public class accessibilityService extends AccessibilityService {
                 .setPriority(NotificationManager.IMPORTANCE_MIN)
                 .setContentInfo("info")
                 .setContentIntent(pendingIntent)
+                .setOngoing(true)
                 .setAutoCancel(false);
 
         notificationManager.notify(id, notify_bulder.build());
@@ -291,5 +307,117 @@ public class accessibilityService extends AccessibilityService {
 
         rootInActiveWindow.recycle();
         return null;
+    }
+
+    public void enableProximitySensor() {
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        if (sensorManager != null) {
+            Sensor proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+            if (proximitySensor != null) {
+                sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_FASTEST);
+            } else {
+                Log.e(TAG, "Proximity sensor not available");
+            }
+        } else {
+            Log.e(TAG, "SensorManager not available");
+        }
+    }
+
+    public void disableProximitySensor() {
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+            sensorManager = null;
+        }
+    }
+
+    public void enableShakeDetection() {
+        shakeSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = shakeSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        shakeDetector = new ShakeDetector();
+        shakeDetector.setOnShakeListener(count -> {
+            DataStoreHelper dataStoreHelper = new DataStoreHelper();
+            if (dataStoreHelper.getIntValue(SHAKE_COUNT, 1) == count) {
+                if (!ScreenUtil.isScreenOn(this) || !PhoneUtil.isOnPhoneCall(this)) {
+                    // Sensor detected
+                    if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 0) {
+                        Intent transparentIntent = new Intent(this, CaptureActivity.class);
+                        transparentIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(transparentIntent);
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 1) {
+                        takeScreenshots();
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 2) {
+                        takeScreenshotsSilent();
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 3) {
+                        CreateSelection();
+                    }
+                }
+            }
+        });
+        if (accelerometer != null) {
+            shakeSensorManager.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
+    }
+
+    public void disableShakeDetection() {
+        if (shakeSensorManager != null) {
+            shakeSensorManager.unregisterListener(shakeDetector);
+            shakeSensorManager = null;
+        }
+    }
+
+    public boolean isProximitySensorEnabled() {
+        return sensorManager != null;
+    }
+
+    public boolean isShakeSensorEnabled() {
+        return shakeSensorManager != null;
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        DataStoreHelper dataStoreHelper = new DataStoreHelper();
+        if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+            float proximityValue = event.values[0];
+            Log.d(TAG, String.valueOf(proximityValue));
+            if (proximityValue == 0) {
+                if (!ScreenUtil.isScreenOn(this) || !PhoneUtil.isOnPhoneCall(this)) {
+                    // Sensor detected
+                    if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 0) {
+                        Intent transparentIntent = new Intent(this, CaptureActivity.class);
+                        transparentIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(transparentIntent);
+                    }
+                    else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 1) {
+                        takeScreenshots();
+                    }
+                    else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 2) {
+                        takeScreenshotsSilent();
+                    }
+                    else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 3) {
+                        CreateSelection();
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disableProximitySensor();
+        disableShakeDetection();
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        disableProximitySensor();
+        disableShakeDetection();
+        return super.onUnbind(intent);
     }
 }

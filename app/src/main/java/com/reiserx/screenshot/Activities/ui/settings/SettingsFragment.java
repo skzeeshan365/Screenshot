@@ -2,29 +2,46 @@ package com.reiserx.screenshot.Activities.ui.settings;
 
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_AGREE;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_KEY;
+import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.TAG;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.StatusBarManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
+import com.reiserx.screenshot.R;
+import com.reiserx.screenshot.Services.ScreenshotTile;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 import com.reiserx.screenshot.databinding.FragmentSettingsBinding;
+
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.concurrent.Executor;
 
 public class SettingsFragment extends Fragment {
 
@@ -113,6 +130,21 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
+
+        binding.quickSettingsHolder.setOnClickListener(view16 -> {
+            addTileIfSupported(getContext());
+        });
+        binding.captureWithSensorHolder.setOnClickListener(view17 -> {
+        if (accessibilityService.instance != null) {
+                enableSensor();
+        } else {
+            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+            alert.setTitle("Accessibility service is not Active");
+            alert.setMessage("You have not enabled accessibility service\nPlease enable it then try again.");
+            alert.setPositiveButton("OK", null);
+            alert.show();
+        }
+        });
     }
 
     @Override
@@ -137,9 +169,20 @@ public class SettingsFragment extends Fragment {
 
     ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
-            // Permission is granted, proceed with your task
         } else {
-            // Permission is denied, handle accordingly
         }
     });
+
+    public void addTileIfSupported(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            NavHostFragment.findNavController(this).navigate(R.id.action_navigation_settings_to_navigation_quick_settings);
+        } else {
+            Toast.makeText(context, "Swipe down/up your notification panel then add quick settings option for this app", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void enableSensor() {
+        NavHostFragment.findNavController(this).navigate(R.id.action_navigation_settings_to_fragmentSensor);
+    }
+
 }
