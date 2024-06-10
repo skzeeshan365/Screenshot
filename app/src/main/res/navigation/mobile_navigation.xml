@@ -56,6 +56,6 @@
     <fragment
         android:id="@+id/fragmentSensor"
         android:name="com.reiserx.screenshot.Activities.ui.settings.FragmentSensor"
-        android:label="fragment_sensor"
+        android:label="Capture with sensor"
         tools:layout="@layout/fragment_sensor" />
 </navigation>

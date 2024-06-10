@@ -15,8 +15,8 @@ android {
         applicationId = "com.reiserx.screenshot"
         minSdk = 30
         targetSdk = 34
-        versionCode = 9
-        versionName = "1.0.7"
+        versionCode = 10
+        versionName = "1.0.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -60,4 +60,5 @@ dependencies {
     implementation ("androidx.datastore:datastore-preferences-rxjava2:1.0.0")
 
     implementation ("com.google.android.play:integrity:1.3.0")
+    implementation ("com.github.MikeOrtiz:TouchImageView:3.1.1")
 }

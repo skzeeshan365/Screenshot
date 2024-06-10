@@ -12,6 +12,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
@@ -22,31 +23,41 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.service.notification.StatusBarNotification;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.reiserx.screenshot.Activities.CaptureActivity;
+import com.reiserx.screenshot.Activities.ImageViewerActivity;
 import com.reiserx.screenshot.Activities.ui.IconCropView;
 import com.reiserx.screenshot.R;
+import com.reiserx.screenshot.Receivers.NotificationReceiver;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.Utils.PhoneUtil;
 import com.reiserx.screenshot.Utils.SaveBitmap;
 import com.reiserx.screenshot.Utils.ScreenUtil;
+import com.reiserx.screenshot.Utils.ScreenshotUtils;
 import com.reiserx.screenshot.Utils.ShakeDetector;
 import com.reiserx.screenshot.Utils.getLabelFromPackage;
 
+import java.io.File;
 import java.util.concurrent.Executor;
 
 public class accessibilityService extends AccessibilityService implements SensorEventListener {
@@ -59,6 +70,10 @@ public class accessibilityService extends AccessibilityService implements Sensor
     private ShakeDetector shakeDetector;
     Sensor accelerometer;
 
+    public static String ENABLE_NOTIFICATION = "ENABLE_NOTIFICATION";
+    public static String ENABLE_SENSOR_PROXIMITY = "ENABLE_SENSOR_PROXIMITY";
+    public static String ENABLE_SENSOR_SHAKE = "ENABLE_SENSOR_SHAKE";
+
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
@@ -70,6 +85,13 @@ public class accessibilityService extends AccessibilityService implements Sensor
         setServiceInfo(info);
         instance = this;
         Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
+        DataStoreHelper dataStoreHelper = new DataStoreHelper();
+        if (dataStoreHelper.getBooleanValue(ENABLE_NOTIFICATION, false) && !isNotificationActive(8724))
+            sendNotification("Capture", "Click to capture screenshot", 8724);
+        if (dataStoreHelper.getBooleanValue(ENABLE_SENSOR_PROXIMITY, false))
+            enableProximitySensor();
+        if (dataStoreHelper.getBooleanValue(ENABLE_SENSOR_SHAKE, false))
+            enableShakeDetection();
     }
 
     @Override
@@ -90,7 +112,6 @@ public class accessibilityService extends AccessibilityService implements Sensor
 
     public void takeScreenshots() {
         try {
-            Toast.makeText(this, getString(R.string.local_screenshot_1), Toast.LENGTH_SHORT).show();
             takeScreenshot(Display.DEFAULT_DISPLAY,
                     getApplicationContext().getMainExecutor(), new TakeScreenshotCallback() {
                         @Override
@@ -98,7 +119,9 @@ public class accessibilityService extends AccessibilityService implements Sensor
                             Bitmap bitmap = Bitmap.wrapHardwareBuffer(screenshotResult.getHardwareBuffer(), screenshotResult.getColorSpace());
 
                             SaveBitmap saveBitmap = new SaveBitmap(bitmap, accessibilityService.this);
-                            saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
+                            File file = saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
+                            if (file != null)
+                                createScreenshotOverlay(file);
                         }
 
                         @Override
@@ -121,7 +144,9 @@ public class accessibilityService extends AccessibilityService implements Sensor
                             Bitmap bitmap = Bitmap.wrapHardwareBuffer(screenshotResult.getHardwareBuffer(), screenshotResult.getColorSpace());
 
                             SaveBitmap saveBitmap = new SaveBitmap(bitmap, accessibilityService.this);
-                            saveBitmap.saveDataInApp();
+                            File file = saveBitmap.saveDataInApp();
+                            if (file != null)
+                                createScreenshotOverlay(file);
                         }
 
                         @Override
@@ -176,7 +201,6 @@ public class accessibilityService extends AccessibilityService implements Sensor
 
     public void captureSelectedArea(Rect rect) {
         try {
-            Toast.makeText(this, getString(R.string.local_screenshot_1), Toast.LENGTH_SHORT).show();
             takeScreenshot(Display.DEFAULT_DISPLAY,
                     getApplicationContext().getMainExecutor(), new TakeScreenshotCallback() {
                         @Override
@@ -187,7 +211,9 @@ public class accessibilityService extends AccessibilityService implements Sensor
                             closeSelection();
 
                             SaveBitmap saveBitmap = new SaveBitmap(croppedBitmap, accessibilityService.this);
-                            saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
+                            File file = saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
+                            if (file != null)
+                                createScreenshotOverlay(file);
                         }
 
                         @Override
@@ -240,6 +266,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
     }
 
     public void sendNotification(String title, String content, int id) {
+
         NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         String channel_id = "capture_screenshot_channel";
 
@@ -252,6 +279,10 @@ public class accessibilityService extends AccessibilityService implements Sensor
         Intent transparentIntent = new Intent(this, CaptureActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, transparentIntent, PendingIntent.FLAG_IMMUTABLE);
 
+        Intent deleteIntent = new Intent(this, NotificationReceiver.class);
+        deleteIntent.setAction("NOTIFICATION_DELETED_ACTION");
+        PendingIntent pendingIntentDelete = PendingIntent.getBroadcast(this, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
         NotificationCompat.Builder notify_bulder = new NotificationCompat.Builder(this, channel_id);
         notify_bulder
                 .setDefaults(Notification.DEFAULT_ALL)
@@ -263,14 +294,19 @@ public class accessibilityService extends AccessibilityService implements Sensor
                 .setContentInfo("info")
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
-                .setAutoCancel(false);
+                .setAutoCancel(false)
+                .setDeleteIntent(pendingIntentDelete);
 
         notificationManager.notify(id, notify_bulder.build());
+        DataStoreHelper dataStoreHelper = new DataStoreHelper();
+        dataStoreHelper.putBooleanValue(ENABLE_NOTIFICATION, true);
     }
 
     public void cancelNotification(int id) {
         NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(id);
+        DataStoreHelper dataStoreHelper = new DataStoreHelper();
+        dataStoreHelper.putBooleanValue(ENABLE_NOTIFICATION, false);
     }
 
     public boolean isNotificationActive(int notificationId) {
@@ -310,6 +346,9 @@ public class accessibilityService extends AccessibilityService implements Sensor
     }
 
     public void enableProximitySensor() {
+        DataStoreHelper dataStoreHelper = new DataStoreHelper();
+        dataStoreHelper.putBooleanValue(ENABLE_SENSOR_PROXIMITY, true);
+
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         if (sensorManager != null) {
             Sensor proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
@@ -328,9 +367,14 @@ public class accessibilityService extends AccessibilityService implements Sensor
             sensorManager.unregisterListener(this);
             sensorManager = null;
         }
+        DataStoreHelper dataStoreHelper = new DataStoreHelper();
+        dataStoreHelper.putBooleanValue(ENABLE_SENSOR_PROXIMITY, false);
     }
 
     public void enableShakeDetection() {
+        DataStoreHelper StoreHelper = new DataStoreHelper();
+        StoreHelper.putBooleanValue(ENABLE_SENSOR_SHAKE, true);
+
         shakeSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = shakeSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
@@ -338,11 +382,12 @@ public class accessibilityService extends AccessibilityService implements Sensor
         shakeDetector.setOnShakeListener(count -> {
             DataStoreHelper dataStoreHelper = new DataStoreHelper();
             if (dataStoreHelper.getIntValue(SHAKE_COUNT, 1) == count) {
-                if (!ScreenUtil.isScreenOn(this) || !PhoneUtil.isOnPhoneCall(this)) {
+                if (ScreenUtil.isScreenOn(this)) {
                     // Sensor detected
                     if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 0) {
                         Intent transparentIntent = new Intent(this, CaptureActivity.class);
-                        transparentIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        transparentIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        transparentIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(transparentIntent);
                     } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 1) {
                         takeScreenshots();
@@ -364,6 +409,8 @@ public class accessibilityService extends AccessibilityService implements Sensor
             shakeSensorManager.unregisterListener(shakeDetector);
             shakeSensorManager = null;
         }
+        DataStoreHelper dataStoreHelper = new DataStoreHelper();
+        dataStoreHelper.putBooleanValue(ENABLE_SENSOR_SHAKE, false);
     }
 
     public boolean isProximitySensorEnabled() {
@@ -381,11 +428,12 @@ public class accessibilityService extends AccessibilityService implements Sensor
             float proximityValue = event.values[0];
             Log.d(TAG, String.valueOf(proximityValue));
             if (proximityValue == 0) {
-                if (!ScreenUtil.isScreenOn(this) || !PhoneUtil.isOnPhoneCall(this)) {
+                if (ScreenUtil.isScreenOn(this) || !PhoneUtil.isOnPhoneCall(this)) {
                     // Sensor detected
                     if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 0) {
                         Intent transparentIntent = new Intent(this, CaptureActivity.class);
-                        transparentIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        transparentIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        transparentIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(transparentIntent);
                     }
                     else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 1) {
@@ -419,5 +467,63 @@ public class accessibilityService extends AccessibilityService implements Sensor
         disableProximitySensor();
         disableShakeDetection();
         return super.onUnbind(intent);
+    }
+
+    private void createScreenshotOverlay(File file) {
+        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View overlayView = inflater.inflate(R.layout.captured_overlay, null);
+
+        ImageView share_btn = overlayView.findViewById(R.id.imageView1);
+        ImageView preview_btn = overlayView.findViewById(R.id.preview_btn);
+        ImageView close_btn = overlayView.findViewById(R.id.close_btn);
+
+        share_btn.setImageResource(R.drawable.baseline_share_24);
+        preview_btn.setImageResource(R.drawable.baseline_preview_24);
+        close_btn.setImageResource(R.drawable.ic_baseline_close_24);
+
+        close_btn.setOnClickListener(view -> {
+            clearWindowManager(overlayView);
+        });
+
+        share_btn.setOnClickListener(view -> {
+            ScreenshotUtils screenshotUtils = new ScreenshotUtils(accessibilityService.this);
+            screenshotUtils.shareImage(file);
+            clearWindowManager(overlayView);
+        });
+
+        preview_btn.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ImageViewerActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("url", file.getAbsolutePath());
+            startActivity(intent);
+            clearWindowManager(overlayView);
+        });
+
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                PixelFormat.TRANSLUCENT
+        );
+        params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        params.y = 150;
+
+        windowManager.addView(overlayView, params);
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> clearWindowManager(overlayView), 5000);
+    }
+
+    void clearWindowManager(View view) {
+        try {
+            if (windowManager != null && view != null) {
+                windowManager.removeView(view);
+                view = null;
+            }
+        } catch (Exception e) {
+
+        }
     }
 }

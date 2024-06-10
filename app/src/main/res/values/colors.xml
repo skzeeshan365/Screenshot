@@ -10,4 +10,11 @@
     <color name="image_done_tint">#00CE7A</color>
     <color name="layout_background">#FFFFFF</color>
     <color name="fab_color">#FFFFFF</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="button_design_outline">#2E2E2E</color>
+    <color name="button_design_text">#2E2E2E</color>
 </resources>

@@ -41,7 +41,7 @@ public class SaveBitmap {
         viewModel = new ViewModelProvider((ViewModelStoreOwner) context.getApplicationContext()).get(ScreenshotsViewModel.class);
     }
 
-    public void saveDataInApp() {
+    public File saveDataInApp() {
         // Specify the directory and filename
         File directory = context.getFilesDir();
         String filename = getRandom.getRandom(0, 1000000000) + ".png";
@@ -61,12 +61,14 @@ public class SaveBitmap {
 
             if (BaseApplication.getInstance().isMyActivityInForeground())
                 viewModel.getScreenshotsInApp(context);
+            return file;
         } catch (Exception e) {
             Toast.makeText(context, "An error occurred: " + e, Toast.LENGTH_LONG).show();
         }
+        return null;
     }
 
-    public void saveDataLocalDCIM(String package_name) {
+    public File saveDataLocalDCIM(String package_name) {
         // Use MediaStore for Android 10 and above
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.RELATIVE_PATH, "DCIM/"+dataStoreHelper.getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null));
@@ -91,17 +93,29 @@ public class SaveBitmap {
                 values.put(MediaStore.Images.Media.IS_PENDING, 0);
                 context.getContentResolver().update(uri, values, null, null);
 
-                Toast.makeText(context, "Screenshot saved in DCIM/"+dataStoreHelper.getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null), Toast.LENGTH_LONG).show();
-
                 if (BaseApplication.getInstance().isMyActivityInForeground()) {
-                    Toast.makeText(context, String.valueOf(dataStoreHelper.getStringValue(GalleryFragment.SCREENSHOT_LABEL, null)), Toast.LENGTH_LONG).show();
                     viewModel.getScreenshots(context, dataStoreHelper.getStringValue(GalleryFragment.SCREENSHOT_LABEL, null));
                 }
+                return getFileFromUri(uri);
             } catch (Exception e) {
                 Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
             }
         } else
             Toast.makeText(context, "An error occurred", Toast.LENGTH_SHORT).show();
+        return null;
+    }
+
+    private File getFileFromUri(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String filePath = cursor.getString(column_index);
+            cursor.close();
+            return new File(filePath);
+        }
+        return null;
     }
 
     private String generateFilename(String package_name) {

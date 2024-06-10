@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="12dp"
     android:layout_marginEnd="12dp"
-    android:background="#191919"
+    android:background="@drawable/textbox_outline"
+    android:backgroundTint="#3C3535"
     tools:context=".Activities.CaptureActivity">
 
     <Button
@@ -57,10 +58,10 @@
         android:layout_height="30dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="3dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_close_24"
-        android:background="?selectableItemBackgroundBorderless"
-        android:padding="3dp"
         app:tint="@color/white" />
 </androidx.constraintlayout.widget.ConstraintLayout>

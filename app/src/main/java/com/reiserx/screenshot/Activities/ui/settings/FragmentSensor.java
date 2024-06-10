@@ -90,12 +90,17 @@ public class FragmentSensor extends Fragment {
         binding.enableSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
             if (accessibilityService.instance != null) {
                 if (b) {
-                    accessibilityService.instance.enableProximitySensor();
+                    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE);
+                    } else {
+                        accessibilityService.instance.enableProximitySensor();
+                        dataStoreHelper.putBooleanValue(SENSOR_KEY, b);
+                    }
                 } else {
                     accessibilityService.instance.disableProximitySensor();
+                    dataStoreHelper.putBooleanValue(SENSOR_KEY, b);
                 }
             }
-            dataStoreHelper.putBooleanValue(SENSOR_KEY, b);
         });
 
         binding.captureWithSensorHolder.setOnClickListener(view1 -> {
@@ -109,7 +114,7 @@ public class FragmentSensor extends Fragment {
 
     void updateValues() {
         if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 0)
-            binding.sensorValue.setText("Default");
+            binding.sensorValue.setText("Ask every time");
         else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 1)
             binding.sensorValue.setText(getString(R.string.screenshot_label));
         else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 2)
@@ -136,8 +141,8 @@ public class FragmentSensor extends Fragment {
         final RadioButton btn3 = mView.findViewById(R.id.radioButton3);
         final RadioButton btn4 = mView.findViewById(R.id.radioButton4);
 
-        alert.setTitle("Select default screenshot type");
-        alert.setMessage("Select default screenshot type for capturing with sensor");
+        alert.setTitle("Select screenshot type");
+        alert.setMessage("Select screenshot type for capturing with sensor");
         alert.setView(mView);
 
         if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 0)
@@ -191,14 +196,14 @@ public class FragmentSensor extends Fragment {
 
         final NumberPicker picker = mView.findViewById(R.id.numberpicker_main_picker);
 
-        alert.setTitle("Select default screenshot type");
-        alert.setMessage("Select default screenshot type for capturing with sensor");
+        alert.setTitle("Shake count");
+        alert.setMessage("Set shake count for capturing with Shake");
         alert.setView(mView);
 
         picker.setMaxValue(5);
         picker.setMinValue(1);
 
-        alert.setPositiveButton("select", (dialogInterface, i) -> {
+        alert.setPositiveButton("set", (dialogInterface, i) -> {
             int select_value = picker.getValue();
             binding.shakeSensorValue.setText(String.valueOf(select_value));
             dataStoreHelper.putIntValue(SHAKE_COUNT, select_value);
@@ -208,4 +213,13 @@ public class FragmentSensor extends Fragment {
         AlertDialog builder = alert.create();
         builder.show();
     }
+
+    ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+        if (isGranted) {
+            accessibilityService.instance.enableProximitySensor();
+            dataStoreHelper.putBooleanValue(SENSOR_KEY, true);
+        } else {
+            Toast.makeText(getContext(), "Please grant necessary permissions", Toast.LENGTH_SHORT).show();
+        }
+    });
 }

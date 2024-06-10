@@ -20,7 +20,7 @@ public class ScreenshotSilentTile extends TileService {
     public void onTileAdded() {
         if (ScreenshotSilentTile.this.getQsTile() != null) {
             Tile tile = ScreenshotSilentTile.this.getQsTile();
-            tile.setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_screenshot_white_24dp));
+            tile.setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.screenshot));
             tile.setLabel(getString(R.string.silent_screenshot_label));
             tile.setState(Tile.STATE_INACTIVE);
             tile.updateTile();

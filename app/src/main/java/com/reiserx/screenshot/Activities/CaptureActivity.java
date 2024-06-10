@@ -26,12 +26,12 @@ public class CaptureActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         ButtonDesign design = new ButtonDesign(this);
-        design.setButtonOutline(binding.screenshotBtn);
-        design.setButtonOutline(binding.silentScreenshotBtn);
-        design.setButtonOutline(binding.snapshotBtn);
+        design.setButtonOutlineLight(binding.screenshotBtn);
+        design.setButtonOutlineLight(binding.silentScreenshotBtn);
+        design.setButtonOutlineLight(binding.snapshotBtn);
 
         binding.screenshotBtn.setOnClickListener(view -> {
-            design.buttonFill(binding.screenshotBtn);
+            design.buttonFillLight(binding.screenshotBtn);
             isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
             if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
                 accessibilityService.instance.closeNotifications();
@@ -47,7 +47,7 @@ public class CaptureActivity extends AppCompatActivity {
         });
 
         binding.silentScreenshotBtn.setOnClickListener(view -> {
-            design.buttonFill(binding.silentScreenshotBtn);
+            design.buttonFillLight(binding.silentScreenshotBtn);
             isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
             if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
                 accessibilityService.instance.closeNotifications();
@@ -63,7 +63,7 @@ public class CaptureActivity extends AppCompatActivity {
         });
 
         binding.snapshotBtn.setOnClickListener(view -> {
-            design.buttonFill(binding.snapshotBtn);
+            design.buttonFillLight(binding.snapshotBtn);
             isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
             if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
                 accessibilityService.instance.closeNotifications();

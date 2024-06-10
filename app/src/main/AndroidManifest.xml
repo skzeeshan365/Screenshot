@@ -38,9 +38,17 @@
         android:theme="@style/Base.Theme.AppAccessibility"
         tools:targetApi="34">
         <activity
-            android:name=".Activities.CaptureActivity"
-            android:theme="@style/Theme.Transparent"
+            android:name=".Activities.ImageViewerActivity"
+            android:theme="@style/FullscreenTheme"
             android:exported="false" />
+        <activity
+            android:name=".Activities.CaptureActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Transparent"
+            android:taskAffinity=".Activities.CaptureActivity"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            />
         <activity
             android:name=".Activities.CropActivity"
             android:exported="false" />
@@ -82,7 +90,7 @@
         <service
             android:name=".Services.ScreenshotSilentTile"
             android:exported="true"
-            android:icon="@drawable/ic_screenshot_white_24dp"
+            android:icon="@drawable/screenshot"
             android:label="@string/silent_screenshot_label"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
@@ -99,6 +107,15 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
+
+        <receiver
+            android:name=".Receivers.NotificationReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="NOTIFICATION_DELETED_ACTION" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name="androidx.core.content.FileProvider"
