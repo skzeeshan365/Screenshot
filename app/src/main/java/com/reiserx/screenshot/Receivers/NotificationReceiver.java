@@ -6,8 +6,6 @@ import static com.reiserx.screenshot.Services.accessibilityService.instance;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 

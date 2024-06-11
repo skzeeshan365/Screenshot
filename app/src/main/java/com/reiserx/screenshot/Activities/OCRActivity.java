@@ -1,7 +1,5 @@
 package com.reiserx.screenshot.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -17,6 +15,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.ButtonDesign;

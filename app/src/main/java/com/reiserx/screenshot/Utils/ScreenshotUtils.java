@@ -1,13 +1,10 @@
 package com.reiserx.screenshot.Utils;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
 import androidx.core.content.FileProvider;
-
-import com.reiserx.screenshot.Models.Screenshots;
 
 import java.io.File;
 

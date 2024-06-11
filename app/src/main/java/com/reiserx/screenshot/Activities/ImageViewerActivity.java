@@ -1,11 +1,8 @@
 package com.reiserx.screenshot.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.ortiz.touchview.TouchImageView;

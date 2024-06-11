@@ -1,18 +1,16 @@
 package com.reiserx.screenshot.Activities.ui.settings;
 
-import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_AGREE;
-import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_KEY;
-
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.NumberPicker;
+import android.widget.RadioButton;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -20,24 +18,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.NumberPicker;
-import android.widget.RadioButton;
-import android.widget.Toast;
 
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
-import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 import com.reiserx.screenshot.databinding.FragmentSensorBinding;
-import com.reiserx.screenshot.databinding.FragmentSettingsBinding;
-
-import java.math.BigInteger;
 
 public class FragmentSensor extends Fragment {
 
