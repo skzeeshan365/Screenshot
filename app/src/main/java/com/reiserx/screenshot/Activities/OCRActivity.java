@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.ButtonDesign;
+import com.reiserx.screenshot.Utils.ScreenshotUtils;
 
 public class OCRActivity extends AppCompatActivity {
 
@@ -37,12 +38,22 @@ public class OCRActivity extends AppCompatActivity {
         messageTextView.setText(message);
 
         Button copy_btn = dialogView.findViewById(R.id.copy_btn);
+        Button share_btn = dialogView.findViewById(R.id.share_btn);
+
         ButtonDesign design = new ButtonDesign(this);
         design.setButtonOutlineDark(copy_btn);
+        design.setButtonOutlineDark(share_btn);
 
         copy_btn.setOnClickListener(v -> {
             design.buttonFillDark(copy_btn);
             copyToClipboard(this, message);
+            finish();
+        });
+
+        share_btn.setOnClickListener(view -> {
+            design.buttonFillDark(share_btn);
+            ScreenshotUtils screenshotUtils = new ScreenshotUtils(this);
+            screenshotUtils.shareText(message);
             finish();
         });
 

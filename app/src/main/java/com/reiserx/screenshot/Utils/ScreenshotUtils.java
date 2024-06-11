@@ -35,4 +35,19 @@ public class ScreenshotUtils {
             e.printStackTrace();
         }
     }
+
+    public void shareText(String text) {
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+
+        try {
+            Intent chooserIntent = Intent.createChooser(shareIntent, "Share this with");
+            chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(chooserIntent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

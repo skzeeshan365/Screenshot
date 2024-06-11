@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text=" Share screenshot"
+        android:text=" Share"
         app:layout_constraintBottom_toBottomOf="@+id/share_image_fab"
         app:layout_constraintEnd_toStartOf="@+id/share_image_fab"
         app:layout_constraintTop_toTopOf="@+id/share_image_fab" />
@@ -63,8 +63,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text="Delete screenshot"
+        android:text="Delete"
         app:layout_constraintBottom_toBottomOf="@+id/delete_file_fab"
         app:layout_constraintEnd_toStartOf="@+id/delete_file_fab"
         app:layout_constraintTop_toTopOf="@+id/delete_file_fab" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/ocr_FAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:clickable="true"
+        app:backgroundTint="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/delete_file_fab"
+        app:layout_constraintEnd_toEndOf="@+id/delete_file_fab"
+        app:srcCompat="@drawable/baseline_add_24" />
+
+    <TextView
+        android:id="@+id/ocr_image_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Scan"
+        app:layout_constraintBottom_toBottomOf="@+id/ocr_FAB"
+        app:layout_constraintEnd_toStartOf="@+id/ocr_FAB"
+        app:layout_constraintTop_toTopOf="@+id/ocr_FAB" />
 </androidx.constraintlayout.widget.ConstraintLayout>

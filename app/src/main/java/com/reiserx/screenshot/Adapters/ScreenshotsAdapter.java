@@ -21,6 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.mlkit.vision.common.InputImage;
+import com.reiserx.screenshot.Activities.ui.TextDrawable;
+import com.reiserx.screenshot.MachineLearning.OCR;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.SaveBitmap;
@@ -35,9 +38,9 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
     Context context;
     List<Screenshots> data;
 
-    FloatingActionButton shareFAB, deleteFAB;
+    FloatingActionButton shareFAB, deleteFAB, ocrFAB;
     ExtendedFloatingActionButton mAddFab;
-    TextView shareFAB_Text, deleteFAB_Text;
+    TextView shareFAB_Text, deleteFAB_Text, ocrFAB_Text;
     Boolean isAllFabsVisible;
     Screenshots temp;
     StfalconImageViewer stfalconImageViewer;
@@ -120,11 +123,21 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
         deleteFAB = view.findViewById(R.id.delete_file_fab);
         shareFAB_Text = view.findViewById(R.id.share_image_text);
         deleteFAB_Text = view.findViewById(R.id.delete_image_text);
+        ocrFAB = view.findViewById(R.id.ocr_FAB);
+        ocrFAB_Text = view.findViewById(R.id.ocr_image_text);
 
         shareFAB.setVisibility(View.GONE);
         deleteFAB.setVisibility(View.GONE);
         shareFAB_Text.setVisibility(View.GONE);
         deleteFAB_Text.setVisibility(View.GONE);
+        ocrFAB.setVisibility(View.GONE);
+        ocrFAB_Text.setVisibility(View.GONE);
+
+        TextDrawable textDrawable = new TextDrawable("T");
+        textDrawable.setTextColor(context.getColor(R.color.white));
+        textDrawable.setTextSize(50);
+        textDrawable.setFont(context, R.font.source_serif_pro_semibold);
+        ocrFAB.setImageDrawable(textDrawable);
 
         isAllFabsVisible = false;
 
@@ -134,8 +147,10 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
             if (!isAllFabsVisible) {
                 shareFAB.show();
                 deleteFAB.show();
+                ocrFAB.show();
                 shareFAB_Text.setVisibility(View.VISIBLE);
                 deleteFAB_Text.setVisibility(View.VISIBLE);
+                ocrFAB_Text.setVisibility(View.VISIBLE);
 
                 mAddFab.extend();
 
@@ -143,8 +158,10 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
             } else {
                 shareFAB.hide();
                 deleteFAB.hide();
+                ocrFAB.hide();
                 shareFAB_Text.setVisibility(View.GONE);
                 deleteFAB_Text.setVisibility(View.GONE);
+                ocrFAB_Text.setVisibility(View.GONE);
 
                 mAddFab.shrink();
 
@@ -153,6 +170,11 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
         });
         shareFAB.setOnClickListener(view1 -> shareImage(temp));
         deleteFAB.setOnClickListener(view12 -> saveImage());
+        ocrFAB.setOnClickListener(view14 -> {
+            OCR ocr = new OCR(context);
+            InputImage inputImage = ocr.prepareImage(Uri.fromFile(temp.getFile()));
+            ocr.scan(inputImage);
+        });
     }
 
     void saveImage() {

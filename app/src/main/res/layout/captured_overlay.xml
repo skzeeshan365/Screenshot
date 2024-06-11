@@ -69,21 +69,18 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/baseline_preview_24" />
 
-        <TextView
+        <ImageView
             android:id="@+id/ocr_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
-            android:fontFamily="@font/source_serif_pro_semibold"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:text="T"
-            android:textColor="@color/button_design_text"
-            android:textSize="34sp"
+            android:padding="8dp"
+            android:tint="@color/button_design_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/preview_btn"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_crop_square_24" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

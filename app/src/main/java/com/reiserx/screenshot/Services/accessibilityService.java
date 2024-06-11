@@ -51,6 +51,7 @@ import com.google.mlkit.vision.common.InputImage;
 import com.reiserx.screenshot.Activities.CaptureActivity;
 import com.reiserx.screenshot.Activities.ImageViewerActivity;
 import com.reiserx.screenshot.Activities.ui.IconCropView;
+import com.reiserx.screenshot.Activities.ui.TextDrawable;
 import com.reiserx.screenshot.MachineLearning.OCR;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Receivers.NotificationReceiver;
@@ -483,7 +484,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
 
         ImageView share_btn = overlayView.findViewById(R.id.imageView1);
         ImageView preview_btn = overlayView.findViewById(R.id.preview_btn);
-        TextView ocr_btn = overlayView.findViewById(R.id.ocr_btn);
+        ImageView ocr_btn = overlayView.findViewById(R.id.ocr_btn);
         ImageView close_btn = overlayView.findViewById(R.id.close_btn);
         ImageView preview = overlayView.findViewById(R.id.preview);
 
@@ -491,6 +492,12 @@ public class accessibilityService extends AccessibilityService implements Sensor
         preview_btn.setImageResource(R.drawable.baseline_preview_24);
         close_btn.setImageResource(R.drawable.ic_baseline_close_24);
         preview.setImageURI(Uri.fromFile(file));
+
+        TextDrawable textDrawable = new TextDrawable("T");
+        textDrawable.setTextColor(getColor(R.color.button_design_text));
+        textDrawable.setTextSize(50);
+        textDrawable.setFont(this, R.font.source_serif_pro_semibold);
+        ocr_btn.setImageDrawable(textDrawable);
 
         close_btn.setOnClickListener(view -> {
             clearWindowManager(overlayView);
