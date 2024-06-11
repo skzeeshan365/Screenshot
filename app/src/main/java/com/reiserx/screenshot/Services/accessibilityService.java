@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.hardware.Sensor;
@@ -22,6 +23,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.display.DisplayManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -39,16 +41,20 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import com.google.mlkit.vision.common.InputImage;
 import com.reiserx.screenshot.Activities.CaptureActivity;
 import com.reiserx.screenshot.Activities.ImageViewerActivity;
 import com.reiserx.screenshot.Activities.ui.IconCropView;
+import com.reiserx.screenshot.MachineLearning.OCR;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Receivers.NotificationReceiver;
+import com.reiserx.screenshot.Utils.CaptureSound;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.Utils.PhoneUtil;
 import com.reiserx.screenshot.Utils.SaveBitmap;
@@ -477,11 +483,14 @@ public class accessibilityService extends AccessibilityService implements Sensor
 
         ImageView share_btn = overlayView.findViewById(R.id.imageView1);
         ImageView preview_btn = overlayView.findViewById(R.id.preview_btn);
+        TextView ocr_btn = overlayView.findViewById(R.id.ocr_btn);
         ImageView close_btn = overlayView.findViewById(R.id.close_btn);
+        ImageView preview = overlayView.findViewById(R.id.preview);
 
         share_btn.setImageResource(R.drawable.baseline_share_24);
         preview_btn.setImageResource(R.drawable.baseline_preview_24);
         close_btn.setImageResource(R.drawable.ic_baseline_close_24);
+        preview.setImageURI(Uri.fromFile(file));
 
         close_btn.setOnClickListener(view -> {
             clearWindowManager(overlayView);
@@ -498,6 +507,13 @@ public class accessibilityService extends AccessibilityService implements Sensor
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("url", file.getAbsolutePath());
             startActivity(intent);
+            clearWindowManager(overlayView);
+        });
+
+        ocr_btn.setOnClickListener(view -> {
+            OCR ocr = new OCR(this);
+            InputImage inputImage = ocr.prepareImage(Uri.fromFile(file));
+            ocr.scan(inputImage);
             clearWindowManager(overlayView);
         });
 

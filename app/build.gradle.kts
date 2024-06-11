@@ -15,8 +15,8 @@ android {
         applicationId = "com.reiserx.screenshot"
         minSdk = 30
         targetSdk = 34
-        versionCode = 10
-        versionName = "1.0.8"
+        versionCode = 11
+        versionName = "1.0.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,6 +53,7 @@ dependencies {
 
     implementation ("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
 
     //DataStore instead of SharedPreferences
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
@@ -61,4 +62,7 @@ dependencies {
 
     implementation ("com.google.android.play:integrity:1.3.0")
     implementation ("com.github.MikeOrtiz:TouchImageView:3.1.1")
+
+    // To recognize Latin script
+    implementation ("com.google.mlkit:text-recognition:16.0.0")
 }

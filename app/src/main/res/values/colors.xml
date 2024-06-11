@@ -17,4 +17,5 @@
     <color name="black_overlay">#66000000</color>
     <color name="button_design_outline">#2E2E2E</color>
     <color name="button_design_text">#2E2E2E</color>
+    <color name="PrimaryBackGround">#FFFFFF</color>
 </resources>
