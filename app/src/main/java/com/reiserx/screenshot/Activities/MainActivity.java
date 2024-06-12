@@ -1,13 +1,18 @@
 package com.reiserx.screenshot.Activities;
 
 import android.os.Bundle;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.screenshot.Activities.ui.settings.FileFragment;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
@@ -35,6 +40,15 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        if (!dataStoreHelper.getBooleanValue("FCM_SUB", false)) {
+            FirebaseMessaging.getInstance().subscribeToTopic("updates")
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful())
+                            dataStoreHelper.putBooleanValue("FCM_SUB", true);
+
+                    });
+        }
     }
 
     @Override
