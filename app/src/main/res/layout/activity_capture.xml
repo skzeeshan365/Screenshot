@@ -64,4 +64,5 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_close_24"
         app:tint="@color/white" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

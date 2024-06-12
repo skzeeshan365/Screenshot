@@ -21,9 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.mlkit.vision.common.InputImage;
+import com.reiserx.screenshot.Activities.OCRActivity;
 import com.reiserx.screenshot.Activities.ui.TextDrawable;
-import com.reiserx.screenshot.MachineLearning.OCR;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.SaveBitmap;
@@ -171,9 +170,9 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
         shareFAB.setOnClickListener(view1 -> shareImage(temp));
         deleteFAB.setOnClickListener(view12 -> saveImage());
         ocrFAB.setOnClickListener(view14 -> {
-            OCR ocr = new OCR(context);
-            InputImage inputImage = ocr.prepareImage(Uri.fromFile(temp.getFile()));
-            ocr.scan(inputImage);
+            Intent intent = new Intent(context, OCRActivity.class);
+            intent.setData(Uri.fromFile(temp.getFile()));
+            context.startActivity(intent);
         });
     }
 

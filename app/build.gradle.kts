@@ -16,8 +16,8 @@ android {
         applicationId = "com.reiserx.screenshot"
         minSdk = 30
         targetSdk = 34
-        versionCode = 11
-        versionName = "1.0.9"
+        versionCode = 12
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -67,4 +67,15 @@ dependencies {
 
     // To recognize Latin script
     implementation ("com.google.mlkit:text-recognition:16.0.0")
+    // To recognize Devanagari script
+    implementation ("com.google.mlkit:text-recognition-devanagari:16.0.0")
+
+    implementation ("com.google.android.gms:play-services-ads:23.1.0")
+
+    // To recognize Japanese script
+    implementation ("com.google.android.gms:play-services-mlkit-text-recognition-japanese:16.0.0")
+    // To recognize Korean script
+    implementation ("com.google.android.gms:play-services-mlkit-text-recognition-korean:16.0.0")
+    // To recognize Chinese script
+    implementation ("com.google.android.gms:play-services-mlkit-text-recognition-chinese:16.0.0")
 }

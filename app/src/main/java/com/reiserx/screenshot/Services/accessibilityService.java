@@ -44,12 +44,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
-import com.google.mlkit.vision.common.InputImage;
 import com.reiserx.screenshot.Activities.CaptureActivity;
 import com.reiserx.screenshot.Activities.ImageViewerActivity;
+import com.reiserx.screenshot.Activities.OCRActivity;
 import com.reiserx.screenshot.Activities.ui.IconCropView;
 import com.reiserx.screenshot.Activities.ui.TextDrawable;
-import com.reiserx.screenshot.MachineLearning.OCR;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Receivers.NotificationReceiver;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
@@ -514,9 +513,11 @@ public class accessibilityService extends AccessibilityService implements Sensor
         });
 
         ocr_btn.setOnClickListener(view -> {
-            OCR ocr = new OCR(this);
-            InputImage inputImage = ocr.prepareImage(Uri.fromFile(file));
-            ocr.scan(inputImage);
+            Intent intent = new Intent(this, OCRActivity.class);
+            intent.setData(Uri.fromFile(file));
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
             clearWindowManager(overlayView);
         });
 
