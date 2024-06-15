@@ -140,19 +140,21 @@ public class ScreenshotsRepository {
 
     private String extractAppLabelFromFilename(String filename) {
         String[] parts = filename.split("_");
-        if (parts.length >= 3) {
-            // Assuming the app label is the third part after splitting by "_"
-            String lastPart = parts[2];
-            // Remove the file extension (e.g., ".png")
-            int extensionIndex = lastPart.lastIndexOf('.');
-            if (extensionIndex != -1) {
-                return lastPart.substring(0, extensionIndex);
-            } else {
-                return lastPart; // Return the part as is if there is no extension
+        for (int i = parts.length - 1; i >= 0; i--) {
+            String part = parts[i];
+            if (!part.isEmpty()) {
+                // Remove the file extension (e.g., ".png")
+                int extensionIndex = part.lastIndexOf('.');
+                if (extensionIndex != -1) {
+                    return part.substring(0, extensionIndex);
+                } else {
+                    return part; // Return the part as is if there is no extension
+                }
             }
         }
-        return null;
+        return null; // No valid app label found
     }
+
 
     public void getScreenshotsInApp(Context context) {
         List<Screenshots> imagePaths = new ArrayList<>();

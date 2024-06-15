@@ -118,12 +118,14 @@ public class OCRActivity extends AppCompatActivity {
 
                 @Override
                 public void onScanFailure(String e) {
+                    progressBar.setVisibility(View.GONE);
+                    text_holder.setVisibility(View.VISIBLE);
                     messageTextView.setText(e);
                 }
             };
 
-            OCR ocr = new OCR(OCRActivity.this);
-            InputImage inputImage = ocr.prepareImage(uri);
+            OCR ocr = new OCR();
+            InputImage inputImage = ocr.prepareImage(OCRActivity.this, uri);
 
             lang_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override

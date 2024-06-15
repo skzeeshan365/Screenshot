@@ -8,18 +8,45 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.reiserx.screenshot.Activities.ui.home.HomeFragment"
-        android:label="@string/title_home"
+        android:label="@string/app_name"
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_navigation_home_to_navigation_gallery"
-            app:destination="@id/navigation_gallery" />
+            app:destination="@id/navigation_gallery"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
     <fragment
         android:id="@+id/navigation_silent_screenshots"
         android:name="com.reiserx.screenshot.Activities.ui.silent_screenshots.SilentScreenshotsFragment"
         android:label="@string/title_silent_screenshots"
-        tools:layout="@layout/fragment_silent_screenshots" />
+        tools:layout="@layout/fragment_silent_screenshots"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right"/>
+
+    <fragment
+        android:id="@+id/navigation_search"
+        android:name="com.reiserx.screenshot.Activities.ui.search.SearchFragment"
+        android:label="@string/search"
+        tools:layout="@layout/fragment_search">
+        <action
+            android:id="@+id/action_navigation_search_to_navigation_labelscreenshots"
+            app:destination="@id/navigation_labelscreenshots"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_labelscreenshots"
+        android:name="com.reiserx.screenshot.Activities.ui.search.LabelScreenshotsFragment"
+        tools:layout="@layout/fragment_label_screenshots" />
 
     <fragment
         android:id="@+id/navigation_settings"
@@ -28,10 +55,18 @@
         tools:layout="@layout/fragment_settings" >
         <action
             android:id="@+id/action_navigation_settings_to_navigation_quick_settings"
-            app:destination="@id/navigation_quick_settings" />
+            app:destination="@id/navigation_quick_settings"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_navigation_settings_to_fragmentSensor"
-            app:destination="@id/fragmentSensor" />
+            app:destination="@id/fragmentSensor"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
     <fragment
@@ -41,7 +76,11 @@
         tools:layout="@layout/fragment_gallery">
         <action
             android:id="@+id/action_navigation_gallery_to_navigation_home"
-            app:destination="@id/navigation_home" />
+            app:destination="@id/navigation_home"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
     <fragment
@@ -51,7 +90,11 @@
         tools:layout="@layout/fragment_quick_settings">
         <action
             android:id="@+id/action_navigation_quick_settings_to_navigation_settings"
-            app:destination="@id/navigation_settings" />
+            app:destination="@id/navigation_settings"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/fragmentSensor"

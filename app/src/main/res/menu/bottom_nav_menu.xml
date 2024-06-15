@@ -12,6 +12,10 @@
         android:title="@string/title_silent_screenshots" />
 
     <item
+        android:id="@+id/navigation_search"
+        android:icon="@drawable/baseline_search_24"
+        android:title="@android:string/search_go" />
+    <item
         android:id="@+id/navigation_settings"
         android:icon="@drawable/outline_settings_24"
         android:title="@string/title_settings" />

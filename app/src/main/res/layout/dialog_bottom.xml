@@ -76,7 +76,10 @@
                         android:id="@+id/dialog_message"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:autoLink="web|phone|email"
+                        android:linksClickable="true"
                         android:textColor="@color/button_design_text"
+                        android:textColorLink="#2196F3"
                         android:textIsSelectable="true"
                         android:textSize="14sp" />
                 </LinearLayout>

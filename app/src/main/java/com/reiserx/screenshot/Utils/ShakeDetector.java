@@ -7,8 +7,8 @@ import android.hardware.SensorManager;
 
 public class ShakeDetector implements SensorEventListener {
 
-    private static final float SHAKE_THRESHOLD_GRAVITY = 3.5F; // Increased to reduce sensitivity
-    private static final int SHAKE_SLOP_TIME_MS = 500; // Time between shakes to be considered separate
+    private static final float SHAKE_THRESHOLD_GRAVITY = 6.5F; // Increased to reduce sensitivity
+    private static final int SHAKE_SLOP_TIME_MS = 300; // Time between shakes to be considered separate
     private static final int SHAKE_COUNT_RESET_TIME_MS = 2000; // Reset shake count if no shakes in this time
 
     private OnShakeListener listener;
@@ -31,7 +31,7 @@ public class ShakeDetector implements SensorEventListener {
             float z = event.values[2];
 
             // Apply a simple low-pass filter to smooth out the data
-            final float alpha = 0.8f; // Lower alpha for more smoothing
+            final float alpha = 0.7f; // Lower alpha for more smoothing
             x = alpha * x + (1 - alpha) * event.values[0];
             y = alpha * y + (1 - alpha) * event.values[1];
             z = alpha * z + (1 - alpha) * event.values[2];

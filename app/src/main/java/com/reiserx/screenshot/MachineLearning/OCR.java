@@ -1,8 +1,5 @@
 package com.reiserx.screenshot.MachineLearning;
 
-import android.content.Context;
-import android.net.Uri;
-
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
@@ -13,20 +10,13 @@ import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 import com.reiserx.screenshot.Interfaces.ScanCallback;
 
-import java.io.IOException;
-
-public class OCR {
-    Context context;
+public class OCR extends MachineLearning {
     TextRecognizer recognizer;
     public static int ENGLISH = 0;
     public static int HINDI = 1;
     public static int KOREAN = 2;
     public static int JAPANESE = 3;
     public static int CHINESE = 4;
-
-    public OCR(Context context) {
-        this.context = context;
-    }
 
     public void setRecognizer(int LangCode) {
         if (LangCode == ENGLISH)
@@ -42,20 +32,11 @@ public class OCR {
 
     }
 
-    public InputImage prepareImage(Uri uri) {
-        try {
-            return InputImage.fromFilePath(context, uri);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public void scan(InputImage image, ScanCallback callback) {
         recognizer.process(image)
                 .addOnSuccessListener(visionText -> {
                     if (visionText.getText().trim().equals(""))
-                        callback.onScanFailure("Failed");
+                        callback.onScanFailure("Text not available");
                     else
                         callback.onScanSuccess(visionText.getText());
                 })

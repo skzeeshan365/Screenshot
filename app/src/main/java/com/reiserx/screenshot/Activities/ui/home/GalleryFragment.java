@@ -91,7 +91,7 @@ public class GalleryFragment extends Fragment {
             binding.rec.setVisibility(View.VISIBLE);
             binding.progHolder.setVisibility(View.GONE);
             adapter.setData(ItemList);
-            adapter.notifyItemChanged(0);
+            adapter.notifyDataSetChanged();
         });
         viewModel.getErrorMutableLiveData().observe(getViewLifecycleOwner(), error -> {
             binding.textView9.setText(error);

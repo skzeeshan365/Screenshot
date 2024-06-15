@@ -7,7 +7,7 @@
     android:layout_marginStart="12dp"
     android:layout_marginEnd="12dp"
     android:background="@drawable/textbox_outline"
-    android:backgroundTint="#3C3535"
+    android:backgroundTint="@color/PrimaryBackGround"
     tools:context=".Activities.CaptureActivity">
 
     <Button

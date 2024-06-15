@@ -22,6 +22,7 @@ public class BaseApplication extends Application implements ViewModelStoreOwner 
 
     private ViewModelStore viewModelStore;
     private boolean isMyActivityInForeground = false;
+    private static AppDatabase database;
 
     @Override
     public void onCreate() {
@@ -83,6 +84,7 @@ public class BaseApplication extends Application implements ViewModelStoreOwner 
                 }
             }
         });
+        database = AppDatabase.getDatabase(this);
     }
     @Override
     public Context getApplicationContext() {
@@ -100,5 +102,9 @@ public class BaseApplication extends Application implements ViewModelStoreOwner 
 
     public boolean isMyActivityInForeground() {
         return isMyActivityInForeground;
+    }
+
+    public static AppDatabase getDatabase() {
+        return database;
     }
 }

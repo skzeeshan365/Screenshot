@@ -382,6 +382,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
 
         shakeDetector = new ShakeDetector();
         shakeDetector.setOnShakeListener(count -> {
+            Log.d(TAG, String.valueOf(count));
             DataStoreHelper dataStoreHelper = new DataStoreHelper();
             if (dataStoreHelper.getIntValue(SHAKE_COUNT, 1) == count) {
                 if (ScreenUtil.isScreenOn(this)) {
@@ -428,9 +429,8 @@ public class accessibilityService extends AccessibilityService implements Sensor
         DataStoreHelper dataStoreHelper = new DataStoreHelper();
         if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
             float proximityValue = event.values[0];
-            Log.d(TAG, String.valueOf(proximityValue));
             if (proximityValue == 0) {
-                if (ScreenUtil.isScreenOn(this) || !PhoneUtil.isOnPhoneCall(this)) {
+                if (ScreenUtil.isScreenOn(this) && !PhoneUtil.isOnPhoneCall(this)) {
                     // Sensor detected
                     if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 0) {
                         Intent transparentIntent = new Intent(this, CaptureActivity.class);

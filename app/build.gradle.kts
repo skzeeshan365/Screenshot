@@ -16,8 +16,8 @@ android {
         applicationId = "com.reiserx.screenshot"
         minSdk = 30
         targetSdk = 34
-        versionCode = 12
-        versionName = "1.1.0"
+        versionCode = 13
+        versionName = "1.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,7 +39,7 @@ android {
 
 dependencies {
 
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.navigation:navigation-fragment:2.7.7")
@@ -70,12 +70,18 @@ dependencies {
     // To recognize Devanagari script
     implementation ("com.google.mlkit:text-recognition-devanagari:16.0.0")
 
-    implementation ("com.google.android.gms:play-services-ads:23.1.0")
-
     // To recognize Japanese script
     implementation ("com.google.android.gms:play-services-mlkit-text-recognition-japanese:16.0.0")
     // To recognize Korean script
     implementation ("com.google.android.gms:play-services-mlkit-text-recognition-korean:16.0.0")
     // To recognize Chinese script
     implementation ("com.google.android.gms:play-services-mlkit-text-recognition-chinese:16.0.0")
+
+    implementation ("com.google.android.gms:play-services-mlkit-image-labeling:16.0.8")
+
+    implementation ("androidx.room:room-runtime:2.6.1")
+    annotationProcessor ("androidx.room:room-compiler:2.6.1")
+
+    implementation ("androidx.work:work-runtime:2.9.0")
+    implementation ("com.google.guava:guava:30.1-jre")
 }

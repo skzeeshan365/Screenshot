@@ -151,8 +151,8 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/AccentColor" />
         <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-1588658066763563~8795419930"/>
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="ica" />
     </application>
 
 </manifest>

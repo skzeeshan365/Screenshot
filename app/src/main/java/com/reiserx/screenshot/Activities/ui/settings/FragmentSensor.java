@@ -95,6 +95,8 @@ public class FragmentSensor extends Fragment {
         binding.captureWithShakeSensorHolder.setEnabled(binding.enableShakeSwitch.isChecked());
 
         updateValues();
+
+        binding.shakeSensorValue.setText(String.valueOf(dataStoreHelper.getIntValue(SHAKE_COUNT, 1)));
     }
 
     void updateValues() {
@@ -187,6 +189,8 @@ public class FragmentSensor extends Fragment {
 
         picker.setMaxValue(5);
         picker.setMinValue(1);
+
+        picker.setValue(dataStoreHelper.getIntValue(SHAKE_COUNT, 1));
 
         alert.setPositiveButton("set", (dialogInterface, i) -> {
             int select_value = picker.getValue();

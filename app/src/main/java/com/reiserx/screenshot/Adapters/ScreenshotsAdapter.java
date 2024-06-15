@@ -58,6 +58,8 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
     }
 
     public void setData(List<Screenshots> data) {
+        if (this.data != null)
+            this.data.clear();
         this.data = data;
     }
 
