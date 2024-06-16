@@ -5,9 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.reiserx.screenshot.Activities.ui.settings.FileFragment;
+import com.reiserx.screenshot.Adapters.ScreenshotLabelsAdapter;
+import com.reiserx.screenshot.Adapters.ScreenshotsAdapter;
+import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.Models.ScreenshotLabels;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
@@ -16,6 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class ScreenshotsRepository {
     private final OnGetScreenshotsComplete onGetScreenshotsComplete;
@@ -47,7 +54,7 @@ public class ScreenshotsRepository {
         };
 
         String selection = MediaStore.Images.Media.DATA + " like ?";
-        String[] selectionArgs = new String[]{"%/DCIM/"+dataStoreHelper.getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null)+"/%"};
+        String[] selectionArgs = new String[]{"%/DCIM/" + dataStoreHelper.getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null) + "/%"};
 
         String sortOrder = MediaStore.Images.Media.DATE_ADDED + " DESC";
 
@@ -72,8 +79,22 @@ public class ScreenshotsRepository {
 
                 if (imagePaths.isEmpty())
                     onGetScreenshotsComplete.onFailure("No available screenshot");
-                else
+                else {
+                    Random random = new Random();
+                    int numberOfAds = imagePaths.size() / 3; // Number of ad elements based on the list size
+
+                    for (int i = 0; i < numberOfAds; i++) {
+                        int randomPosition = random.nextInt(imagePaths.size() - 1); // Ensure not to overwrite the "All screenshots" label at index 0
+                        imagePaths.add(randomPosition, new Screenshots(ScreenshotsAdapter.ITEM_TYPE_AD)); // Add ad element with the appropriate label and ad object
+                    }
                     onGetScreenshotsComplete.onSuccess(imagePaths);
+                    new Thread(() -> {
+                        NativeAds nativeAds = new NativeAds(context);
+                        nativeAds.prefetchAds(numberOfAds, () -> {
+                            onGetScreenshotsComplete.onSuccessAds(nativeAds.getAdList());
+                        });
+                    }).start();
+                }
             } else {
                 onGetScreenshotsComplete.onFailure("Failed to get screenshots");
             }
@@ -82,7 +103,6 @@ public class ScreenshotsRepository {
             throw e;
         }
     }
-
 
     public void getScreenshotLabels(Context context) {
         filepath_parent = null;
@@ -95,7 +115,7 @@ public class ScreenshotsRepository {
         };
 
         String selection = MediaStore.Images.Media.DATA + " like ?";
-        String[] selectionArgs = new String[]{"%/DCIM/"+dataStoreHelper.getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null)+"/%"};
+        String[] selectionArgs = new String[]{"%/DCIM/" + dataStoreHelper.getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null) + "/%"};
 
         String sortOrder = MediaStore.Images.Media.DATE_ADDED + " DESC";
 
@@ -118,7 +138,7 @@ public class ScreenshotsRepository {
                     onGetLabelsComplete.onLabelsFailure("No available screenshot");
                 else {
                     labels.add(0, new ScreenshotLabels("All screenshots", filepath_parent));
-                    onGetLabelsComplete.onLabelsSuccess(labels);
+                    insertAdElementsAtRandomPositions(labels, context);
                 }
             } else {
                 onGetLabelsComplete.onLabelsFailure("Failed to get screenshots");
@@ -126,6 +146,25 @@ public class ScreenshotsRepository {
         } catch (Exception e) {
             onGetLabelsComplete.onLabelsFailure("Exception: " + e.getMessage());
         }
+    }
+
+    private void insertAdElementsAtRandomPositions(List<ScreenshotLabels> labels, Context context) {
+        Random random = new Random();
+        int numberOfAds = labels.size() / 3; // Number of ad elements based on the list size
+
+        for (int i = 0; i < numberOfAds; i++) {
+            int randomPosition = random.nextInt(labels.size() - 1) + 1; // Ensure not to overwrite the "All screenshots" label at index 0
+            labels.add(randomPosition, new ScreenshotLabels(ScreenshotLabelsAdapter.AD_CONTENT)); // Add ad element with the appropriate label and ad object
+        }
+        onGetLabelsComplete.onLabelsSuccess(labels);
+        new Thread(() -> {
+            NativeAds nativeAds = new NativeAds(context);
+            nativeAds.prefetchAds(numberOfAds, () -> {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    onGetLabelsComplete.onLabelsLoadedAds(nativeAds.getAdList());
+                });
+            });
+        }).start();
     }
 
     private boolean containsLabel(List<ScreenshotLabels> labels, String label) {
@@ -172,7 +211,25 @@ public class ScreenshotsRepository {
                     imagePaths.add(new Screenshots(imagePath));
                 }
             }
-            onGetSilentScreenshotsComplete.onSilentSuccess(imagePaths);
+
+            if (imagePaths.isEmpty())
+                onGetSilentScreenshotsComplete.onSilentFailure("No available screenshots");
+            else {
+                Random random = new Random();
+                int numberOfAds = imagePaths.size() / 3; // Number of ad elements based on the list size
+
+                for (int i = 0; i < numberOfAds; i++) {
+                    int randomPosition = random.nextInt(imagePaths.size() - 1); // Ensure not to overwrite the "All screenshots" label at index 0
+                    imagePaths.add(randomPosition, new Screenshots(ScreenshotsAdapter.ITEM_TYPE_AD)); // Add ad element with the appropriate label and ad object
+                }
+                onGetSilentScreenshotsComplete.onSilentSuccess(imagePaths);
+                new Thread(() -> {
+                    NativeAds nativeAds = new NativeAds(context);
+                    nativeAds.prefetchAds(numberOfAds, () -> {
+                        onGetSilentScreenshotsComplete.onSilentSuccessAds(nativeAds.getAdList());
+                    });
+                }).start();
+            }
         } else {
             onGetSilentScreenshotsComplete.onSilentFailure("No available screenshots");
         }
@@ -209,11 +266,15 @@ public class ScreenshotsRepository {
     public interface OnGetScreenshotsComplete {
         void onSuccess(List<Screenshots> parentItemList);
 
+        void onSuccessAds(List<NativeAd> nativeAdList);
+
         void onFailure(String error);
     }
 
     public interface OnGetSilentScreenshotsComplete {
         void onSilentSuccess(List<Screenshots> parentItemList);
+
+        void onSilentSuccessAds(List<NativeAd> parentItemList);
 
         void onSilentFailure(String error);
     }
@@ -226,6 +287,8 @@ public class ScreenshotsRepository {
 
     public interface OnGetLabelsComplete {
         void onLabelsSuccess(List<ScreenshotLabels> labelsList);
+
+        void onLabelsLoadedAds(List<NativeAd> nativeAdList);
 
         void onLabelsFailure(String error);
     }

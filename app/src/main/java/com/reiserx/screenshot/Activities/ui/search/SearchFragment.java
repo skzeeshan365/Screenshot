@@ -1,6 +1,8 @@
 package com.reiserx.screenshot.Activities.ui.search;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.reiserx.screenshot.Adapters.SearchAdapter;
+import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.DAO.LabelDao;
 import com.reiserx.screenshot.Models.SearchListModel;
 import com.reiserx.screenshot.Utils.ScheduleWork;
@@ -20,6 +23,7 @@ import com.reiserx.screenshot.ViewModels.LabelsViewModel;
 import com.reiserx.screenshot.databinding.FragmentSearchBinding;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class SearchFragment extends Fragment {
 
@@ -66,7 +70,36 @@ public class SearchFragment extends Fragment {
                 for (LabelDao.LabelWithImageCount labelEntity : labelWithImageCountList) {
                     data.add(new SearchListModel(labelEntity.label.getLabelName(), labelEntity.label.getId(), labelEntity.imageCount, adapter.DATA_CONTENT));
                 }
+
+                Random random = new Random();
+                int numberOfAds = data.size() / 3; // Number of ad elements based on the list size
+
+                for (int i = 0; i < numberOfAds; i++) {
+                    int randomPosition = random.nextInt(data.size() - 1) + 1; // Ensure not to overwrite the "All screenshots" label at index 0
+                    data.add(randomPosition, new SearchListModel(SearchAdapter.AD_CONTENT)); // Add ad element with the appropriate label and ad object
+                }
+
                 adapter.notifyItemChanged(0);
+
+                new Thread(() -> {
+                    NativeAds nativeAds = new NativeAds(getContext());
+                    nativeAds.prefetchAds(numberOfAds, () -> {
+                        Handler mainHandler = new Handler(Looper.getMainLooper());
+                        mainHandler.post(() -> {
+                            if (!data.isEmpty()) {
+                                for (SearchListModel model : data) {
+                                    if (!nativeAds.getAdList().isEmpty()) {
+                                        if (model.getType() == SearchAdapter.AD_CONTENT) {
+                                            model.setNativeAd(nativeAds.getAdList().get(0));
+                                            nativeAds.getAdList().remove(0);
+                                        }
+                                        adapter.notifyItemChanged(data.indexOf(model), model);
+                                    }
+                                }
+                            }
+                        });
+                    });
+                }).start();
             }
         });
     }

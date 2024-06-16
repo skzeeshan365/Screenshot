@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.reiserx.screenshot.Advertisements.BannerAds;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
@@ -132,6 +133,9 @@ public class SettingsFragment extends Fragment {
             alert.show();
         }
         });
+
+        BannerAds ads = new BannerAds(getContext(), binding.adPlaceholder);
+        ads.loadBanner();
     }
 
     @Override

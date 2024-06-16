@@ -3,6 +3,7 @@ package com.reiserx.screenshot.Activities.ui.home;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_AGREE;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_KEY;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_REJECT;
+import static com.reiserx.screenshot.Adapters.ScreenshotLabelsAdapter.AD_CONTENT;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -32,6 +33,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.reiserx.screenshot.Activities.ui.settings.FragmentAbout;
 import com.reiserx.screenshot.Activities.ui.settings.FragmentConsent;
 import com.reiserx.screenshot.Adapters.ScreenshotLabelsAdapter;
+import com.reiserx.screenshot.Models.ScreenshotLabels;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
@@ -102,6 +104,19 @@ public class HomeFragment extends Fragment {
             binding.progHolder.setVisibility(View.GONE);
             adapter.setData(ItemList);
             adapter.notifyDataSetChanged();
+        });
+        viewModel.getItemNativeAdMutableLiveData().observe(getViewLifecycleOwner(), Adlist -> {
+            if (adapter.getData() != null && !adapter.getData().isEmpty()) {
+                for (ScreenshotLabels label : adapter.getData()) {
+                    if (!Adlist.isEmpty()) {
+                        if (label != null && label.getType() == AD_CONTENT) {
+                            label.setNativeAd(Adlist.get(0));
+                            Adlist.remove(0);
+                        }
+                        adapter.notifyItemChanged(adapter.getData().indexOf(label), label);
+                    }
+                }
+            }
         });
         viewModel.getErrorLabelsMutableLiveData().observe(getViewLifecycleOwner(), error -> {
             binding.textView9.setText(error);

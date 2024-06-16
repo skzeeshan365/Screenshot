@@ -16,8 +16,8 @@ android {
         applicationId = "com.reiserx.screenshot"
         minSdk = 30
         targetSdk = 34
-        versionCode = 13
-        versionName = "1.1.1"
+        versionCode = 14
+        versionName = "1.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -84,4 +84,6 @@ dependencies {
 
     implementation ("androidx.work:work-runtime:2.9.0")
     implementation ("com.google.guava:guava:30.1-jre")
+
+    implementation ("com.google.android.gms:play-services-ads:23.1.0")
 }

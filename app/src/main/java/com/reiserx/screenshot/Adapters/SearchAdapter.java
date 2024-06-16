@@ -12,9 +12,11 @@ import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.reiserx.screenshot.Activities.ui.search.LabelScreenshotsFragment;
+import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.Models.SearchListModel;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
+import com.reiserx.screenshot.databinding.ImageLabelAdplaceholderBinding;
 import com.reiserx.screenshot.databinding.SearchListHeaderBinding;
 import com.reiserx.screenshot.databinding.SearchListItemBinding;
 
@@ -27,6 +29,7 @@ public class SearchAdapter extends RecyclerView.Adapter {
 
     public final int DATA_CONTENT = 0;
     public final int HEADER = 1;
+    public static int AD_CONTENT = 2;
 
     NavController navController;
 
@@ -42,9 +45,12 @@ public class SearchAdapter extends RecyclerView.Adapter {
         if (viewType == DATA_CONTENT) {
             View view = LayoutInflater.from(context).inflate(R.layout.search_list_item, parent, false);
             return new DataViewHolder(view);
-        } else {
+        } else if (viewType == HEADER){
             View view = LayoutInflater.from(context).inflate(R.layout.search_list_header, parent, false);
             return new HeaderViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(context).inflate(R.layout.image_label_adplaceholder, parent, false);
+            return new AdsViewHolder(view);
         }
     }
 
@@ -68,6 +74,11 @@ public class SearchAdapter extends RecyclerView.Adapter {
         } else if (holder.getClass() == HeaderViewHolder.class) {
             HeaderViewHolder viewHolder = (HeaderViewHolder) holder;
             viewHolder.binding.textView12.setText(model.getName());
+        } else if (holder.getClass() == AdsViewHolder.class) {
+            if (model.getNativeAd() != null) {
+                AdsViewHolder viewHolder = (AdsViewHolder) holder;
+                NativeAds.loadNoIconPrefetchedAds(context, model.getNativeAd(), viewHolder.binding.imageHolder);
+            }
         }
     }
 
@@ -76,9 +87,10 @@ public class SearchAdapter extends RecyclerView.Adapter {
         SearchListModel model = data.get(position);
         if (model.getType() == DATA_CONTENT) {
             return DATA_CONTENT;
-        } else {
+        } else if (model.getType() == HEADER){
             return HEADER;
-        }
+        } else
+            return AD_CONTENT;
     }
 
     @Override
@@ -103,6 +115,16 @@ public class SearchAdapter extends RecyclerView.Adapter {
         public HeaderViewHolder(@NonNull View itemView) {
             super(itemView);
             binding = SearchListHeaderBinding.bind(itemView);
+        }
+    }
+
+    public class AdsViewHolder extends RecyclerView.ViewHolder {
+
+        ImageLabelAdplaceholderBinding binding;
+
+        public AdsViewHolder(@NonNull View itemView) {
+            super(itemView);
+            binding = ImageLabelAdplaceholderBinding.bind(itemView);
         }
     }
 }

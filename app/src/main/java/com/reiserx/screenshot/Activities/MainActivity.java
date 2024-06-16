@@ -8,6 +8,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.screenshot.Activities.ui.settings.FileFragment;
 import com.reiserx.screenshot.R;
@@ -48,6 +49,13 @@ public class MainActivity extends AppCompatActivity {
 
                     });
         }
+
+        new Thread(
+                () -> {
+                    // Initialize the Google Mobile Ads SDK on a background thread.
+                    MobileAds.initialize(this, initializationStatus -> {});
+                })
+                .start();
     }
 
     @Override

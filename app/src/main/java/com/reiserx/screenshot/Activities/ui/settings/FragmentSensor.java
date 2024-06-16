@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
@@ -97,6 +98,9 @@ public class FragmentSensor extends Fragment {
         updateValues();
 
         binding.shakeSensorValue.setText(String.valueOf(dataStoreHelper.getIntValue(SHAKE_COUNT, 1)));
+
+        NativeAds nativeAds = new NativeAds(getContext(), binding.adPlaceholder);
+        nativeAds.loadAdLarge();
     }
 
     void updateValues() {

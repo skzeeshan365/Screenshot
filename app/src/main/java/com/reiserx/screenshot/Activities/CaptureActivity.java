@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.ButtonDesign;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
@@ -18,6 +19,7 @@ import com.reiserx.screenshot.databinding.ActivityCaptureBinding;
 public class CaptureActivity extends AppCompatActivity {
 
     ActivityCaptureBinding binding;
+    NativeAds nativeAds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,9 @@ public class CaptureActivity extends AppCompatActivity {
         design.setButtonOutlineDark(binding.screenshotBtn);
         design.setButtonOutlineDark(binding.silentScreenshotBtn);
         design.setButtonOutlineDark(binding.snapshotBtn);
+
+        nativeAds = new NativeAds(this, binding.adPlaceholder);
+        nativeAds.loadAdSmall();
 
         binding.screenshotBtn.setOnClickListener(view -> {
             design.buttonFillDark(binding.screenshotBtn);
@@ -95,5 +100,11 @@ public class CaptureActivity extends AppCompatActivity {
         intent.setData(Uri.parse("package:" + getPackageName()));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        nativeAds.destroyAd();
     }
 }

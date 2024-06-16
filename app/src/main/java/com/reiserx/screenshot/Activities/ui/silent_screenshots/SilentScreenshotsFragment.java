@@ -58,6 +58,19 @@ public class SilentScreenshotsFragment extends Fragment {
             adapter.setData(ItemList);
             adapter.notifyItemChanged(0);
         });
+        viewModel.getItemNativeAdMutableLiveData().observe(getViewLifecycleOwner(), Adlist -> {
+            if (adapter.getData() != null && !adapter.getData().isEmpty()) {
+                for (Screenshots screenshot : adapter.getData()) {
+                    if (!Adlist.isEmpty()) {
+                        if (screenshot.getType() == ScreenshotsAdapter.ITEM_TYPE_AD) {
+                            screenshot.setNativeAd(Adlist.get(0));
+                            Adlist.remove(0);
+                        }
+                        adapter.notifyItemChanged(adapter.getData().indexOf(screenshot), screenshot);
+                    }
+                }
+            }
+        });
         viewModel.getErrorSilentMutableLiveData().observe(getViewLifecycleOwner(), error -> {
             binding.textView9.setText(error);
             binding.rec.setVisibility(View.GONE);

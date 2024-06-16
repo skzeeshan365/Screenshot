@@ -7,6 +7,7 @@ import android.os.Looper;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.reiserx.screenshot.Models.ScreenshotLabels;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.Repositories.ScreenshotsRepository;
@@ -24,6 +25,7 @@ public class ScreenshotsViewModel extends ViewModel implements
     private final MutableLiveData<List<Screenshots>> ItemSilentMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<String>> ItemFilesMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<ScreenshotLabels>> ItemLabelsMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<NativeAd>> ItemNativeAdMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> ErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> ErrorSilentMutableLiveData = new MutableLiveData<>();
@@ -44,6 +46,10 @@ public class ScreenshotsViewModel extends ViewModel implements
 
     public MutableLiveData<List<ScreenshotLabels>> getItemLabelsMutableLiveData() {
         return ItemLabelsMutableLiveData;
+    }
+
+    public MutableLiveData<List<NativeAd>> getItemNativeAdMutableLiveData() {
+        return ItemNativeAdMutableLiveData;
     }
 
     public MutableLiveData<String> getErrorMutableLiveData() {
@@ -92,6 +98,11 @@ public class ScreenshotsViewModel extends ViewModel implements
     }
 
     @Override
+    public void onSuccessAds(List<NativeAd> nativeAdList) {
+        ItemNativeAdMutableLiveData.setValue(nativeAdList);
+    }
+
+    @Override
     public void onFailure(String error) {
         Handler mainHandler = new Handler(Looper.getMainLooper());
         mainHandler.post(() -> {
@@ -102,6 +113,11 @@ public class ScreenshotsViewModel extends ViewModel implements
     @Override
     public void onSilentSuccess(List<Screenshots> parentItemList) {
         ItemSilentMutableLiveData.setValue(parentItemList);
+    }
+
+    @Override
+    public void onSilentSuccessAds(List<NativeAd> nativeAdList) {
+        ItemNativeAdMutableLiveData.setValue(nativeAdList);
     }
 
     @Override
@@ -125,6 +141,11 @@ public class ScreenshotsViewModel extends ViewModel implements
         mainHandler.post(() -> {
             ItemLabelsMutableLiveData.setValue(labelsList);
         });
+    }
+
+    @Override
+    public void onLabelsLoadedAds(List<NativeAd> nativeAdList) {
+        ItemNativeAdMutableLiveData.setValue(nativeAdList);
     }
 
     @Override

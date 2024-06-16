@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.mlkit.vision.common.InputImage;
+import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.Interfaces.ScanCallback;
 import com.reiserx.screenshot.MachineLearning.OCR;
 import com.reiserx.screenshot.R;
@@ -78,6 +80,12 @@ public class OCRActivity extends AppCompatActivity {
             ButtonDesign design = new ButtonDesign(this);
             design.setButtonOutlineDark(copy_btn);
             design.setButtonOutlineDark(share_btn);
+
+            FrameLayout ad_placeholder = dialogView.findViewById(R.id.ad_placeholder);
+            NativeAds nativeAds = new NativeAds(this);
+            nativeAds.loadAdSmallRunnable(nativeAd -> {
+                NativeAds.loadPrefetchedSmall(this, nativeAd, ad_placeholder);
+            });
 
             lang_list = new ArrayList<>();
             lang_list.add("English");

@@ -1,8 +1,11 @@
 package com.reiserx.screenshot.Models;
 
+import com.google.android.gms.ads.nativead.NativeAd;
+
 public class SearchListModel {
     String name;
     int type, id, imageCount;
+    NativeAd nativeAd;
 
     public SearchListModel(String name, int type) {
         this.name = name;
@@ -14,6 +17,10 @@ public class SearchListModel {
         this.type = type;
         this.id = id;
         this.imageCount = imageCount;
+    }
+
+    public SearchListModel(int type) {
+        this.type = type;
     }
 
     public String getName() {
@@ -46,5 +53,13 @@ public class SearchListModel {
 
     public void setImageCount(int imageCount) {
         this.imageCount = imageCount;
+    }
+
+    public NativeAd getNativeAd() {
+        return nativeAd;
+    }
+
+    public void setNativeAd(NativeAd nativeAd) {
+        this.nativeAd = nativeAd;
     }
 }

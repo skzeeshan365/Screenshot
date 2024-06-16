@@ -23,16 +23,18 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.reiserx.screenshot.Activities.OCRActivity;
 import com.reiserx.screenshot.Activities.ui.TextDrawable;
+import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.SaveBitmap;
+import com.reiserx.screenshot.databinding.ImageLabelAdplaceholderBinding;
 import com.reiserx.screenshot.databinding.ImageLayoutBinding;
 import com.stfalcon.imageviewer.StfalconImageViewer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.ImagesViewHolder> {
+public class ScreenshotsAdapter extends RecyclerView.Adapter {
 
     Context context;
     List<Screenshots> data;
@@ -49,6 +51,9 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
 
     private int SCREENSHOT_TYPE = 0;
 
+    public static int ITEM_TYPE_DATA = 0;
+    public static int ITEM_TYPE_AD = 1;
+
     ActivityResultLauncher<IntentSenderRequest> deleteResultLauncher;
 
     public ScreenshotsAdapter(Context context, int SCREENSHOT_TYPE, ActivityResultLauncher<IntentSenderRequest> deleteResultLauncher) {
@@ -63,17 +68,28 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
         this.data = data;
     }
 
+    public List<Screenshots> getData() {
+        return data;
+    }
+
     @NonNull
     @Override
-    public ScreenshotsAdapter.ImagesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.image_layout, parent, false);
-        return new ScreenshotsAdapter.ImagesViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == ITEM_TYPE_DATA) {
+            View view = LayoutInflater.from(context).inflate(R.layout.image_layout, parent, false);
+            return new ImagesViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(context).inflate(R.layout.image_label_adplaceholder, parent, false);
+            return new AdsViewHolder(view);
+        }
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull ScreenshotsAdapter.ImagesViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         Screenshots screenshots = data.get(position);
+        if (viewHolder.getClass() == ImagesViewHolder.class) {
+            ImagesViewHolder holder = (ImagesViewHolder) viewHolder;
         Glide.with(context)
                 .load(screenshots.getFilename())
                 .thumbnail(0.01f)
@@ -98,6 +114,22 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
                     })
                     .show();
         });
+        } else if (viewHolder.getClass() == AdsViewHolder.class) {
+            if (screenshots.getNativeAd() != null) {
+                AdsViewHolder holder = (AdsViewHolder) viewHolder;
+                NativeAds.loadPrefetchedAds(context, screenshots.getNativeAd(), holder.binding.imageHolder);
+            }
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        Screenshots model = data.get(position);
+        if (model.getType() == ITEM_TYPE_DATA) {
+            return ITEM_TYPE_DATA;
+        } else {
+            return ITEM_TYPE_AD;
+        }
     }
 
     @Override
@@ -115,6 +147,16 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotsAdapter.
         public ImagesViewHolder(@NonNull View itemView) {
             super(itemView);
             binding = ImageLayoutBinding.bind(itemView);
+        }
+    }
+
+    public class AdsViewHolder extends RecyclerView.ViewHolder {
+
+        ImageLabelAdplaceholderBinding binding;
+
+        public AdsViewHolder(@NonNull View itemView) {
+            super(itemView);
+            binding = ImageLabelAdplaceholderBinding.bind(itemView);
         }
     }
 

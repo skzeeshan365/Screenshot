@@ -53,4 +53,5 @@ Your trust is important to us. Our app is designed to enhance your screenshot ex
     <string name="share_screenshot">Share screenshot</string>
     <string name="image">image</string>
     <string name="search">Search</string>
+    <string name="ad_placeholder_text">Ads</string>
 </resources>

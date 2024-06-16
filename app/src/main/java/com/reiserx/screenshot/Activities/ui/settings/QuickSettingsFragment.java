@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Services.ScreenshotSelectedTile;
 import com.reiserx.screenshot.Services.ScreenshotSilentTile;
@@ -62,6 +63,9 @@ public class QuickSettingsFragment extends Fragment {
             design.buttonFill(binding.button3);
             addTileIfSupported(getContext(), ScreenshotSelectedTile.class, getString(R.string.selected_screenshot_label), R.drawable.baseline_crop_square_24, binding.button3);
         });
+
+        NativeAds nativeAds = new NativeAds(getContext(), binding.adPlaceholder);
+        nativeAds.loadAdLarge();
     }
 
     @Override

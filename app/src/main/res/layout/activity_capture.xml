@@ -42,11 +42,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:text="@string/selected_screenshot_label"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,5 +62,31 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_close_24"
         app:tint="@color/white" />
+
+    <FrameLayout
+        android:id="@+id/ad_placeholder"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/textbox_outline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/snapshot_btn">
+
+        <TextView
+            android:id="@+id/textView16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:layout_margin="8dp"
+            android:fontFamily="@font/source_serif_pro_semibold"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="@string/ad_placeholder_text"
+            android:textSize="16sp" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
