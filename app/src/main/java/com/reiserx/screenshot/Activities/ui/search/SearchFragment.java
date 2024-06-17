@@ -71,35 +71,40 @@ public class SearchFragment extends Fragment {
                     data.add(new SearchListModel(labelEntity.label.getLabelName(), labelEntity.label.getId(), labelEntity.imageCount, adapter.DATA_CONTENT));
                 }
 
-                Random random = new Random();
-                int numberOfAds = data.size() / 3; // Number of ad elements based on the list size
+                if (data.isEmpty())
+                    adapter.notifyItemChanged(0);
+                else {
 
-                for (int i = 0; i < numberOfAds; i++) {
-                    int randomPosition = random.nextInt(data.size() - 1) + 1; // Ensure not to overwrite the "All screenshots" label at index 0
-                    data.add(randomPosition, new SearchListModel(SearchAdapter.AD_CONTENT)); // Add ad element with the appropriate label and ad object
-                }
+                    Random random = new Random();
+                    int numberOfAds = data.size() / 3; // Number of ad elements based on the list size
 
-                adapter.notifyItemChanged(0);
+                    for (int i = 0; i < numberOfAds; i++) {
+                        int randomPosition = random.nextInt(data.size() - 1) + 1; // Ensure not to overwrite the "All screenshots" label at index 0
+                        data.add(randomPosition, new SearchListModel(SearchAdapter.AD_CONTENT)); // Add ad element with the appropriate label and ad object
+                    }
 
-                new Thread(() -> {
-                    NativeAds nativeAds = new NativeAds(getContext());
-                    nativeAds.prefetchAds(numberOfAds, () -> {
-                        Handler mainHandler = new Handler(Looper.getMainLooper());
-                        mainHandler.post(() -> {
-                            if (!data.isEmpty()) {
-                                for (SearchListModel model : data) {
-                                    if (!nativeAds.getAdList().isEmpty()) {
-                                        if (model.getType() == SearchAdapter.AD_CONTENT) {
-                                            model.setNativeAd(nativeAds.getAdList().get(0));
-                                            nativeAds.getAdList().remove(0);
+                    adapter.notifyItemChanged(0);
+
+                    new Thread(() -> {
+                        NativeAds nativeAds = new NativeAds(getContext());
+                        nativeAds.prefetchAds(numberOfAds, () -> {
+                            Handler mainHandler = new Handler(Looper.getMainLooper());
+                            mainHandler.post(() -> {
+                                if (!data.isEmpty()) {
+                                    for (SearchListModel model : data) {
+                                        if (!nativeAds.getAdList().isEmpty()) {
+                                            if (model.getType() == SearchAdapter.AD_CONTENT) {
+                                                model.setNativeAd(nativeAds.getAdList().get(0));
+                                                nativeAds.getAdList().remove(0);
+                                            }
+                                            adapter.notifyItemChanged(data.indexOf(model), model);
                                         }
-                                        adapter.notifyItemChanged(data.indexOf(model), model);
                                     }
                                 }
-                            }
+                            });
                         });
-                    });
-                }).start();
+                    }).start();
+                }
             }
         });
     }

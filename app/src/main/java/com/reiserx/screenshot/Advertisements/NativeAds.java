@@ -128,6 +128,7 @@ public class NativeAds {
                             .inflate(R.layout.native_ad_medium, null);
                     MediaView imageView = adView.findViewById(R.id.ad_app_icon);
                     imageView.setMediaContent(nativeAd.getMediaContent());
+                    imageView.setImageScaleType(ImageView.ScaleType.FIT_CENTER);
                     adView.setMediaView(imageView);
 
                     TextView headlineView = adView.findViewById(R.id.ad_headline);

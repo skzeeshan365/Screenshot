@@ -66,7 +66,7 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        viewModel = new ViewModelProvider((ViewModelStoreOwner) requireContext().getApplicationContext()).get(ScreenshotsViewModel.class);
+        viewModel = new ViewModelProvider((ViewModelStoreOwner) requireActivity()).get(ScreenshotsViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         dataStoreHelper = new DataStoreHelper();
