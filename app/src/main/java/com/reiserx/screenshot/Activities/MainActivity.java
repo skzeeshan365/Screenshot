@@ -1,6 +1,7 @@
 package com.reiserx.screenshot.Activities;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -11,6 +12,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.screenshot.Activities.ui.settings.FileFragment;
+import com.reiserx.screenshot.BuildConfig;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.databinding.ActivityMainBinding;

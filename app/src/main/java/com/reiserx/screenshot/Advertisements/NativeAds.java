@@ -15,6 +15,7 @@ import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
 import com.google.android.gms.ads.nativead.NativeAdView;
+import com.reiserx.screenshot.BuildConfig;
 import com.reiserx.screenshot.Interfaces.OnNativeAdLoaded;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.ButtonDesign;
@@ -28,15 +29,24 @@ public class NativeAds {
     NativeAd nativeAd;
     NativeAdView adView;
     List<NativeAd> adList = new ArrayList<>();
+    String AD_ID;
 
 
     public NativeAds(Context context, FrameLayout placeholder) {
         this.context = context;
         this.placeholder = placeholder;
+        if (BuildConfig.DEBUG)
+            AD_ID = AdBase.NATIVE_AD_ID_DEBUG;
+        else
+            AD_ID = AdBase.NATIVE_AD_ID_RELEASE;
     }
 
     public NativeAds(Context context) {
         this.context = context;
+        if (BuildConfig.DEBUG)
+            AD_ID = AdBase.NATIVE_AD_ID_DEBUG;
+        else
+            AD_ID = AdBase.NATIVE_AD_ID_RELEASE;
     }
 
     public List<NativeAd> getAdList() {
@@ -44,7 +54,7 @@ public class NativeAds {
     }
 
     public void loadAdSmall() {
-        AdLoader adLoader = new AdLoader.Builder(context, "ca-app-pub-3940256099942544/2247696110")
+        AdLoader adLoader = new AdLoader.Builder(context, AD_ID)
                 .forNativeAd(nativeAd -> {
                     if (nativeAd.getIcon() != null) {
                         LayoutInflater inflater = (LayoutInflater) context
@@ -103,7 +113,7 @@ public class NativeAds {
     }
 
     public void loadAdSmallRunnable(OnNativeAdLoaded onNativeAdLoaded) {
-        AdLoader adLoader = new AdLoader.Builder(context, "ca-app-pub-3940256099942544/2247696110")
+        AdLoader adLoader = new AdLoader.Builder(context, AD_ID)
                 .forNativeAd(onNativeAdLoaded::onAdsLoaded)
                 .withAdListener(new AdListener() {
                     @Override
@@ -120,7 +130,7 @@ public class NativeAds {
     }
 
     public void loadAdLarge() {
-        AdLoader adLoader = new AdLoader.Builder(context, "ca-app-pub-3940256099942544/2247696110")
+        AdLoader adLoader = new AdLoader.Builder(context, AD_ID)
                 .forNativeAd(nativeAd -> {
                     LayoutInflater inflater = (LayoutInflater) context
                             .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -171,7 +181,7 @@ public class NativeAds {
 
     public void prefetchAds(int NUMBER_OF_ADS, Runnable onAdsLoadedCallback) {
         adList = new ArrayList<>();
-        final AdLoader adLoader = new AdLoader.Builder(context, "ca-app-pub-3940256099942544/2247696110")
+        final AdLoader adLoader = new AdLoader.Builder(context, AD_ID)
                 .forNativeAd(nativeAd -> {
                     adList.add(nativeAd);
                     // Check if all ads are loaded

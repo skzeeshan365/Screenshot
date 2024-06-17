@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -49,6 +50,8 @@ dependencies {
     implementation("com.github.stfalcon-studio:StfalconImageViewer:v1.0.1")
     implementation("com.github.yalantis:ucrop:2.2.8-native")
     implementation("com.google.firebase:firebase-messaging:24.0.0")
+    implementation("com.google.firebase:firebase-analytics:22.0.1")
+    implementation("com.google.firebase:firebase-crashlytics:19.0.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

@@ -9,14 +9,22 @@ import android.widget.FrameLayout;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.reiserx.screenshot.BuildConfig;
+
+import org.checkerframework.checker.units.qual.A;
 
 public class BannerAds {
     Context context;
     FrameLayout placeholder;
+    String AD_ID;
 
     public BannerAds(Context context, FrameLayout placeholder) {
         this.context = context;
         this.placeholder = placeholder;
+        if (BuildConfig.DEBUG)
+            AD_ID = AdBase.BANNER_AD_ID_DEBUG;
+        else
+            AD_ID = AdBase.BANNER_AD_ID_RELEASE;
     }
 
     private AdSize getAdSize() {
@@ -44,7 +52,7 @@ public class BannerAds {
         // Create a new ad view.
         AdView adView = new AdView(context);
         adView.setAdSize(getAdSize());
-        adView.setAdUnitId("ca-app-pub-3940256099942544/9214589741");
+        adView.setAdUnitId(AD_ID);
 
         // Replace ad container with new ad view.
         placeholder.removeAllViews();
@@ -60,7 +68,7 @@ public class BannerAds {
         // Create a new ad view.
         AdView adView = new AdView(context);
         adView.setAdSize(AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(context, 320));
-        adView.setAdUnitId("ca-app-pub-3940256099942544/9214589741");
+        adView.setAdUnitId(AD_ID);
 
         // Replace ad container with new ad view.
         placeholder.removeAllViews();
