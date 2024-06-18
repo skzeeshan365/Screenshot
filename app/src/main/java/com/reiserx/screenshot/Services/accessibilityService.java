@@ -44,11 +44,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import com.reiserx.screenshot.Activities.AIActivity;
 import com.reiserx.screenshot.Activities.CaptureActivity;
 import com.reiserx.screenshot.Activities.ImageViewerActivity;
 import com.reiserx.screenshot.Activities.OCRActivity;
 import com.reiserx.screenshot.Activities.ui.IconCropView;
 import com.reiserx.screenshot.Activities.ui.TextDrawable;
+import com.reiserx.screenshot.Activities.ui.settings.FragmentSensor;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Receivers.NotificationReceiver;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
@@ -75,6 +77,10 @@ public class accessibilityService extends AccessibilityService implements Sensor
     public static String ENABLE_NOTIFICATION = "ENABLE_NOTIFICATION";
     public static String ENABLE_SENSOR_PROXIMITY = "ENABLE_SENSOR_PROXIMITY";
     public static String ENABLE_SENSOR_SHAKE = "ENABLE_SENSOR_SHAKE";
+
+    public static int CAPTURE_SNAPSHOT_DEFAULT = 0;
+    public static int CAPTURE_SNAPSHOT_OCR = 1;
+    public static int CAPTURE_SNAPSHOT_AI = 2;
 
     @Override
     protected void onServiceConnected() {
@@ -175,7 +181,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
         }
     }
 
-    public void CreateSelection() {
+    public void CreateSelection(int type) {
         if (windowManager == null) {
             windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         }
@@ -196,12 +202,12 @@ public class accessibilityService extends AccessibilityService implements Sensor
                     PixelFormat.TRANSLUCENT);
 
 
-            selectionRectView = new IconCropView(this);
+            selectionRectView = new IconCropView(this, type);
             windowManager.addView(selectionRectView, params);
         }
     }
 
-    public void captureSelectedArea(Rect rect) {
+    public void captureSelectedArea(Rect rect, int type) {
         try {
             takeScreenshot(Display.DEFAULT_DISPLAY,
                     getApplicationContext().getMainExecutor(), new TakeScreenshotCallback() {
@@ -214,8 +220,28 @@ public class accessibilityService extends AccessibilityService implements Sensor
 
                             SaveBitmap saveBitmap = new SaveBitmap(croppedBitmap, accessibilityService.this);
                             File file = saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
-                            if (file != null)
-                                createScreenshotOverlay(file);
+                            if (type == CAPTURE_SNAPSHOT_DEFAULT) {
+                                if (file != null)
+                                    createScreenshotOverlay(file);
+                            } else if (type == CAPTURE_SNAPSHOT_OCR) {
+                                if (file != null) {
+                                    Intent intent = new Intent(accessibilityService.this, OCRActivity.class);
+                                    intent.setData(Uri.fromFile(file));
+                                    intent.putExtra("temp", true);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                }
+                            } else if (type == CAPTURE_SNAPSHOT_AI) {
+                                if (file != null) {
+                                    Intent intent = new Intent(accessibilityService.this, AIActivity.class);
+                                    intent.setData(Uri.fromFile(file));
+                                    intent.putExtra("temp", true);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                }
+                            }
                         }
 
                         @Override
@@ -387,17 +413,21 @@ public class accessibilityService extends AccessibilityService implements Sensor
             if (dataStoreHelper.getIntValue(SHAKE_COUNT, 1) == count) {
                 if (ScreenUtil.isScreenOn(this)) {
                     // Sensor detected
-                    if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 0) {
+                    if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == FragmentSensor.DEFAULT) {
                         Intent transparentIntent = new Intent(this, CaptureActivity.class);
                         transparentIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         transparentIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(transparentIntent);
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 1) {
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == FragmentSensor.SCREENSHOT) {
                         takeScreenshots();
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 2) {
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == FragmentSensor.SILENT_SCREENSHOT) {
                         takeScreenshotsSilent();
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 3) {
-                        CreateSelection();
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == FragmentSensor.SNAPSHOT) {
+                        CreateSelection(CAPTURE_SNAPSHOT_DEFAULT);
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == FragmentSensor.SNAPSHOT_TYPE_OCR) {
+                        CreateSelection(CAPTURE_SNAPSHOT_OCR);
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == FragmentSensor.SNAPSHOT_TYPE_AI) {
+                        CreateSelection(CAPTURE_SNAPSHOT_AI);
                     }
                 }
             }
@@ -432,20 +462,21 @@ public class accessibilityService extends AccessibilityService implements Sensor
             if (proximityValue == 0) {
                 if (ScreenUtil.isScreenOn(this) && !PhoneUtil.isOnPhoneCall(this)) {
                     // Sensor detected
-                    if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 0) {
+                    if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == FragmentSensor.DEFAULT) {
                         Intent transparentIntent = new Intent(this, CaptureActivity.class);
                         transparentIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         transparentIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(transparentIntent);
-                    }
-                    else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 1) {
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == FragmentSensor.SCREENSHOT) {
                         takeScreenshots();
-                    }
-                    else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 2) {
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == FragmentSensor.SILENT_SCREENSHOT) {
                         takeScreenshotsSilent();
-                    }
-                    else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 3) {
-                        CreateSelection();
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == FragmentSensor.SNAPSHOT) {
+                        CreateSelection(CAPTURE_SNAPSHOT_DEFAULT);
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == FragmentSensor.SNAPSHOT_TYPE_OCR) {
+                        CreateSelection(CAPTURE_SNAPSHOT_OCR);
+                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == FragmentSensor.SNAPSHOT_TYPE_AI) {
+                        CreateSelection(CAPTURE_SNAPSHOT_AI);
                     }
                 }
             }
@@ -482,6 +513,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
         ImageView ocr_btn = overlayView.findViewById(R.id.ocr_btn);
         ImageView close_btn = overlayView.findViewById(R.id.close_btn);
         ImageView preview = overlayView.findViewById(R.id.preview);
+        ImageView ai_explain = overlayView.findViewById(R.id.ai_explain);
 
         share_btn.setImageResource(R.drawable.baseline_share_24);
         preview_btn.setImageResource(R.drawable.baseline_preview_24);
@@ -493,6 +525,12 @@ public class accessibilityService extends AccessibilityService implements Sensor
         textDrawable.setTextSize(50);
         textDrawable.setFont(this, R.font.source_serif_pro_semibold);
         ocr_btn.setImageDrawable(textDrawable);
+
+        textDrawable = new TextDrawable("AI");
+        textDrawable.setTextColor(getColor(R.color.button_design_text));
+        textDrawable.setTextSize(50);
+        textDrawable.setFont(this, R.font.source_serif_pro_semibold);
+        ai_explain.setImageDrawable(textDrawable);
 
         close_btn.setOnClickListener(view -> {
             clearWindowManager(overlayView);
@@ -506,14 +544,24 @@ public class accessibilityService extends AccessibilityService implements Sensor
 
         preview_btn.setOnClickListener(view -> {
             Intent intent = new Intent(this, ImageViewerActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("url", file.getAbsolutePath());
+            intent.setData(Uri.fromFile(file));
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             clearWindowManager(overlayView);
         });
 
         ocr_btn.setOnClickListener(view -> {
             Intent intent = new Intent(this, OCRActivity.class);
+            intent.setData(Uri.fromFile(file));
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            clearWindowManager(overlayView);
+        });
+
+        ai_explain.setOnClickListener(view -> {
+            Intent intent = new Intent(this, AIActivity.class);
             intent.setData(Uri.fromFile(file));
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

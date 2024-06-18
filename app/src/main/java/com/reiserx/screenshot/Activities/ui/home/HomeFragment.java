@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,6 +107,7 @@ public class HomeFragment extends Fragment {
             adapter.notifyDataSetChanged();
         });
         viewModel.getItemNativeAdMutableLiveData().observe(getViewLifecycleOwner(), Adlist -> {
+            Log.d("dsfdsfssdfds", String.valueOf(Adlist.size()));
             if (adapter.getData() != null && !adapter.getData().isEmpty()) {
                 for (ScreenshotLabels label : adapter.getData()) {
                     if (!Adlist.isEmpty()) {

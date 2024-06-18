@@ -35,6 +35,8 @@ public class FragmentSensor extends Fragment {
     public static int SCREENSHOT = 1;
     public static int SILENT_SCREENSHOT = 2;
     public static int SNAPSHOT = 3;
+    public static int SNAPSHOT_TYPE_OCR = 4;
+    public static int SNAPSHOT_TYPE_AI = 5;
     public static String SHAKE_COUNT = "SHAKE_COUNT";
     DataStoreHelper dataStoreHelper;
 
@@ -104,14 +106,18 @@ public class FragmentSensor extends Fragment {
     }
 
     void updateValues() {
-        if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 0)
+        if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == DEFAULT)
             binding.sensorValue.setText("Ask every time");
-        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 1)
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SCREENSHOT)
             binding.sensorValue.setText(getString(R.string.screenshot_label));
-        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 2)
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SILENT_SCREENSHOT)
             binding.sensorValue.setText(getString(R.string.silent_screenshot_label));
-        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 3)
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT)
             binding.sensorValue.setText(getString(R.string.selected_screenshot_label));
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT_TYPE_OCR)
+            binding.sensorValue.setText(getString(R.string.capture_with_ocr));
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT_TYPE_AI)
+            binding.sensorValue.setText(getString(R.string.capture_with_ai_explain));
     }
 
     @Override
@@ -131,19 +137,25 @@ public class FragmentSensor extends Fragment {
         final RadioButton btn2 = mView.findViewById(R.id.radioButton2);
         final RadioButton btn3 = mView.findViewById(R.id.radioButton3);
         final RadioButton btn4 = mView.findViewById(R.id.radioButton4);
+        final RadioButton ocr = mView.findViewById(R.id.rad_ocr);
+        final RadioButton ai = mView.findViewById(R.id.rad_ai);
 
         alert.setTitle("Select screenshot type");
         alert.setMessage("Select screenshot type for capturing with sensor");
         alert.setView(mView);
 
-        if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 0)
+        if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == DEFAULT)
             btn1.setChecked(true);
-        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 1)
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SCREENSHOT)
             btn2.setChecked(true);
-        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 2)
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SILENT_SCREENSHOT)
             btn3.setChecked(true);
-        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == 3)
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT)
             btn4.setChecked(true);
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT_TYPE_OCR)
+            ocr.setChecked(true);
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT_TYPE_AI)
+            ai.setChecked(true);
 
         btn1.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (btn1.isChecked()) {
@@ -171,6 +183,20 @@ public class FragmentSensor extends Fragment {
         btn4.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (btn4.isChecked()) {
                 dataStoreHelper.putIntValue(SCREENSHOT_TYPE_KEY, SNAPSHOT);
+            }
+            alert.dismiss();
+            updateValues();
+        });
+        ocr.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (ocr.isChecked()) {
+                dataStoreHelper.putIntValue(SCREENSHOT_TYPE_KEY, SNAPSHOT_TYPE_OCR);
+            }
+            alert.dismiss();
+            updateValues();
+        });
+        ai.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (ai.isChecked()) {
+                dataStoreHelper.putIntValue(SCREENSHOT_TYPE_KEY, SNAPSHOT_TYPE_AI);
             }
             alert.dismiss();
             updateValues();

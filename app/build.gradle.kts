@@ -48,10 +48,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("com.github.stfalcon-studio:StfalconImageViewer:v1.0.1")
-    implementation("com.github.yalantis:ucrop:2.2.8-native")
     implementation("com.google.firebase:firebase-messaging:24.0.0")
     implementation("com.google.firebase:firebase-analytics:22.0.1")
     implementation("com.google.firebase:firebase-crashlytics:19.0.1")
+    implementation("com.google.firebase:firebase-auth:23.0.0")
+    implementation("androidx.activity:activity:1.8.0")
+    implementation("com.google.firebase:firebase-database:21.0.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -66,7 +68,6 @@ dependencies {
     implementation ("androidx.datastore:datastore-preferences-rxjava2:1.0.0")
 
     implementation ("com.google.android.play:integrity:1.3.0")
-    implementation ("com.github.MikeOrtiz:TouchImageView:3.1.1")
 
     // To recognize Latin script
     implementation ("com.google.mlkit:text-recognition:16.0.0")
@@ -89,4 +90,19 @@ dependencies {
     implementation ("com.google.guava:guava:30.1-jre")
 
     implementation ("com.google.android.gms:play-services-ads:23.1.0")
+
+    implementation ("com.google.code.gson:gson:2.10.1")
+    implementation ("com.github.deano2390:FlowTextView:2.0.5")
+
+    val markwonVersion = "4.6.2"
+    implementation("io.noties.markwon:core:$markwonVersion")
+    implementation("io.noties.markwon:ext-tasklist:$markwonVersion")
+    implementation("io.noties.markwon:html:$markwonVersion")
+    implementation("io.noties.markwon:inline-parser:$markwonVersion")
+    implementation("io.noties.markwon:linkify:$markwonVersion")
+    implementation("io.noties.markwon:simple-ext:$markwonVersion")
+
+    implementation ("androidx.security:security-crypto:1.1.0-alpha06")
+
+    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
 }

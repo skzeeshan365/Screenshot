@@ -37,11 +37,13 @@ import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.Interfaces.ScanCallback;
 import com.reiserx.screenshot.MachineLearning.OCR;
 import com.reiserx.screenshot.R;
+import com.reiserx.screenshot.Utils.API;
 import com.reiserx.screenshot.Utils.ButtonDesign;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.Utils.ScreenshotUtils;
 import com.reiserx.screenshot.databinding.ActivityOcractivityBinding;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class OCRActivity extends AppCompatActivity {
@@ -50,6 +52,8 @@ public class OCRActivity extends AppCompatActivity {
     ActivityOcractivityBinding binding;
 
     public static String LANG_CODE = "LANG_CODE";
+    boolean temp;
+    Uri uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +63,8 @@ public class OCRActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null && intent.getData() != null) {
-            Uri uri = intent.getData();
+            uri = intent.getData();
+            temp = intent.getBooleanExtra("temp", false);
 
             LayoutInflater inflater = LayoutInflater.from(this);
             View dialogView = inflater.inflate(R.layout.dialog_bottom, null);
@@ -222,5 +227,16 @@ public class OCRActivity extends AppCompatActivity {
         clipboardManager.setPrimaryClip(clipData);
 
         Toast.makeText(context, "Text copied to clipboard", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (temp) {
+            File file = API.getFileFromUri(uri, this);
+            if (file.exists()) {
+                file.delete();
+            }
+        }
     }
 }

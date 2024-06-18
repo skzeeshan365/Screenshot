@@ -58,6 +58,7 @@ public class LabelScreenshotsFragment extends Fragment {
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         binding.rec.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         adapter = new ScreenshotsAdapter(requireContext(), DEFAULT_SCREENSHOT, deleteResultLauncher);
+        adapter.setActivity(requireActivity());
         binding.rec.setAdapter(adapter);
 
         DataStoreHelper dataStoreHelper = new DataStoreHelper();

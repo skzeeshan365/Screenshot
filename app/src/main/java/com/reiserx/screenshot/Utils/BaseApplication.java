@@ -12,7 +12,9 @@ import androidx.datastore.rxjava2.RxDataStore;
 import androidx.lifecycle.ViewModelStore;
 import androidx.lifecycle.ViewModelStoreOwner;
 
+import com.google.android.gms.ads.MobileAds;
 import com.reiserx.screenshot.Activities.MainActivity;
+import com.reiserx.screenshot.Advertisements.InterstitialAds;
 
 public class BaseApplication extends Application implements ViewModelStoreOwner {
     public static BaseApplication instance;
@@ -23,6 +25,7 @@ public class BaseApplication extends Application implements ViewModelStoreOwner 
     private ViewModelStore viewModelStore;
     private boolean isMyActivityInForeground = false;
     private static AppDatabase database;
+    static InterstitialAds interstitialAds;
 
     @Override
     public void onCreate() {
@@ -38,6 +41,12 @@ public class BaseApplication extends Application implements ViewModelStoreOwner 
             dataStoreRX = dataStoreSingleton.getDataStore();
         }
         dataStoreSingleton.setDataStore(dataStoreRX);
+
+        new Thread(
+                () -> {
+                    MobileAds.initialize(this);
+                })
+                .start();
 
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
@@ -106,5 +115,13 @@ public class BaseApplication extends Application implements ViewModelStoreOwner 
 
     public static AppDatabase getDatabase() {
         return database;
+    }
+
+    public static InterstitialAds getInterstitialAds() {
+        return interstitialAds;
+    }
+
+    public static void setInterstitialAds(InterstitialAds interstitialAds) {
+        BaseApplication.interstitialAds = interstitialAds;
     }
 }

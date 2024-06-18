@@ -75,7 +75,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/snapshot_btn">
+        app:layout_constraintTop_toBottomOf="@+id/capture_ai_btn">
 
         <TextView
             android:id="@+id/textView16"
@@ -88,5 +88,29 @@
             android:text="@string/ad_placeholder_text"
             android:textSize="16sp" />
     </FrameLayout>
+
+    <Button
+        android:id="@+id/capture_ocr_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:text="@string/capture_with_ocr"
+        app:layout_constraintEnd_toEndOf="@+id/snapshot_btn"
+        app:layout_constraintStart_toStartOf="@+id/snapshot_btn"
+        app:layout_constraintTop_toBottomOf="@+id/snapshot_btn" />
+
+    <Button
+        android:id="@+id/capture_ai_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:text="@string/capture_with_ai_explain"
+        app:layout_constraintEnd_toEndOf="@+id/capture_ocr_btn"
+        app:layout_constraintStart_toStartOf="@+id/capture_ocr_btn"
+        app:layout_constraintTop_toBottomOf="@+id/capture_ocr_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

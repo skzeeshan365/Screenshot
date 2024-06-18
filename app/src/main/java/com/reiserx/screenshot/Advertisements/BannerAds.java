@@ -11,8 +11,6 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.reiserx.screenshot.BuildConfig;
 
-import org.checkerframework.checker.units.qual.A;
-
 public class BannerAds {
     Context context;
     FrameLayout placeholder;

@@ -88,4 +88,26 @@
         app:layout_constraintBottom_toBottomOf="@+id/ocr_FAB"
         app:layout_constraintEnd_toStartOf="@+id/ocr_FAB"
         app:layout_constraintTop_toTopOf="@+id/ocr_FAB" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/ai_FAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        app:backgroundTint="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/ocr_FAB"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/baseline_crop_square_24" />
+
+    <TextView
+        android:id="@+id/ai_image_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="AI explain"
+        app:layout_constraintBottom_toBottomOf="@+id/ai_FAB"
+        app:layout_constraintEnd_toStartOf="@+id/ai_FAB"
+        app:layout_constraintTop_toTopOf="@+id/ai_FAB" />
 </androidx.constraintlayout.widget.ConstraintLayout>

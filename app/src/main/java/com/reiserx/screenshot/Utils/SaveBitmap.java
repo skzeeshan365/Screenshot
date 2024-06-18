@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -68,6 +70,30 @@ public class SaveBitmap {
         return null;
     }
 
+    public File saveDataInAppTemp() {
+        // Specify the directory and filename
+        File directory = context.getFilesDir();
+        String filename = getRandom.getRandom(0, 1000000000) + ".png";
+        File file = new File(directory, "Temp/"+filename);
+
+        try {
+            // Create necessary directories if they don't exist
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+
+            // Save the bitmap to the file
+            FileOutputStream out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.flush();
+            out.close();
+            return file;
+        } catch (Exception e) {
+            Toast.makeText(context, "An error occurred: " + e, Toast.LENGTH_LONG).show();
+        }
+        return null;
+    }
+
     public File saveDataLocalDCIM(String package_name) {
         // Use MediaStore for Android 10 and above
         ContentValues values = new ContentValues();
@@ -96,7 +122,7 @@ public class SaveBitmap {
                 if (BaseApplication.getInstance().isMyActivityInForeground()) {
                     viewModel.getScreenshots(context, dataStoreHelper.getStringValue(GalleryFragment.SCREENSHOT_LABEL, null));
                 }
-                return getFileFromUri(uri);
+                return getFileFromUri(uri, context);
             } catch (Exception e) {
                 Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
             }
@@ -105,7 +131,7 @@ public class SaveBitmap {
         return null;
     }
 
-    private File getFileFromUri(Uri uri) {
+    public static File getFileFromUri(Uri uri, Context context) {
         String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
         if (cursor != null) {
@@ -180,4 +206,15 @@ public class SaveBitmap {
             return dcimDirectory;
         }
     }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        int width = drawable.getIntrinsicWidth();
+        int height = drawable.getIntrinsicHeight();
+        Bitmap bitmap = Bitmap.createBitmap(width > 0 ? width : 1, height > 0 ? height : 1, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
 }

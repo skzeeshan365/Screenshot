@@ -3,6 +3,7 @@ package com.reiserx.screenshot.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
 
 import androidx.core.content.FileProvider;
 
@@ -10,6 +11,9 @@ import java.io.File;
 
 public class ScreenshotUtils {
     Context context;
+    public static final int APP_DATA_DIR = 1;
+    public static final int SHARED_STORAGE = 2;
+    public static final int UNKNOWN = -1;
 
     public ScreenshotUtils(Context context) {
         this.context = context;
@@ -45,6 +49,19 @@ public class ScreenshotUtils {
             context.startActivity(chooserIntent);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static int getFileLocationType(Context context, File file) {
+        File appDataDir = context.getFilesDir();
+        File sharedStorageDir = Environment.getExternalStorageDirectory();
+
+        if (file.getAbsolutePath().startsWith(appDataDir.getAbsolutePath())) {
+            return APP_DATA_DIR;
+        } else if (file.getAbsolutePath().startsWith(sharedStorageDir.getAbsolutePath())) {
+            return SHARED_STORAGE;
+        } else {
+            return UNKNOWN;
         }
     }
 }

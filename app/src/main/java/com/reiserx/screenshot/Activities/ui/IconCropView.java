@@ -25,13 +25,15 @@ public class IconCropView extends RelativeLayout {
     private boolean isResizing = false;
     private float lastTouchX, lastTouchY;
     private int touchOffsetX, touchOffsetY;
+    private int type;
 
     boolean isDragging;
 
     Button button;
-    public IconCropView(Context context) {
+    public IconCropView(Context context, int type) {
         super(context);
         init();
+        this.type = type;
     }
 
     public IconCropView(Context context, AttributeSet attrs) {
@@ -74,7 +76,7 @@ public class IconCropView extends RelativeLayout {
         button.setOnClickListener(view -> {
             if (accessibilityService.instance != null) {
                 buttonDesign.buttonFillLight(button);
-                accessibilityService.instance.captureSelectedArea(rect);
+                accessibilityService.instance.captureSelectedArea(rect, type);
             } else {
                 Toast.makeText(getContext(), "Failed to capture, Accessibility service is disabled.", Toast.LENGTH_SHORT).show();
             }

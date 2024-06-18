@@ -1,6 +1,6 @@
 package com.reiserx.screenshot.Services;
 
-import static com.reiserx.screenshot.Services.accessibilityService.CAPTURE_SNAPSHOT_DEFAULT;
+import static com.reiserx.screenshot.Services.accessibilityService.CAPTURE_SNAPSHOT_AI;
 
 import android.content.Intent;
 import android.graphics.drawable.Icon;
@@ -16,16 +16,17 @@ import com.reiserx.screenshot.Activities.MainActivity;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 
-public class ScreenshotSelectedTile extends TileService {
+public class ScreenshotAITile extends TileService {
 
     public static boolean TILE_ADDED = false;
 
     @Override
     public void onTileAdded() {
-        if (ScreenshotSelectedTile.this.getQsTile() != null) {
-            Tile tile = ScreenshotSelectedTile.this.getQsTile();
-            tile.setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.baseline_crop_square_24));
-            tile.setLabel(getString(R.string.selected_screenshot_label));
+        if (this.getQsTile() != null) {
+
+            Tile tile = this.getQsTile();
+            tile.setIcon(Icon.createWithResource(getApplicationContext(), R.drawable.ic_icon_ai));
+            tile.setLabel(getString(R.string.capture_with_ai_explain));
             tile.setState(Tile.STATE_INACTIVE);
             tile.updateTile();
             TILE_ADDED = true;
@@ -39,7 +40,7 @@ public class ScreenshotSelectedTile extends TileService {
             accessibilityService.instance.closeNotifications();
             if (isSystemAlertWindowPermissionGranted()) {
                 Handler handler = new Handler(Looper.getMainLooper());
-                handler.postDelayed(() -> accessibilityService.instance.CreateSelection(CAPTURE_SNAPSHOT_DEFAULT), 1000);
+                handler.postDelayed(() -> accessibilityService.instance.CreateSelection(CAPTURE_SNAPSHOT_AI), 1000);
             } else {
                 Toast.makeText(this, "Please grant necessary APPEAR ON TOP permission required for this feature", Toast.LENGTH_LONG).show();
                 requestSystemAlertWindowPermission();

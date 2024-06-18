@@ -1,6 +1,7 @@
 package com.reiserx.screenshot.Adapters;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -21,11 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.reiserx.screenshot.Activities.AIActivity;
 import com.reiserx.screenshot.Activities.OCRActivity;
 import com.reiserx.screenshot.Activities.ui.TextDrawable;
 import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.R;
+import com.reiserx.screenshot.Utils.BaseApplication;
 import com.reiserx.screenshot.Utils.SaveBitmap;
 import com.reiserx.screenshot.databinding.ImageLabelAdplaceholderBinding;
 import com.reiserx.screenshot.databinding.ImageLayoutBinding;
@@ -39,12 +42,13 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter {
     Context context;
     List<Screenshots> data;
 
-    FloatingActionButton shareFAB, deleteFAB, ocrFAB;
+    FloatingActionButton shareFAB, deleteFAB, ocrFAB, aiFAB;
     ExtendedFloatingActionButton mAddFab;
-    TextView shareFAB_Text, deleteFAB_Text, ocrFAB_Text;
+    TextView shareFAB_Text, deleteFAB_Text, ocrFAB_Text, aiFAB_Text;
     Boolean isAllFabsVisible;
     Screenshots temp;
     StfalconImageViewer stfalconImageViewer;
+    Activity activity;
 
     public static int SILENT_SCREENSHOT = 1;
     public static int DEFAULT_SCREENSHOT = 2;
@@ -70,6 +74,10 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter {
 
     public List<Screenshots> getData() {
         return data;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 
     @NonNull
@@ -168,6 +176,8 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter {
         deleteFAB_Text = view.findViewById(R.id.delete_image_text);
         ocrFAB = view.findViewById(R.id.ocr_FAB);
         ocrFAB_Text = view.findViewById(R.id.ocr_image_text);
+        aiFAB = view.findViewById(R.id.ai_FAB);
+        aiFAB_Text = view.findViewById(R.id.ai_image_text);
 
         shareFAB.setVisibility(View.GONE);
         deleteFAB.setVisibility(View.GONE);
@@ -175,12 +185,20 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter {
         deleteFAB_Text.setVisibility(View.GONE);
         ocrFAB.setVisibility(View.GONE);
         ocrFAB_Text.setVisibility(View.GONE);
+        aiFAB.setVisibility(View.GONE);
+        aiFAB_Text.setVisibility(View.GONE);
 
         TextDrawable textDrawable = new TextDrawable("T");
         textDrawable.setTextColor(context.getColor(R.color.white));
         textDrawable.setTextSize(50);
         textDrawable.setFont(context, R.font.source_serif_pro_semibold);
         ocrFAB.setImageDrawable(textDrawable);
+
+        textDrawable = new TextDrawable("AI");
+        textDrawable.setTextColor(context.getColor(R.color.white));
+        textDrawable.setTextSize(50);
+        textDrawable.setFont(context, R.font.source_serif_pro_semibold);
+        aiFAB.setImageDrawable(textDrawable);
 
         isAllFabsVisible = false;
 
@@ -191,9 +209,11 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter {
                 shareFAB.show();
                 deleteFAB.show();
                 ocrFAB.show();
+                aiFAB.show();
                 shareFAB_Text.setVisibility(View.VISIBLE);
                 deleteFAB_Text.setVisibility(View.VISIBLE);
                 ocrFAB_Text.setVisibility(View.VISIBLE);
+                aiFAB_Text.setVisibility(View.VISIBLE);
 
                 mAddFab.extend();
 
@@ -202,21 +222,39 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter {
                 shareFAB.hide();
                 deleteFAB.hide();
                 ocrFAB.hide();
+                aiFAB.hide();
                 shareFAB_Text.setVisibility(View.GONE);
                 deleteFAB_Text.setVisibility(View.GONE);
                 ocrFAB_Text.setVisibility(View.GONE);
+                aiFAB_Text.setVisibility(View.GONE);
 
                 mAddFab.shrink();
 
                 isAllFabsVisible = false;
             }
         });
-        shareFAB.setOnClickListener(view1 -> shareImage(temp));
-        deleteFAB.setOnClickListener(view12 -> saveImage());
+        shareFAB.setOnClickListener(view1 -> {
+            BaseApplication.getInterstitialAds().displayAd(activity, () -> {
+                shareImage(temp);
+            });
+        });
+        deleteFAB.setOnClickListener(view12 -> {
+            BaseApplication.getInterstitialAds().displayAd(activity, this::saveImage);
+        });
         ocrFAB.setOnClickListener(view14 -> {
-            Intent intent = new Intent(context, OCRActivity.class);
-            intent.setData(Uri.fromFile(temp.getFile()));
-            context.startActivity(intent);
+            BaseApplication.getInterstitialAds().displayAd(activity, () -> {
+                Intent intent = new Intent(context, OCRActivity.class);
+                intent.setData(Uri.fromFile(temp.getFile()));
+                context.startActivity(intent);
+            });
+        });
+
+        aiFAB.setOnClickListener(view15 -> {
+            BaseApplication.getInterstitialAds().displayAd(activity, () -> {
+                Intent intent = new Intent(context, AIActivity.class);
+                intent.setData(Uri.fromFile(temp.getFile()));
+                context.startActivity(intent);
+            });
         });
     }
 

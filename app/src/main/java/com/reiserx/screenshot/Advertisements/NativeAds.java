@@ -30,6 +30,7 @@ public class NativeAds {
     NativeAdView adView;
     List<NativeAd> adList = new ArrayList<>();
     String AD_ID;
+    AdLoader adLoader;
 
 
     public NativeAds(Context context, FrameLayout placeholder) {
@@ -181,18 +182,19 @@ public class NativeAds {
 
     public void prefetchAds(int NUMBER_OF_ADS, Runnable onAdsLoadedCallback) {
         adList = new ArrayList<>();
-        final AdLoader adLoader = new AdLoader.Builder(context, AD_ID)
+        adLoader = new AdLoader.Builder(context, AD_ID)
                 .forNativeAd(nativeAd -> {
                     adList.add(nativeAd);
-                    // Check if all ads are loaded
-                    if (adList.size() >= NUMBER_OF_ADS) {
-                        onAdsLoadedCallback.run(); // Invoke callback when all ads are loaded
+                    if (adLoader != null && !adLoader.isLoading()) {
+                        onAdsLoadedCallback.run();
                     }
                 })
                 .withAdListener(new AdListener() {
                     @Override
                     public void onAdFailedToLoad(LoadAdError adError) {
-                        onAdsLoadedCallback.run();
+                        if (adLoader != null && !adLoader.isLoading()) {
+                            onAdsLoadedCallback.run();
+                        }
                     }
                 })
                 .withNativeAdOptions(new NativeAdOptions.Builder().build())
@@ -206,16 +208,27 @@ public class NativeAds {
         }
     }
 
-
     public static void loadPrefetchedAds(Context context, NativeAd nativeAd, FrameLayout placeholder) {
-        LayoutInflater inflater = (LayoutInflater) context
+        NativeAdView adView;
+        if (nativeAd.getIcon() != null) {
+            LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        NativeAdView adView = (NativeAdView) inflater
+            adView = (NativeAdView) inflater
                     .inflate(R.layout.native_ad_image_label_list, null);
-        ImageView imageView = adView.findViewById(R.id.ad_app_icon);
-        imageView.setImageDrawable(nativeAd.getIcon().getDrawable());
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        adView.setIconView(imageView);
+            ImageView imageView = adView.findViewById(R.id.ad_app_icon);
+            imageView.setImageDrawable(nativeAd.getIcon().getDrawable());
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            adView.setIconView(imageView);
+        } else {
+            LayoutInflater inflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            adView = (NativeAdView) inflater
+                    .inflate(R.layout.native_ad_media_label_list, null);
+            MediaView mediaView = adView.findViewById(R.id.ad_app_icon);
+            mediaView.setMediaContent(nativeAd.getMediaContent());
+            mediaView.setImageScaleType(ImageView.ScaleType.CENTER_CROP);
+            adView.setMediaView(mediaView);
+        }
 
         TextView headlineView = adView.findViewById(R.id.ad_headline);
         headlineView.setText(nativeAd.getHeadline());

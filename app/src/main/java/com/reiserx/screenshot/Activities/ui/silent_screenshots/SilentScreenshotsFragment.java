@@ -47,6 +47,7 @@ public class SilentScreenshotsFragment extends Fragment {
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         binding.rec.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         adapter = new ScreenshotsAdapter(requireContext(), SILENT_SCREENSHOT, null);
+        adapter.setActivity(requireActivity());
         binding.rec.setAdapter(adapter);
 
         binding.rec.setVisibility(View.GONE);

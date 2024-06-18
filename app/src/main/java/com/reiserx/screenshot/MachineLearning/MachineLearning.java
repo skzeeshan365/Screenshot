@@ -1,6 +1,7 @@
 package com.reiserx.screenshot.MachineLearning;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 import com.google.mlkit.vision.common.InputImage;
@@ -15,5 +16,8 @@ public class MachineLearning {
             e.printStackTrace();
         }
         return null;
+    }
+    public InputImage prepareImage(Bitmap bitmap) {
+        return InputImage.fromBitmap(bitmap, 0);
     }
 }

@@ -82,6 +82,7 @@ public class GalleryFragment extends Fragment {
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         binding.rec.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         adapter = new ScreenshotsAdapter(requireContext(), DEFAULT_SCREENSHOT, deleteResultLauncher);
+        adapter.setActivity(requireActivity());
         binding.rec.setAdapter(adapter);
 
         binding.rec.setVisibility(View.GONE);

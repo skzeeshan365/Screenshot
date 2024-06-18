@@ -1,19 +1,22 @@
 package com.reiserx.screenshot.Activities;
 
 import android.os.Bundle;
-import android.util.Log;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.reiserx.screenshot.Activities.ui.settings.FileFragment;
-import com.reiserx.screenshot.BuildConfig;
+import com.reiserx.screenshot.Advertisements.InterstitialAds;
 import com.reiserx.screenshot.R;
+import com.reiserx.screenshot.Utils.BaseApplication;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.databinding.ActivityMainBinding;
 
@@ -52,12 +55,20 @@ public class MainActivity extends AppCompatActivity {
                     });
         }
 
-        new Thread(
-                () -> {
-                    // Initialize the Google Mobile Ads SDK on a background thread.
-                    MobileAds.initialize(this, initializationStatus -> {});
-                })
-                .start();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        if (user == null) {
+            auth.signInAnonymously().addOnCompleteListener(task -> {
+                if (!task.isSuccessful()) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                    alert.setTitle("Alert");
+                    alert.setMessage("An error occurred: "+task.getException().getMessage());
+                    alert.setPositiveButton("OK", (dialog, which) -> finish());
+                    alert.setCancelable(false);
+                    alert.show();
+                }
+            });
+        }
     }
 
     @Override
@@ -66,7 +77,11 @@ public class MainActivity extends AppCompatActivity {
         return navController.navigateUp() || super.onSupportNavigateUp();
     }
 
-    public void setActionBarTitle(String title) {
-        setTitle(title);
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        InterstitialAds interstitialAds = new InterstitialAds(this);
+        interstitialAds.loadAd();
+        BaseApplication.setInterstitialAds(interstitialAds);
     }
 }
