@@ -9,27 +9,26 @@
     3. Find and select Snapshot App.\n
     4. Turn on the switch to grant permission.\n\n
         Accessibility permission is required for seamless screenshot capture.
+        We do not collect any data;\nthis permission is solely for the mentioned purposes.
     </string>
     <string name="accessibility_service_settings_description">
         To enable seamless screenshot capture, grant accessibility permission. This allows us to enhance your experience by offering features like easy screenshot sharing and more.\n\n
        Follow these steps:\n\n
         Accessibility permission is required for seamless screenshot capture.
+        We do not collect any data;\nthis permission is solely for the mentioned purposes.
     </string>
 
     <string name="consent_text">
         We utilize the Android Accessibility API to empower users with a seamless one-tap screenshot capture experience. This feature enhances accessibility, ensuring quick and efficient screenshot functionality.\n\n
 
-Our app does not collect any user data through the Accessibility API. Screenshots taken using this feature are stored locally on your device, and no information is automatically transmitted to our servers.\n\n
+Our app does not collect any user data through the Accessibility API. Screenshots taken using this feature are stored locally on your device, and no information is transmitted to our servers.\n\n
 
-The Accessibility API is employed solely for the core purpose of capturing screenshots with a single tap. No user data is involved in this process. When you use this feature, the app captures and saves the screenshot directly on your device, ensuring a private and personalized experience without any data leaving your control.\n\n
+The Accessibility API is employed solely for the core purpose of capturing screenshots with a single tap. No user data is involved in this process, When you use this feature, the app captures and saves the screenshot directly on your device, ensuring a private and personalized experience without any data leaving your control..\n\n
 
-If you choose to use our app\'s AI features, the relevant screenshot is then collected and temporarily sent to our servers for processing. After the processing is complete, the screenshot data is deleted from our servers. We do not store these screenshots on our servers.\n\n
+In our commitment to transparency, we want to assure you that our app does not engage in any data collection using the Accessibility API. Your privacy is paramount, and we prioritize clarity in explaining the functionality of our app.\n\n
 
-In our commitment to transparency, we want to assure you that our app does not engage in any long-term data storage using the Accessibility API. Your privacy is paramount, and we prioritize clarity in explaining the functionality of our app.\n\n
-
-Your trust is important to us. Our app is designed to enhance your screenshot experience with advanced AI features without compromising your privacy. Rest assured that no data is permanently stored or transmitted when using the Accessibility API for one-tap screenshot capture, except for temporary processing when AI features are utilized.\n\n
-
-By clicking "Agree", you agree to allow our app to use the Android Accessibility API for the purpose of capturing screenshots with enhanced accessibility features.
+Your trust is important to us. Our app is designed to enhance your screenshot experience without compromising your privacy. Rest assured that no data is collected or transmitted when using the Accessibility API for one-tap screenshot capture.\n\n
+        By clicking "Agree", you agree to allow our app to use the Android Accessibility API for the purpose of capturing screenshots with enhanced accessibility features
     </string>
     <string name="thanks_note">Thanks for choosing Snapshot to make the most of your app experience!</string>
     <string name="enable">Enable</string>
