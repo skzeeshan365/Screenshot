@@ -170,13 +170,13 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter {
 
     void customViewOps(View view) {
         mAddFab = view.findViewById(R.id.add_fab);
-        shareFAB = view.findViewById(R.id.share_image_fab);
-        deleteFAB = view.findViewById(R.id.delete_file_fab);
+        shareFAB = view.findViewById(R.id.fab_full);
+        deleteFAB = view.findViewById(R.id.fab_partial);
         shareFAB_Text = view.findViewById(R.id.share_image_text);
         deleteFAB_Text = view.findViewById(R.id.delete_image_text);
-        ocrFAB = view.findViewById(R.id.ocr_FAB);
+        ocrFAB = view.findViewById(R.id.fab_snapshot);
         ocrFAB_Text = view.findViewById(R.id.ocr_image_text);
-        aiFAB = view.findViewById(R.id.ai_FAB);
+        aiFAB = view.findViewById(R.id.fab_silent);
         aiFAB_Text = view.findViewById(R.id.ai_image_text);
 
         shareFAB.setVisibility(View.GONE);

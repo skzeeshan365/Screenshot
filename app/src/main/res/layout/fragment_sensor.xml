@@ -127,7 +127,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/capture_with_sensor_holder">
+        tools:layout_editor_absoluteY="245dp">
 
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

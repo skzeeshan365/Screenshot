@@ -27,6 +27,55 @@
                 android:orientation="vertical"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/screenshot_type_holder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/capture_title">
+
+                    <TextView
+                        android:id="@+id/screenshot_type_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginBottom="20dp"
+                        android:text="default"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/screenshot_type_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Set screenshot type"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/screenshot_type_desc"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Set default screenshot type"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/screenshot_type_value"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="@+id/screenshot_type_text"
+                        app:layout_constraintTop_toBottomOf="@+id/screenshot_type_text" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <View
                     android:id="@+id/divider"
                     android:layout_width="0dp"
@@ -294,7 +343,6 @@
                     android:id="@+id/quick_settings_holder"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:paddingStart="12dp"
@@ -302,7 +350,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/capture_title">
+                    app:layout_constraintTop_toBottomOf="@+id/divider23">
 
                     <TextView
                         android:id="@+id/quick_settings_text"
@@ -374,6 +422,15 @@
                         android:layout_height="wrap_content"
                         android:text="TextView" />
                 </FrameLayout>
+
+                <View
+                    android:id="@+id/divider23"
+                    android:layout_width="409dp"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/screenshot_type_holder" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>

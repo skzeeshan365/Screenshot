@@ -1,11 +1,15 @@
 package com.reiserx.screenshot.Utils;
 
+import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
+
+import com.reiserx.screenshot.Services.accessibilityService;
 
 import java.io.File;
 
@@ -63,5 +67,30 @@ public class ScreenshotUtils {
         } else {
             return UNKNOWN;
         }
+    }
+
+    public static void handleScreenshotError(int errorCode, Context context) {
+        String errorMessage;
+        switch (errorCode) {
+            case AccessibilityService.ERROR_TAKE_SCREENSHOT_INTERNAL_ERROR:
+                errorMessage = "Internal error occurred while capturing screenshot.";
+                break;
+            case AccessibilityService.ERROR_TAKE_SCREENSHOT_NO_ACCESSIBILITY_ACCESS:
+                errorMessage = "Accessibility service does not have permission to capture screenshot.";
+                break;
+            case AccessibilityService.ERROR_TAKE_SCREENSHOT_INTERVAL_TIME_SHORT:
+                errorMessage = "Interval between screenshot captures is too short.";
+                break;
+            case AccessibilityService.ERROR_TAKE_SCREENSHOT_INVALID_DISPLAY:
+                errorMessage = "Invalid display ID provided.";
+                break;
+            case AccessibilityService.ERROR_TAKE_SCREENSHOT_INVALID_WINDOW:
+                errorMessage = "Invalid window ID provided.";
+                break;
+            default:
+                errorMessage = "Unknown error occurred while capturing screenshot.";
+                break;
+        }
+        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
     }
 }

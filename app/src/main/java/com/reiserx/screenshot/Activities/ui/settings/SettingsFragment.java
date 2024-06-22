@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -34,6 +35,15 @@ import com.reiserx.screenshot.databinding.FragmentSettingsBinding;
 public class SettingsFragment extends Fragment {
 
     private FragmentSettingsBinding binding;
+    DataStoreHelper dataStoreHelper;
+
+    public static String SCREENSHOT_TYPE_KEY = "SCREENSHOT_TYPE_KEY";
+    public static int DEFAULT = 0;
+    public static int SCREENSHOT = 1;
+    public static int SILENT_SCREENSHOT = 2;
+    public static int SNAPSHOT = 3;
+    public static int SNAPSHOT_TYPE_OCR = 4;
+    public static int SNAPSHOT_TYPE_AI = 5;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -47,8 +57,9 @@ public class SettingsFragment extends Fragment {
 
         refreshAccessibilityPermission();
 
+        dataStoreHelper = new DataStoreHelper();
+
         binding.switchHolder.setOnClickListener(view1 -> {
-            DataStoreHelper dataStoreHelper = new DataStoreHelper();
             if (dataStoreHelper.getIntValue(CONSENT_KEY, 0) == CONSENT_AGREE)
                 FragmentAbout.display(requireActivity().getSupportFragmentManager());
             else {
@@ -136,6 +147,12 @@ public class SettingsFragment extends Fragment {
 
         BannerAds ads = new BannerAds(getContext(), binding.adPlaceholder);
         ads.loadBanner();
+
+        updateValues();
+
+        binding.screenshotTypeHolder.setOnClickListener(view18 -> {
+            setScreenshotType(getContext());
+        });
     }
 
     @Override
@@ -176,4 +193,96 @@ public class SettingsFragment extends Fragment {
         NavHostFragment.findNavController(this).navigate(R.id.action_navigation_settings_to_fragmentSensor);
     }
 
+    public void setScreenshotType(Context context) {
+
+        AlertDialog alert = new AlertDialog.Builder(context).create();
+
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View mView = inflater.inflate(R.layout.screenshot_types, null);
+
+        final RadioButton btn1 = mView.findViewById(R.id.radioButton);
+        final RadioButton btn2 = mView.findViewById(R.id.radioButton2);
+        final RadioButton btn3 = mView.findViewById(R.id.radioButton3);
+        final RadioButton btn4 = mView.findViewById(R.id.radioButton4);
+        final RadioButton ocr = mView.findViewById(R.id.rad_ocr);
+        final RadioButton ai = mView.findViewById(R.id.rad_ai);
+
+        alert.setTitle("Select screenshot type");
+        alert.setMessage("Select screenshot type for capturing with sensor");
+        alert.setView(mView);
+
+        if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == DEFAULT)
+            btn1.setChecked(true);
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SCREENSHOT)
+            btn2.setChecked(true);
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SILENT_SCREENSHOT)
+            btn3.setChecked(true);
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT)
+            btn4.setChecked(true);
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT_TYPE_OCR)
+            ocr.setChecked(true);
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT_TYPE_AI)
+            ai.setChecked(true);
+
+        btn1.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (btn1.isChecked()) {
+                dataStoreHelper.putIntValue(SCREENSHOT_TYPE_KEY, DEFAULT);
+            }
+            alert.dismiss();
+            updateValues();
+        });
+
+        btn2.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (btn2.isChecked()) {
+                dataStoreHelper.putIntValue(SCREENSHOT_TYPE_KEY, SCREENSHOT);
+            }
+            alert.dismiss();
+            updateValues();
+        });
+
+        btn3.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (btn3.isChecked()) {
+                dataStoreHelper.putIntValue(SCREENSHOT_TYPE_KEY, SILENT_SCREENSHOT);
+            }
+            alert.dismiss();
+            updateValues();
+        });
+        btn4.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (btn4.isChecked()) {
+                dataStoreHelper.putIntValue(SCREENSHOT_TYPE_KEY, SNAPSHOT);
+            }
+            alert.dismiss();
+            updateValues();
+        });
+        ocr.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (ocr.isChecked()) {
+                dataStoreHelper.putIntValue(SCREENSHOT_TYPE_KEY, SNAPSHOT_TYPE_OCR);
+            }
+            alert.dismiss();
+            updateValues();
+        });
+        ai.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (ai.isChecked()) {
+                dataStoreHelper.putIntValue(SCREENSHOT_TYPE_KEY, SNAPSHOT_TYPE_AI);
+            }
+            alert.dismiss();
+            updateValues();
+        });
+        alert.show();
+    }
+
+    void updateValues() {
+        if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == DEFAULT)
+            binding.screenshotTypeValue.setText("Ask every time");
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SCREENSHOT)
+            binding.screenshotTypeValue.setText(getString(R.string.screenshot_label));
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SILENT_SCREENSHOT)
+            binding.screenshotTypeValue.setText(getString(R.string.silent_screenshot_label));
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT)
+            binding.screenshotTypeValue.setText(getString(R.string.selected_screenshot_label));
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT_TYPE_OCR)
+            binding.screenshotTypeValue.setText(getString(R.string.capture_with_ocr));
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT_TYPE_AI)
+            binding.screenshotTypeValue.setText(getString(R.string.capture_with_ai_explain));
+    }
 }

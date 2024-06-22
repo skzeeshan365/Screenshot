@@ -6,15 +6,20 @@ import static com.reiserx.screenshot.Services.accessibilityService.CAPTURE_SNAPS
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.reiserx.screenshot.Activities.ui.TextDrawable;
 import com.reiserx.screenshot.Advertisements.NativeAds;
+import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.ButtonDesign;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
@@ -31,23 +36,29 @@ public class CaptureActivity extends AppCompatActivity {
         binding = ActivityCaptureBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        ButtonDesign design = new ButtonDesign(this);
-        design.setButtonOutlineDark(binding.screenshotBtn);
-        design.setButtonOutlineDark(binding.silentScreenshotBtn);
-        design.setButtonOutlineDark(binding.snapshotBtn);
-        design.setButtonOutlineDark(binding.captureOcrBtn);
-        design.setButtonOutlineDark(binding.captureAiBtn);
+        TextDrawable textDrawable = new TextDrawable("AI");
+        textDrawable.setTextColor(getColor(R.color.button_design_text));
+        textDrawable.setTextSize(50);
+        binding.fabAi.setImageDrawable(textDrawable);
 
         nativeAds = new NativeAds(this, binding.adPlaceholder);
         nativeAds.loadAdSmall();
 
-        binding.screenshotBtn.setOnClickListener(view -> {
-            design.buttonFillDark(binding.screenshotBtn);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            binding.fabPartial.show();
+            binding.textView19.setVisibility(View.VISIBLE);
+            takeScreenshotOfWindow();
+        } else {
+            binding.fabPartial.hide();
+            binding.textView19.setVisibility(View.GONE);
+        }
+
+        binding.fabFull.setOnClickListener(view -> {
             isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
             if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
                 accessibilityService.instance.closeNotifications();
                 Handler handler = new Handler(Looper.getMainLooper());
-                handler.postDelayed(() -> accessibilityService.instance.takeScreenshots(), 1000);
+                handler.post(() -> accessibilityService.instance.takeScreenshots());
             } else {
                 Toast.makeText(this, "Accessibility service is not enabled.", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MainActivity.class);
@@ -57,13 +68,12 @@ public class CaptureActivity extends AppCompatActivity {
             finish();
         });
 
-        binding.silentScreenshotBtn.setOnClickListener(view -> {
-            design.buttonFillDark(binding.silentScreenshotBtn);
+        binding.fabSilent.setOnClickListener(view -> {
             isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
             if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
                 accessibilityService.instance.closeNotifications();
                 Handler handler = new Handler(Looper.getMainLooper());
-                handler.postDelayed(() -> accessibilityService.instance.takeScreenshotsSilent(), 1000);
+                handler.post(() -> accessibilityService.instance.takeScreenshotsSilent());
             } else {
                 Toast.makeText(this, "Accessibility service is not enabled", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MainActivity.class);
@@ -73,14 +83,13 @@ public class CaptureActivity extends AppCompatActivity {
             finish();
         });
 
-        binding.snapshotBtn.setOnClickListener(view -> {
-            design.buttonFillDark(binding.snapshotBtn);
+        binding.fabSnapshot.setOnClickListener(view -> {
             isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
             if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
                 accessibilityService.instance.closeNotifications();
                 if (isSystemAlertWindowPermissionGranted()) {
                     Handler handler = new Handler(Looper.getMainLooper());
-                    handler.postDelayed(() -> accessibilityService.instance.CreateSelection(CAPTURE_SNAPSHOT_DEFAULT), 1000);
+                    handler.post(() -> accessibilityService.instance.CreateSelection(CAPTURE_SNAPSHOT_DEFAULT));
                 } else {
                     Toast.makeText(this, "Please grant necessary APPEAR ON TOP permission required for this feature", Toast.LENGTH_LONG).show();
                     requestSystemAlertWindowPermission();
@@ -94,8 +103,7 @@ public class CaptureActivity extends AppCompatActivity {
             finish();
         });
 
-        binding.captureOcrBtn.setOnClickListener(view -> {
-            design.buttonFillDark(binding.captureOcrBtn);
+        binding.fabCopy.setOnClickListener(view -> {
             isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
             if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
                 if (isSystemAlertWindowPermissionGranted()) {
@@ -114,8 +122,7 @@ public class CaptureActivity extends AppCompatActivity {
             finish();
         });
 
-        binding.captureAiBtn.setOnClickListener(view -> {
-            design.buttonFillDark(binding.captureAiBtn);
+        binding.fabAi.setOnClickListener(view -> {
             isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
             if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
                 if (isSystemAlertWindowPermissionGranted()) {
@@ -152,5 +159,27 @@ public class CaptureActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         nativeAds.destroyAd();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    void takeScreenshotOfWindow() {
+        binding.fabPartial.setOnClickListener(view -> {
+            isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
+            if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
+                if (isSystemAlertWindowPermissionGranted()) {
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(() -> accessibilityService.instance.takeScreenshotOfWindows());
+                } else {
+                    Toast.makeText(this, "Please grant necessary APPEAR ON TOP permission required for this feature", Toast.LENGTH_LONG).show();
+                    requestSystemAlertWindowPermission();
+                }
+            } else {
+                Toast.makeText(this, "Accessibility service is not enabled.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+            finish();
+        });
     }
 }

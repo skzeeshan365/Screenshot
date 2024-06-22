@@ -25,6 +25,9 @@
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+
+    <uses-permission android:name="android.permission.PREVENT_POWER_KEY" />
 
     <application
         android:name=".Utils.BaseApplication"
@@ -54,7 +57,7 @@
         <activity
             android:name=".Activities.CaptureActivity"
             android:excludeFromRecents="true"
-            android:exported="false"
+            android:exported="true"
             android:launchMode="singleInstance"
             android:taskAffinity=".Activities.CaptureActivity"
             android:theme="@style/Theme.Transparent" />
@@ -85,7 +88,8 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config"
                 android:value="R.styleable.AccessibilityService_canTakeScreenshot" />
-        </service> <!-- screenshot tile -->
+        </service>
+        <!-- screenshot tile -->
         <service
             android:name=".Services.ScreenshotTile"
             android:exported="true"
@@ -99,7 +103,7 @@
         <service
             android:name=".Services.ScreenshotSilentTile"
             android:exported="true"
-            android:icon="@drawable/screenshot"
+            android:icon="@drawable/ic_phone_silent"
             android:label="@string/silent_screenshot_label"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>

@@ -22,7 +22,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
     <!--Floating action button for add alarm-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/share_image_fab"
+        android:id="@+id/fab_full"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
@@ -40,21 +40,21 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text=" Share"
-        app:layout_constraintBottom_toBottomOf="@+id/share_image_fab"
-        app:layout_constraintEnd_toStartOf="@+id/share_image_fab"
-        app:layout_constraintTop_toTopOf="@+id/share_image_fab" />
+        app:layout_constraintBottom_toBottomOf="@+id/fab_full"
+        app:layout_constraintEnd_toStartOf="@+id/fab_full"
+        app:layout_constraintTop_toTopOf="@+id/fab_full" />
     <!--Floating action button for add person-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/delete_file_fab"
+        android:id="@+id/fab_partial"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:backgroundTint="@color/black"
         android:contentDescription="@string/app_name"
         app:fabSize="normal"
-        app:layout_constraintBottom_toTopOf="@+id/share_image_fab"
-        app:layout_constraintEnd_toEndOf="@+id/share_image_fab"
-        app:layout_constraintStart_toStartOf="@+id/share_image_fab"
+        app:layout_constraintBottom_toTopOf="@+id/fab_full"
+        app:layout_constraintEnd_toEndOf="@+id/fab_full"
+        app:layout_constraintStart_toStartOf="@+id/fab_full"
         app:srcCompat="@drawable/baseline_delete_24"
         app:tint="@color/white" />
     <!--Action name text for the add person button-->
@@ -64,19 +64,19 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="Delete"
-        app:layout_constraintBottom_toBottomOf="@+id/delete_file_fab"
-        app:layout_constraintEnd_toStartOf="@+id/delete_file_fab"
-        app:layout_constraintTop_toTopOf="@+id/delete_file_fab" />
+        app:layout_constraintBottom_toBottomOf="@+id/fab_partial"
+        app:layout_constraintEnd_toStartOf="@+id/fab_partial"
+        app:layout_constraintTop_toTopOf="@+id/fab_partial" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/ocr_FAB"
+        android:id="@+id/fab_snapshot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:clickable="true"
         app:backgroundTint="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/delete_file_fab"
-        app:layout_constraintEnd_toEndOf="@+id/delete_file_fab"
+        app:layout_constraintBottom_toTopOf="@+id/fab_partial"
+        app:layout_constraintEnd_toEndOf="@+id/fab_partial"
         app:srcCompat="@drawable/baseline_add_24" />
 
     <TextView
@@ -85,19 +85,19 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="Scan"
-        app:layout_constraintBottom_toBottomOf="@+id/ocr_FAB"
-        app:layout_constraintEnd_toStartOf="@+id/ocr_FAB"
-        app:layout_constraintTop_toTopOf="@+id/ocr_FAB" />
+        app:layout_constraintBottom_toBottomOf="@+id/fab_snapshot"
+        app:layout_constraintEnd_toStartOf="@+id/fab_snapshot"
+        app:layout_constraintTop_toTopOf="@+id/fab_snapshot" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/ai_FAB"
+        android:id="@+id/fab_silent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:clickable="true"
         app:backgroundTint="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/ocr_FAB"
+        app:layout_constraintBottom_toTopOf="@+id/fab_snapshot"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/baseline_crop_square_24" />
 
@@ -107,7 +107,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="AI explain"
-        app:layout_constraintBottom_toBottomOf="@+id/ai_FAB"
-        app:layout_constraintEnd_toStartOf="@+id/ai_FAB"
-        app:layout_constraintTop_toTopOf="@+id/ai_FAB" />
+        app:layout_constraintBottom_toBottomOf="@+id/fab_silent"
+        app:layout_constraintEnd_toStartOf="@+id/fab_silent"
+        app:layout_constraintTop_toTopOf="@+id/fab_silent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
