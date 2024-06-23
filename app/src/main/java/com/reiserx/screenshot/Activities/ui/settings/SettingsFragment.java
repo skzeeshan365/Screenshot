@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.reiserx.screenshot.Advertisements.BannerAds;
 import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.R;
@@ -191,6 +192,10 @@ public class SettingsFragment extends Fragment {
                     alert.show();
                 }
             }
+        });
+
+        binding.licenseHolder.setOnClickListener(view110 -> {
+            startActivity(new Intent(getContext(), OssLicensesMenuActivity.class));
         });
     }
 

@@ -25,9 +25,9 @@
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
-
-    <uses-permission android:name="android.permission.PREVENT_POWER_KEY" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name=".Utils.BaseApplication"
@@ -40,6 +40,12 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.AppAccessibility"
         tools:targetApi="34">
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/Theme.AppCompat.DayNight" />
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:theme="@style/Theme.AppCompat.DayNight" />
         <activity
             android:name=".Activities.AIActivity"
             android:exported="true" />
@@ -88,13 +94,22 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config"
                 android:value="R.styleable.AccessibilityService_canTakeScreenshot" />
-        </service>
-        <!-- screenshot tile -->
+        </service> <!-- screenshot tile -->
         <service
             android:name=".Services.ScreenshotTile"
             android:exported="true"
             android:icon="@drawable/ic_screenshot_white_24dp"
             android:label="@string/screenshot_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".Services.ScreenshotCurrentWindowTile"
+            android:exported="true"
+            android:icon="@drawable/screenshot"
+            android:label="@string/current_app"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />

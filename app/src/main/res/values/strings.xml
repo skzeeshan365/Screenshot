@@ -54,7 +54,7 @@ Your trust is important to us. Our app is designed to enhance your screenshot ex
     <string name="search">Search</string>
     <string name="ad_placeholder_text">Ads</string>
     <string name="capture_with_ocr">Copy text</string>
-    <string name="capture_with_ai_explain">AI vision</string>
+    <string name="capture_with_ai_explain">AI explain</string>
     <string name="silent">Silent</string>
     <string name="full_screen">Full screen</string>
     <string name="capture_screenshot">Capture screenshot</string>

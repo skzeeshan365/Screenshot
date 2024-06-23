@@ -6,5 +6,6 @@
     android:accessibilityFlags="flagIncludeNotImportantViews"
     android:notificationTimeout="100"
     android:settingsActivity="com.reiserx.screenshot.MainActivity"
+    android:canRetrieveWindowContent="true"
     android:canTakeScreenshot="true"
     />

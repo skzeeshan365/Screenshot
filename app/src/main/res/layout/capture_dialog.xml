@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_close_24"
-        app:tint="@color/white" />
+        app:tint="@color/button_design_text" />
 
     <FrameLayout
         android:id="@+id/ad_placeholder"

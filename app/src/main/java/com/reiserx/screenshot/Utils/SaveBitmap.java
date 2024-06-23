@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -18,15 +19,19 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.IntentSenderRequest;
+import androidx.exifinterface.media.ExifInterface;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.reiserx.screenshot.Activities.ui.home.GalleryFragment;
 import com.reiserx.screenshot.Activities.ui.settings.FileFragment;
+import com.reiserx.screenshot.Interfaces.FusedLocationResult;
+import com.reiserx.screenshot.Interfaces.SaveBitmapInterface;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
@@ -35,12 +40,27 @@ public class SaveBitmap {
     Bitmap bitmap;
     DataStoreHelper dataStoreHelper;
     ScreenshotsViewModel viewModel;
+    Location location;
 
-    public SaveBitmap(Bitmap bitmap, Context context) {
+    public SaveBitmap(Bitmap bitmap, Context context, SaveBitmapInterface saveBitmapInterface) {
         this.bitmap = bitmap;
         this.context = context;
         dataStoreHelper = new DataStoreHelper();
         viewModel = new ViewModelProvider((ViewModelStoreOwner) context.getApplicationContext()).get(ScreenshotsViewModel.class);
+        FusedLocation fusedLocation = new FusedLocation(context, new FusedLocationResult() {
+            @Override
+            public void onSuccess(Location loc) {
+                location = loc;
+                saveBitmapInterface.onSuccess(SaveBitmap.this);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                location = null;
+                saveBitmapInterface.onSuccess(SaveBitmap.this);
+            }
+        });
+        fusedLocation.getLocation();
     }
 
     public File saveDataInApp() {
@@ -50,12 +70,12 @@ public class SaveBitmap {
         File file = new File(directory, "Screenshots/"+filename);
 
         try {
-            // Create necessary directories if they don't exist
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
 
-            // Save the bitmap to the file
+            attachLocationMetadata(file.getAbsolutePath());
+
             FileOutputStream out = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
             out.flush();
@@ -63,30 +83,6 @@ public class SaveBitmap {
 
             if (BaseApplication.getInstance().isMyActivityInForeground())
                 viewModel.getScreenshotsInApp(context);
-            return file;
-        } catch (Exception e) {
-            Toast.makeText(context, "An error occurred: " + e, Toast.LENGTH_LONG).show();
-        }
-        return null;
-    }
-
-    public File saveDataInAppTemp() {
-        // Specify the directory and filename
-        File directory = context.getFilesDir();
-        String filename = getRandom.getRandom(0, 1000000000) + ".png";
-        File file = new File(directory, "Temp/"+filename);
-
-        try {
-            // Create necessary directories if they don't exist
-            if (!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs();
-            }
-
-            // Save the bitmap to the file
-            FileOutputStream out = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-            out.flush();
-            out.close();
             return file;
         } catch (Exception e) {
             Toast.makeText(context, "An error occurred: " + e, Toast.LENGTH_LONG).show();
@@ -115,6 +111,9 @@ public class SaveBitmap {
                     out.flush();
                     out.close();
                 }
+
+                String path = getFileFromUri(uri, context).getAbsolutePath();
+                attachLocationMetadata(path);
 
                 values.put(MediaStore.Images.Media.IS_PENDING, 0);
                 context.getContentResolver().update(uri, values, null, null);
@@ -207,14 +206,15 @@ public class SaveBitmap {
         }
     }
 
-    public static Bitmap drawableToBitmap(Drawable drawable) {
-        int width = drawable.getIntrinsicWidth();
-        int height = drawable.getIntrinsicHeight();
-        Bitmap bitmap = Bitmap.createBitmap(width > 0 ? width : 1, height > 0 ? height : 1, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
+    private void attachLocationMetadata(String imagePath) {
+        try {
+            ExifInterface exif = new ExifInterface(imagePath);
+            if (location != null) {
+                exif.setGpsInfo(location);
+                exif.saveAttributes();
+            }
+        } catch (IOException e) {
+            Toast.makeText(context, "Error attaching location metadata: " + e.toString(), Toast.LENGTH_SHORT).show();
+        }
     }
-
 }

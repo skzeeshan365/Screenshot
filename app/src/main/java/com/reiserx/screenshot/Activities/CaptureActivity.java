@@ -37,6 +37,7 @@ public class CaptureActivity extends AppCompatActivity {
 
     NativeAds nativeAds;
     CaptureDialogBinding binding;
+    AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,8 +112,11 @@ public class CaptureActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         nativeAds.destroyAd();
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
+        super.onDestroy();
     }
 
     void takeScreenshots() {
@@ -191,7 +195,7 @@ public class CaptureActivity extends AppCompatActivity {
         // Create the AlertDialog with the custom view
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(binding.getRoot());
-        AlertDialog dialog = builder.create();
+        dialog = builder.create();
         dialog.setOnDismissListener(dialogInterface -> {
             finish();
         });

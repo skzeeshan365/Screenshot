@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 
 android {
@@ -17,8 +18,8 @@ android {
         applicationId = "com.reiserx.screenshot"
         minSdk = 30
         targetSdk = 34
-        versionCode = 17
-        versionName = "1.1.4"
+        versionCode = 18
+        versionName = "1.1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -105,4 +106,8 @@ dependencies {
     implementation ("androidx.security:security-crypto:1.1.0-alpha06")
 
     implementation ("com.squareup.okhttp3:okhttp:4.9.3")
+
+    implementation("com.google.android.gms:play-services-oss-licenses:17.1.0")
+    implementation ("com.google.android.gms:play-services-location:20.0.0")
+
 }

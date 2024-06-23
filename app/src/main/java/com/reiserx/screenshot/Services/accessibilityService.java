@@ -45,6 +45,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
+import com.google.android.gms.location.LocationCallback;
 import com.reiserx.screenshot.Activities.AIActivity;
 import com.reiserx.screenshot.Activities.CaptureActivity;
 import com.reiserx.screenshot.Activities.ImageViewerActivity;
@@ -74,6 +75,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
     private SensorManager shakeSensorManager;
     private ShakeDetector shakeDetector;
     Sensor accelerometer;
+    LocationCallback locationCallback;
 
     public static String ENABLE_NOTIFICATION = "ENABLE_NOTIFICATION";
     public static String ENABLE_SENSOR_PROXIMITY = "ENABLE_SENSOR_PROXIMITY";
@@ -107,7 +109,6 @@ public class accessibilityService extends AccessibilityService implements Sensor
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
-        Log.d(TAG, String.valueOf(accessibilityEvent.getEventType()));
         if (accessibilityEvent.getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED) {
             if (isDoubleTap(accessibilityEvent)) {
                 handleDoubleTap();
@@ -148,26 +149,28 @@ public class accessibilityService extends AccessibilityService implements Sensor
     @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void takeScreenshotOfWindows() {
         try {
-                takeScreenshotOfWindow(getRootInActiveWindow().getWindowId(),
-                        getApplicationContext().getMainExecutor(), new TakeScreenshotCallback() {
-                            @Override
-                            public void onSuccess(@NonNull ScreenshotResult screenshotResult) {
-                                Bitmap bitmap = Bitmap.wrapHardwareBuffer(screenshotResult.getHardwareBuffer(), screenshotResult.getColorSpace());
+            takeScreenshotOfWindow(getRootInActiveWindow().getWindowId(),
+                    getApplicationContext().getMainExecutor(), new TakeScreenshotCallback() {
+                        @Override
+                        public void onSuccess(@NonNull ScreenshotResult screenshotResult) {
+                            Bitmap bitmap = Bitmap.wrapHardwareBuffer(screenshotResult.getHardwareBuffer(), screenshotResult.getColorSpace());
 
-                                SaveBitmap saveBitmap = new SaveBitmap(bitmap, accessibilityService.this);
-                                File file = saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
+                            new SaveBitmap(bitmap, accessibilityService.this, saveBitmap1 -> {
+                                File file = saveBitmap1.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
                                 if (file != null) {
                                     createScreenshotOverlay(file);
                                 }
-                            }
+                            });
+                        }
 
-                            @Override
-                            public void onFailure(int i) {
-                                ScreenshotUtils.handleScreenshotError(i, accessibilityService.this);
-                            }
-                        });
+                        @Override
+                        public void onFailure(int i) {
+                            ScreenshotUtils.handleScreenshotError(i, accessibilityService.this);
+                        }
+                    });
 
         } catch (Exception e) {
+            Log.d(TAG, e.toString());
             Toast.makeText(this, "An error occurred: " + e, Toast.LENGTH_SHORT).show();
         }
     }
@@ -180,10 +183,11 @@ public class accessibilityService extends AccessibilityService implements Sensor
                         public void onSuccess(@NonNull ScreenshotResult screenshotResult) {
                             Bitmap bitmap = Bitmap.wrapHardwareBuffer(screenshotResult.getHardwareBuffer(), screenshotResult.getColorSpace());
 
-                            SaveBitmap saveBitmap = new SaveBitmap(bitmap, accessibilityService.this);
-                            File file = saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
-                            if (file != null)
-                                createScreenshotOverlay(file);
+                            new SaveBitmap(bitmap, accessibilityService.this, saveBitmap -> {
+                                File file = saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
+                                if (file != null)
+                                    createScreenshotOverlay(file);
+                            });
                         }
 
                         @Override
@@ -205,10 +209,11 @@ public class accessibilityService extends AccessibilityService implements Sensor
                         public void onSuccess(@NonNull ScreenshotResult screenshotResult) {
                             Bitmap bitmap = Bitmap.wrapHardwareBuffer(screenshotResult.getHardwareBuffer(), screenshotResult.getColorSpace());
 
-                            SaveBitmap saveBitmap = new SaveBitmap(bitmap, accessibilityService.this);
-                            File file = saveBitmap.saveDataInApp();
-                            if (file != null)
-                                createScreenshotOverlay(file);
+                            new SaveBitmap(bitmap, accessibilityService.this, saveBitmap -> {
+                                File file = saveBitmap.saveDataInApp();
+                                if (file != null)
+                                    createScreenshotOverlay(file);
+                            });
                         }
 
                         @Override
@@ -227,6 +232,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
 
     }
 
+    @SuppressLint("MissingPermission")
     public void closeNotifications() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             performGlobalAction(GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE);
@@ -252,7 +258,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
                             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
                             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
                             WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH |
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                     PixelFormat.TRANSLUCENT);
 
 
@@ -272,30 +278,31 @@ public class accessibilityService extends AccessibilityService implements Sensor
                             Bitmap croppedBitmap = cropScreenshot(bitmap, rect);
                             closeSelection();
 
-                            SaveBitmap saveBitmap = new SaveBitmap(croppedBitmap, accessibilityService.this);
-                            File file = saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
-                            if (type == CAPTURE_SNAPSHOT_DEFAULT) {
-                                if (file != null)
-                                    createScreenshotOverlay(file);
-                            } else if (type == CAPTURE_SNAPSHOT_OCR) {
-                                if (file != null) {
-                                    Intent intent = new Intent(accessibilityService.this, OCRActivity.class);
-                                    intent.setData(Uri.fromFile(file));
-                                    intent.putExtra("temp", true);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    startActivity(intent);
+                            new SaveBitmap(croppedBitmap, accessibilityService.this, saveBitmap -> {
+                                File file = saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
+                                if (type == CAPTURE_SNAPSHOT_DEFAULT) {
+                                    if (file != null)
+                                        createScreenshotOverlay(file);
+                                } else if (type == CAPTURE_SNAPSHOT_OCR) {
+                                    if (file != null) {
+                                        Intent intent = new Intent(accessibilityService.this, OCRActivity.class);
+                                        intent.setData(Uri.fromFile(file));
+                                        intent.putExtra("temp", true);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                    }
+                                } else if (type == CAPTURE_SNAPSHOT_AI) {
+                                    if (file != null) {
+                                        Intent intent = new Intent(accessibilityService.this, AIActivity.class);
+                                        intent.setData(Uri.fromFile(file));
+                                        intent.putExtra("temp", true);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                    }
                                 }
-                            } else if (type == CAPTURE_SNAPSHOT_AI) {
-                                if (file != null) {
-                                    Intent intent = new Intent(accessibilityService.this, AIActivity.class);
-                                    intent.setData(Uri.fromFile(file));
-                                    intent.putExtra("temp", true);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    startActivity(intent);
-                                }
-                            }
+                            });
                         }
 
                         @Override
@@ -319,7 +326,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
         int cropRight = Math.min(fullBitmap.getWidth(), cropRect.right - borderWidth);
 
         int cropWidth = Math.max(0, cropRight - cropLeft);
-        int cropHeight = Math.max(0, cropRect.height() - borderWidth*2);
+        int cropHeight = Math.max(0, cropRect.height() - borderWidth * 2);
 
         return Bitmap.createBitmap(fullBitmap, cropLeft, cropTop, cropWidth, cropHeight);
     }
