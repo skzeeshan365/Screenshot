@@ -11,8 +11,6 @@ import android.provider.MediaStore;
 
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.reiserx.screenshot.Activities.ui.settings.FileFragment;
-import com.reiserx.screenshot.Adapters.ScreenshotLabelsAdapter;
-import com.reiserx.screenshot.Adapters.ScreenshotsAdapter;
 import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.Models.ScreenshotLabels;
 import com.reiserx.screenshot.Models.Screenshots;
@@ -22,7 +20,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 public class ScreenshotsRepository {
     private final OnGetScreenshotsComplete onGetScreenshotsComplete;
@@ -80,13 +77,7 @@ public class ScreenshotsRepository {
                 if (imagePaths.isEmpty())
                     onGetScreenshotsComplete.onFailure("No available screenshot");
                 else {
-                    Random random = new Random();
-                    int numberOfAds = imagePaths.size() / 3; // Number of ad elements based on the list size
-
-                    for (int i = 0; i < numberOfAds; i++) {
-                        int randomPosition = random.nextInt(imagePaths.size() - 1); // Ensure not to overwrite the "All screenshots" label at index 0
-                        imagePaths.add(randomPosition, new Screenshots(ScreenshotsAdapter.ITEM_TYPE_AD)); // Add ad element with the appropriate label and ad object
-                    }
+                    int numberOfAds = imagePaths.size() / 3;
                     onGetScreenshotsComplete.onSuccess(imagePaths);
                     new Thread(() -> {
                         NativeAds nativeAds = new NativeAds(context);
@@ -149,13 +140,7 @@ public class ScreenshotsRepository {
     }
 
     private void insertAdElementsAtRandomPositions(List<ScreenshotLabels> labels, Context context) {
-        Random random = new Random();
         int numberOfAds = labels.size() / 3; // Number of ad elements based on the list size
-
-        for (int i = 0; i < numberOfAds; i++) {
-            int randomPosition = random.nextInt(labels.size() - 1) + 1; // Ensure not to overwrite the "All screenshots" label at index 0
-            labels.add(randomPosition, new ScreenshotLabels(ScreenshotLabelsAdapter.AD_CONTENT)); // Add ad element with the appropriate label and ad object
-        }
         onGetLabelsComplete.onLabelsSuccess(labels);
         new Thread(() -> {
             NativeAds nativeAds = new NativeAds(context);
@@ -215,13 +200,7 @@ public class ScreenshotsRepository {
             if (imagePaths.isEmpty())
                 onGetSilentScreenshotsComplete.onSilentFailure("No available screenshots");
             else {
-                Random random = new Random();
-                int numberOfAds = imagePaths.size() / 3; // Number of ad elements based on the list size
-
-                for (int i = 0; i < numberOfAds; i++) {
-                    int randomPosition = random.nextInt(imagePaths.size() - 1); // Ensure not to overwrite the "All screenshots" label at index 0
-                    imagePaths.add(randomPosition, new Screenshots(ScreenshotsAdapter.ITEM_TYPE_AD)); // Add ad element with the appropriate label and ad object
-                }
+                int numberOfAds = imagePaths.size() / 3;
                 onGetSilentScreenshotsComplete.onSilentSuccess(imagePaths);
                 new Thread(() -> {
                     NativeAds nativeAds = new NativeAds(context);

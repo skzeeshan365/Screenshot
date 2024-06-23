@@ -33,14 +33,15 @@ import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
 import com.reiserx.screenshot.databinding.FragmentGalleryBinding;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class GalleryFragment extends Fragment {
 
     private FragmentGalleryBinding binding;
     private ScreenshotsViewModel viewModel;
 
-    ArrayList<Screenshots> data;
+
     ScreenshotsAdapter adapter;
 
     public static String[] storage_permissions = {
@@ -77,7 +78,6 @@ public class GalleryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        data = new ArrayList<>();
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL));
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         binding.rec.setLayoutManager(new GridLayoutManager(requireContext(), 2));
@@ -97,15 +97,13 @@ public class GalleryFragment extends Fragment {
 
         viewModel.getItemNativeAdMutableLiveData().observe(getViewLifecycleOwner(), Adlist -> {
             if (adapter.getData() != null && !adapter.getData().isEmpty()) {
-                for (Screenshots screenshot : adapter.getData()) {
-                    if (!Adlist.isEmpty()) {
-                        if (screenshot.getType() == ScreenshotsAdapter.ITEM_TYPE_AD) {
-                            screenshot.setNativeAd(Adlist.get(0));
-                            Adlist.remove(0);
-                        }
-                        adapter.notifyItemChanged(adapter.getData().indexOf(screenshot), screenshot);
-                    }
+                Random random = new Random();
+                List<Screenshots> data = adapter.getData();
+                for (int i = 0; i < Adlist.size(); i++) {
+                    int randomPosition = random.nextInt(data.size() - 1);
+                    data.add(randomPosition, new Screenshots(ScreenshotsAdapter.ITEM_TYPE_AD, Adlist.get(i)));
                 }
+                adapter.notifyDataSetChanged();
             }
         });
 

@@ -2,7 +2,6 @@ package com.reiserx.screenshot.MachineLearning;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
@@ -34,7 +33,6 @@ public class LabelProcessingWorker extends Worker {
                     ImageLabelling imageLabelling = new ImageLabelling(new ImageLabelCallBack() {
                         @Override
                         public void onSuccess(List<String> labels) {
-                            Log.d("dfdsfs", "log");
                             LabelsRepository labelsRepository = new LabelsRepository();
                             labelsRepository.insertLabeledScreenshot(filePath, labels);
                         }

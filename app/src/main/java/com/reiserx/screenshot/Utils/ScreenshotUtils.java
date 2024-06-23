@@ -9,8 +9,6 @@ import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
 
-import com.reiserx.screenshot.Services.accessibilityService;
-
 import java.io.File;
 
 public class ScreenshotUtils {

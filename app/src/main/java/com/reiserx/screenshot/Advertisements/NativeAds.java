@@ -2,6 +2,7 @@ package com.reiserx.screenshot.Advertisements;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -243,7 +244,7 @@ public class NativeAds {
         placeholder.addView(adView);
     }
 
-    public static void loadNoIconPrefetchedAds(Context context, NativeAd nativeAd, FrameLayout placeholder) {
+    public static void loadWithIconPrefetchedAds(Context context, NativeAd nativeAd, FrameLayout placeholder) {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         NativeAdView adView = (NativeAdView) inflater
@@ -262,6 +263,32 @@ public class NativeAds {
             imageView.setImageDrawable(nativeAd.getIcon().getDrawable());
             adView.setIconView(imageView);
         }
+
+        adView.setNativeAd(nativeAd);
+
+        // Ensure that the parent view doesn't already contain an ad view.
+        placeholder.removeAllViews();
+
+        // Place the AdView into the parent.
+        placeholder.addView(adView);
+    }
+
+    public static void loadNoIconPrefetchedAds(Context context, NativeAd nativeAd, FrameLayout placeholder) {
+        LayoutInflater inflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        NativeAdView adView = (NativeAdView) inflater
+                .inflate(R.layout.native_ad_no_image, null);
+
+        TextView headlineView = adView.findViewById(R.id.ad_headline);
+        headlineView.setText(nativeAd.getHeadline());
+        adView.setHeadlineView(headlineView);
+
+        TextView body = adView.findViewById(R.id.ad_body);
+        body.setText(nativeAd.getBody());
+        adView.setBodyView(body);
+
+        ImageView imageView = adView.findViewById(R.id.ad_app_icon);
+        imageView.setVisibility(View.GONE);
 
         adView.setNativeAd(nativeAd);
 

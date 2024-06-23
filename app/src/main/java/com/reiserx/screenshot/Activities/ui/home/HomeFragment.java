@@ -3,7 +3,6 @@ package com.reiserx.screenshot.Activities.ui.home;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_AGREE;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_KEY;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_REJECT;
-import static com.reiserx.screenshot.Adapters.ScreenshotLabelsAdapter.AD_CONTENT;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -13,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,21 +33,20 @@ import com.reiserx.screenshot.Activities.ui.settings.FragmentAbout;
 import com.reiserx.screenshot.Activities.ui.settings.FragmentConsent;
 import com.reiserx.screenshot.Adapters.ScreenshotLabelsAdapter;
 import com.reiserx.screenshot.Models.ScreenshotLabels;
-import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
 import com.reiserx.screenshot.databinding.FragmentHomeBinding;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private ScreenshotsViewModel viewModel;
 
-    ArrayList<Screenshots> data;
     ScreenshotLabelsAdapter adapter;
 
     public static String[] storage_permissions = {
@@ -90,7 +87,6 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        data = new ArrayList<>();
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL));
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         binding.rec.setLayoutManager(new GridLayoutManager(requireContext(), 2));
@@ -107,17 +103,14 @@ public class HomeFragment extends Fragment {
             adapter.notifyDataSetChanged();
         });
         viewModel.getItemNativeAdMutableLiveData().observe(getViewLifecycleOwner(), Adlist -> {
-            Log.d("dsfdsfssdfds", String.valueOf(Adlist.size()));
-            if (adapter.getData() != null && !adapter.getData().isEmpty()) {
-                for (ScreenshotLabels label : adapter.getData()) {
-                    if (!Adlist.isEmpty()) {
-                        if (label != null && label.getType() == AD_CONTENT) {
-                            label.setNativeAd(Adlist.get(0));
-                            Adlist.remove(0);
-                        }
-                        adapter.notifyItemChanged(adapter.getData().indexOf(label), label);
-                    }
+            Random random = new Random();
+            List<ScreenshotLabels> data = adapter.getData();
+            if (data != null && !data.isEmpty()) {
+                for (int i = 0; i < Adlist.size(); i++) {
+                    int randomPosition = random.nextInt(data.size() - 1) + 1;
+                    data.add(randomPosition, new ScreenshotLabels(ScreenshotLabelsAdapter.AD_CONTENT, Adlist.get(i)));
                 }
+                adapter.notifyDataSetChanged();
             }
         });
         viewModel.getErrorLabelsMutableLiveData().observe(getViewLifecycleOwner(), error -> {

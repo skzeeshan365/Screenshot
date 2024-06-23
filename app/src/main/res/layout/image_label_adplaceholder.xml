@@ -6,16 +6,4 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
-    android:clickable="true">
-
-    <TextView
-        android:id="@+id/textView14"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|center_vertical"
-        android:layout_margin="8dp"
-        android:fontFamily="@font/source_serif_pro_semibold"
-        android:gravity="center_horizontal|center_vertical"
-        android:text="@string/ad_placeholder_text"
-        android:textSize="16sp" />
-</FrameLayout>
+    android:clickable="true"/>

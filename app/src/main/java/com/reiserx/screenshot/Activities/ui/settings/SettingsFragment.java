@@ -25,12 +25,16 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.reiserx.screenshot.Advertisements.BannerAds;
+import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 import com.reiserx.screenshot.databinding.FragmentSettingsBinding;
+
+import java.util.List;
 
 public class SettingsFragment extends Fragment {
 
@@ -44,6 +48,9 @@ public class SettingsFragment extends Fragment {
     public static int SNAPSHOT = 3;
     public static int SNAPSHOT_TYPE_OCR = 4;
     public static int SNAPSHOT_TYPE_AI = 5;
+    public static int CURRENT_WINDOW = 6;
+
+    public static String DOUBLE_TAP_ENABLE = "DOUBLE_TAP_ENABLE";
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -148,10 +155,42 @@ public class SettingsFragment extends Fragment {
         BannerAds ads = new BannerAds(getContext(), binding.adPlaceholder);
         ads.loadBanner();
 
+        NativeAds nativeAds = new NativeAds(getContext());
+        nativeAds.prefetchAds(2, () -> {
+            List<NativeAd> nativeAds1 = nativeAds.getAdList();
+            if (!nativeAds1.isEmpty()) {
+                if (nativeAds1.size() > 1) {
+                    NativeAds.loadNoIconPrefetchedAds(requireContext(), nativeAds1.get(0), binding.adPlaceholder1);
+                    NativeAds.loadNoIconPrefetchedAds(requireContext(), nativeAds1.get(1), binding.adPlaceholder2);
+                } else {
+                    NativeAds.loadNoIconPrefetchedAds(requireContext(), nativeAds1.get(0), binding.adPlaceholder1);
+                }
+            }
+        });
+
         updateValues();
 
         binding.screenshotTypeHolder.setOnClickListener(view18 -> {
             setScreenshotType(getContext());
+        });
+
+        binding.doubleTapHolder.setOnClickListener(view19 -> {
+            binding.switch2.setChecked(!binding.switch2.isChecked());
+        });
+
+        binding.switch2.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                if (binding.switch1.isChecked()) {
+                    dataStoreHelper.putBooleanValue(DOUBLE_TAP_ENABLE, b);
+                } else {
+                    binding.switch2.setChecked(false);
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                    alert.setTitle("Accessibility service is not Active");
+                    alert.setMessage("You have not enabled accessibility service\nPlease enable it then try again.");
+                    alert.setPositiveButton("OK", null);
+                    alert.show();
+                }
+            }
         });
     }
 
@@ -206,6 +245,11 @@ public class SettingsFragment extends Fragment {
         final RadioButton btn4 = mView.findViewById(R.id.radioButton4);
         final RadioButton ocr = mView.findViewById(R.id.rad_ocr);
         final RadioButton ai = mView.findViewById(R.id.rad_ai);
+        final RadioButton current_window = mView.findViewById(R.id.current_window);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            current_window.setVisibility(View.GONE);
+        }
 
         alert.setTitle("Select screenshot type");
         alert.setMessage("Select screenshot type for capturing with sensor");
@@ -223,6 +267,8 @@ public class SettingsFragment extends Fragment {
             ocr.setChecked(true);
         else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT_TYPE_AI)
             ai.setChecked(true);
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == CURRENT_WINDOW)
+            current_window.setChecked(true);
 
         btn1.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (btn1.isChecked()) {
@@ -268,6 +314,13 @@ public class SettingsFragment extends Fragment {
             alert.dismiss();
             updateValues();
         });
+        current_window.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (current_window.isChecked()) {
+                dataStoreHelper.putIntValue(SCREENSHOT_TYPE_KEY, CURRENT_WINDOW);
+            }
+            alert.dismiss();
+            updateValues();
+        });
         alert.show();
     }
 
@@ -275,14 +328,16 @@ public class SettingsFragment extends Fragment {
         if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == DEFAULT)
             binding.screenshotTypeValue.setText("Ask every time");
         else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SCREENSHOT)
-            binding.screenshotTypeValue.setText(getString(R.string.screenshot_label));
+            binding.screenshotTypeValue.setText(getString(R.string.full_screen));
         else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SILENT_SCREENSHOT)
-            binding.screenshotTypeValue.setText(getString(R.string.silent_screenshot_label));
+            binding.screenshotTypeValue.setText(getString(R.string.silent));
         else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT)
             binding.screenshotTypeValue.setText(getString(R.string.selected_screenshot_label));
         else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT_TYPE_OCR)
             binding.screenshotTypeValue.setText(getString(R.string.capture_with_ocr));
         else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SNAPSHOT_TYPE_AI)
             binding.screenshotTypeValue.setText(getString(R.string.capture_with_ai_explain));
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == CURRENT_WINDOW)
+            binding.screenshotTypeValue.setText(getString(R.string.current_app));
     }
 }

@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/textbox_outline"
-    android:backgroundTint="@color/PrimaryBackGround"
-    tools:context=".Activities.CaptureActivity">
+    android:background="@drawable/textbox_filled">
 
     <ImageView
         android:id="@+id/imageView3"
@@ -165,7 +163,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center_horizontal|center_vertical"
-                android:text="Current window"
+                android:text="@string/current_app"
                 android:textColor="@color/button_design_text"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="@+id/fab_partial"
@@ -304,5 +302,4 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

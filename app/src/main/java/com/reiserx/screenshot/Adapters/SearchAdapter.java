@@ -77,7 +77,7 @@ public class SearchAdapter extends RecyclerView.Adapter {
         } else if (holder.getClass() == AdsViewHolder.class) {
             if (model.getNativeAd() != null) {
                 AdsViewHolder viewHolder = (AdsViewHolder) holder;
-                NativeAds.loadNoIconPrefetchedAds(context, model.getNativeAd(), viewHolder.binding.imageHolder);
+                NativeAds.loadWithIconPrefetchedAds(context, model.getNativeAd(), viewHolder.binding.imageHolder);
             }
         }
     }

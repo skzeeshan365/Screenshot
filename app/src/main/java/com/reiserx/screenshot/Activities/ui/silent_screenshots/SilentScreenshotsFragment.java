@@ -20,13 +20,13 @@ import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
 import com.reiserx.screenshot.databinding.FragmentSilentScreenshotsBinding;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class SilentScreenshotsFragment extends Fragment {
 
     private FragmentSilentScreenshotsBinding binding;
     private ScreenshotsViewModel viewModel;
-    ArrayList<Screenshots> data;
     ScreenshotsAdapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,7 +42,6 @@ public class SilentScreenshotsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        data = new ArrayList<>();
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL));
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         binding.rec.setLayoutManager(new GridLayoutManager(requireContext(), 2));
@@ -61,15 +60,13 @@ public class SilentScreenshotsFragment extends Fragment {
         });
         viewModel.getItemNativeAdMutableLiveData().observe(getViewLifecycleOwner(), Adlist -> {
             if (adapter.getData() != null && !adapter.getData().isEmpty()) {
-                for (Screenshots screenshot : adapter.getData()) {
-                    if (!Adlist.isEmpty()) {
-                        if (screenshot.getType() == ScreenshotsAdapter.ITEM_TYPE_AD) {
-                            screenshot.setNativeAd(Adlist.get(0));
-                            Adlist.remove(0);
-                        }
-                        adapter.notifyItemChanged(adapter.getData().indexOf(screenshot), screenshot);
-                    }
+                Random random = new Random();
+                List<Screenshots> data = adapter.getData();
+                for (int i = 0; i < Adlist.size(); i++) {
+                    int randomPosition = random.nextInt(data.size() - 1);
+                    data.add(randomPosition, new Screenshots(ScreenshotsAdapter.ITEM_TYPE_AD, Adlist.get(i)));
                 }
+                adapter.notifyDataSetChanged();
             }
         });
         viewModel.getErrorSilentMutableLiveData().observe(getViewLifecycleOwner(), error -> {

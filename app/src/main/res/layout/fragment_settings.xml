@@ -132,7 +132,7 @@
                     android:text="STORAGE LOCATIONS"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/divider9" />
+                    app:layout_constraintTop_toBottomOf="@+id/ad_placeholder_1" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/switch_holder"
@@ -216,7 +216,7 @@
                     android:text="OTHERS"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/divider5" />
+                    app:layout_constraintTop_toBottomOf="@+id/ad_placeholder_2" />
 
                 <View
                     android:id="@+id/divider5"
@@ -350,7 +350,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/divider23">
+                    app:layout_constraintTop_toBottomOf="@+id/divider24">
 
                     <TextView
                         android:id="@+id/quick_settings_text"
@@ -431,6 +431,71 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/screenshot_type_holder" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/double_tap_holder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="12dp"
+                    android:background="?attr/selectableItemBackground"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/divider23">
+
+                    <Switch
+                        android:id="@+id/switch2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:clickable="false"
+                        android:text="Capture with double tap"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                    <TextView
+                        android:id="@+id/textView25"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Double tap on your screen to capture"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/switch2"
+                        app:layout_constraintStart_toStartOf="@+id/switch2"
+                        app:layout_constraintTop_toBottomOf="@+id/switch2" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:id="@+id/divider24"
+                    android:layout_width="409dp"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/double_tap_holder" />
+
+                <FrameLayout
+                    android:id="@+id/ad_placeholder_1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/divider9">
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/ad_placeholder_2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/divider5">
+
+                </FrameLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>

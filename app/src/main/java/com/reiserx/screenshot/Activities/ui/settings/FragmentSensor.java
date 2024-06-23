@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
-import android.widget.RadioButton;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -82,10 +81,6 @@ public class FragmentSensor extends Fragment {
                     dataStoreHelper.putBooleanValue(SENSOR_KEY, b);
                 }
             }
-        });
-
-        binding.captureWithSensorHolder.setOnClickListener(view1 -> {
-//            setScreenshotType(getContext());
         });
 
         binding.captureWithShakeSensorHolder.setEnabled(binding.enableShakeSwitch.isChecked());

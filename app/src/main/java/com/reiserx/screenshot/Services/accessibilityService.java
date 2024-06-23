@@ -3,7 +3,6 @@ package com.reiserx.screenshot.Services;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentSensor.SHAKE_COUNT;
 import static com.reiserx.screenshot.Activities.ui.settings.SettingsFragment.SCREENSHOT_TYPE_KEY;
 
-import android.accessibilityservice.AccessibilityGestureEvent;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.SuppressLint;
@@ -34,21 +33,17 @@ import android.view.Gravity;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.view.accessibility.AccessibilityWindowInfo;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import androidx.webkit.internal.ApiFeature;
 
 import com.reiserx.screenshot.Activities.AIActivity;
 import com.reiserx.screenshot.Activities.CaptureActivity;
@@ -56,7 +51,6 @@ import com.reiserx.screenshot.Activities.ImageViewerActivity;
 import com.reiserx.screenshot.Activities.OCRActivity;
 import com.reiserx.screenshot.Activities.ui.IconCropView;
 import com.reiserx.screenshot.Activities.ui.TextDrawable;
-import com.reiserx.screenshot.Activities.ui.settings.FragmentSensor;
 import com.reiserx.screenshot.Activities.ui.settings.SettingsFragment;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Receivers.NotificationReceiver;
@@ -96,9 +90,8 @@ public class accessibilityService extends AccessibilityService implements Sensor
     protected void onServiceConnected() {
         super.onServiceConnected();
         AccessibilityServiceInfo info = new AccessibilityServiceInfo();
-        info.eventTypes = AccessibilityEvent.TYPES_ALL_MASK;
-        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_ALL_MASK;
-        info.flags = AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS | AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
+        info.eventTypes = AccessibilityEvent.TYPE_VIEW_CLICKED;
+        info.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
         info.notificationTimeout = 100;
         setServiceInfo(info);
         instance = this;
@@ -114,16 +107,11 @@ public class accessibilityService extends AccessibilityService implements Sensor
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
-
-        int eventType = accessibilityEvent.getEventType();
-        Log.d(TAG, "Event type: " + eventType);
-        switch (eventType) {
-            case AccessibilityEvent.TYPE_VIEW_CLICKED:
-                // Check for conditions that might suggest a double-tap
-                if (isDoubleTap(accessibilityEvent)) {
-                    Log.d(TAG, "Double tap detected");
-                }
-                break;
+        Log.d(TAG, String.valueOf(accessibilityEvent.getEventType()));
+        if (accessibilityEvent.getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED) {
+            if (isDoubleTap(accessibilityEvent)) {
+                handleDoubleTap();
+            }
         }
         if (String.valueOf(accessibilityEvent.getPackageName()).equals("com.android.systemui")) {
             if (String.valueOf(accessibilityEvent.getContentDescription()).trim().equals("Back")) {
@@ -134,12 +122,16 @@ public class accessibilityService extends AccessibilityService implements Sensor
         }
     }
 
+    private void handleDoubleTap() {
+        DataStoreHelper dataStoreHelper = new DataStoreHelper();
+        if (dataStoreHelper.getBooleanValue(SettingsFragment.DOUBLE_TAP_ENABLE, false))
+            initScreenshotCapture();
+    }
+
     private boolean isDoubleTap(AccessibilityEvent event) {
         long firstClickTime = event.getEventTime();
         long timeDifference = firstClickTime - lastClickTime;
-        lastClickTime = firstClickTime; // Update last click time to current click time
-
-        // Check if two clicks happened very close together
+        lastClickTime = firstClickTime;
         return timeDifference < DOUBLE_TAP_TIME_THRESHOLD;
     }
 
@@ -153,6 +145,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
         super.takeScreenshotOfWindow(accessibilityWindowId, executor, callback);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void takeScreenshotOfWindows() {
         try {
                 takeScreenshotOfWindow(getRootInActiveWindow().getWindowId(),
@@ -474,22 +467,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
             if (dataStoreHelper.getIntValue(SHAKE_COUNT, 1) == count) {
                 if (ScreenUtil.isScreenOn(this)) {
                     // Sensor detected
-                    if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.DEFAULT) {
-                        Intent transparentIntent = new Intent(this, CaptureActivity.class);
-                        transparentIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        transparentIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(transparentIntent);
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SCREENSHOT) {
-                        takeScreenshots();
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SILENT_SCREENSHOT) {
-                        takeScreenshotsSilent();
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SNAPSHOT) {
-                        CreateSelection(CAPTURE_SNAPSHOT_DEFAULT);
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SNAPSHOT_TYPE_OCR) {
-                        CreateSelection(CAPTURE_SNAPSHOT_OCR);
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SNAPSHOT_TYPE_AI) {
-                        CreateSelection(CAPTURE_SNAPSHOT_AI);
-                    }
+                    initScreenshotCapture();
                 }
             }
         });
@@ -523,22 +501,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
             if (proximityValue == 0) {
                 if (ScreenUtil.isScreenOn(this) && !PhoneUtil.isOnPhoneCall(this)) {
                     // Sensor detected
-                    if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.DEFAULT) {
-                        Intent transparentIntent = new Intent(this, CaptureActivity.class);
-                        transparentIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        transparentIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(transparentIntent);
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SCREENSHOT) {
-                        takeScreenshots();
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SILENT_SCREENSHOT) {
-                        takeScreenshotsSilent();
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SNAPSHOT) {
-                        CreateSelection(CAPTURE_SNAPSHOT_DEFAULT);
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SNAPSHOT_TYPE_OCR) {
-                        CreateSelection(CAPTURE_SNAPSHOT_OCR);
-                    } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SNAPSHOT_TYPE_AI) {
-                        CreateSelection(CAPTURE_SNAPSHOT_AI);
-                    }
+                    initScreenshotCapture();
                 }
             }
         }
@@ -590,6 +553,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
         textDrawable = new TextDrawable("AI");
         textDrawable.setTextColor(getColor(R.color.button_design_text));
         textDrawable.setTextSize(50);
+        textDrawable.setFont(this, R.font.source_serif_pro_semibold);
         ai_explain.setImageDrawable(textDrawable);
 
         close_btn.setOnClickListener(view -> {
@@ -653,5 +617,30 @@ public class accessibilityService extends AccessibilityService implements Sensor
         } catch (Exception e) {
 
         }
+    }
+
+    public void initScreenshotCapture() {
+        DataStoreHelper dataStoreHelper = new DataStoreHelper();
+        if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.DEFAULT) {
+            Intent transparentIntent = new Intent(this, CaptureActivity.class);
+            transparentIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            transparentIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(transparentIntent);
+        } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SCREENSHOT)
+            takeScreenshots();
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SILENT_SCREENSHOT)
+            takeScreenshotsSilent();
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SNAPSHOT)
+            CreateSelection(CAPTURE_SNAPSHOT_DEFAULT);
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SNAPSHOT_TYPE_OCR)
+            CreateSelection(CAPTURE_SNAPSHOT_OCR);
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SNAPSHOT_TYPE_AI)
+            CreateSelection(CAPTURE_SNAPSHOT_AI);
+        else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.CURRENT_WINDOW)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                takeScreenshotOfWindows();
+            } else {
+                Toast.makeText(this, "Screenshot of current app is not supported on this device", Toast.LENGTH_SHORT).show();
+            }
     }
 }

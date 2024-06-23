@@ -19,8 +19,9 @@ public class Screenshots {
         this.nativeAd = nativeAd;
     }
 
-    public Screenshots(int type) {
+    public Screenshots(int type, NativeAd nativeAd) {
         this.type = type;
+        this.nativeAd = nativeAd;
     }
 
     public String getFilename() {
