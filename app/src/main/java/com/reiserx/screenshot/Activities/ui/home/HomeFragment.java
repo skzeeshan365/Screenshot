@@ -50,12 +50,16 @@ public class HomeFragment extends Fragment {
     ScreenshotLabelsAdapter adapter;
 
     public static String[] storage_permissions = {
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
     };
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public static String[] storage_permissions_33 = {
             Manifest.permission.READ_MEDIA_IMAGES,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
     };
 
     DataStoreHelper dataStoreHelper;
