@@ -18,7 +18,8 @@ public class ScreenshotsViewModel extends ViewModel implements
         ScreenshotsRepository.OnGetScreenshotsComplete,
         ScreenshotsRepository.OnGetSilentScreenshotsComplete,
         ScreenshotsRepository.OnGetFilesComplete,
-        ScreenshotsRepository.OnGetLabelsComplete{
+        ScreenshotsRepository.OnGetLabelsComplete,
+        ScreenshotsRepository.OnGetLocationsComplete{
     private final ScreenshotsRepository screenshotsRepository;
 
     private final MutableLiveData<List<Screenshots>> ItemMutableLiveData = new MutableLiveData<>();
@@ -26,6 +27,8 @@ public class ScreenshotsViewModel extends ViewModel implements
     private final MutableLiveData<List<String>> ItemFilesMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<ScreenshotLabels>> ItemLabelsMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<NativeAd>> ItemNativeAdMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<ScreenshotLabels>> ItemLocationsMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<NativeAd>> ItemLocationNativeAdMutableLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<String> ErrorMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> ErrorSilentMutableLiveData = new MutableLiveData<>();
@@ -52,6 +55,14 @@ public class ScreenshotsViewModel extends ViewModel implements
         return ItemNativeAdMutableLiveData;
     }
 
+    public MutableLiveData<List<ScreenshotLabels>> getItemLocationsMutableLiveData() {
+        return ItemLocationsMutableLiveData;
+    }
+
+    public MutableLiveData<List<NativeAd>> getItemLocationNativeAdMutableLiveData() {
+        return ItemLocationNativeAdMutableLiveData;
+    }
+
     public MutableLiveData<String> getErrorMutableLiveData() {
         return ErrorMutableLiveData;
     }
@@ -68,7 +79,7 @@ public class ScreenshotsViewModel extends ViewModel implements
     }
 
     public ScreenshotsViewModel() {
-        screenshotsRepository = new ScreenshotsRepository(this,this, this, this);
+        screenshotsRepository = new ScreenshotsRepository(this,this,this, this, this);
     }
 
     public void getScreenshots(Context context, String label) {
@@ -87,6 +98,10 @@ public class ScreenshotsViewModel extends ViewModel implements
 
     public void getScreenshotLabels(Context context) {
         screenshotsRepository.getScreenshotLabels(context);
+    }
+
+    public void getLocations(Context context) {
+        screenshotsRepository.getLocations(context);
     }
 
     @Override
@@ -154,5 +169,20 @@ public class ScreenshotsViewModel extends ViewModel implements
         mainHandler.post(() -> {
             ErrorMutableLiveData.setValue(error);
         });
+    }
+
+    @Override
+    public void onLocationsSuccess(List<ScreenshotLabels> locations) {
+        ItemLocationsMutableLiveData.setValue(locations);
+    }
+
+    @Override
+    public void onLocationLoadedAds(List<NativeAd> nativeAdList) {
+        ItemLocationNativeAdMutableLiveData.setValue(nativeAdList);
+    }
+
+    @Override
+    public void onLocationsFailure(String error) {
+        ErrorMutableLiveData.setValue(error);
     }
 }

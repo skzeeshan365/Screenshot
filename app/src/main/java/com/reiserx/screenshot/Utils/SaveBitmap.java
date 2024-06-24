@@ -74,12 +74,12 @@ public class SaveBitmap {
                 file.getParentFile().mkdirs();
             }
 
-            attachLocationMetadata(file.getAbsolutePath());
-
             FileOutputStream out = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
             out.flush();
             out.close();
+
+            attachLocationMetadata(file.getAbsolutePath());
 
             if (BaseApplication.getInstance().isMyActivityInForeground())
                 viewModel.getScreenshotsInApp(context);

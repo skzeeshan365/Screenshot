@@ -1,5 +1,7 @@
 package com.reiserx.screenshot.Repositories;
 
+import static com.reiserx.screenshot.Utils.ExifMetadata.readLocationMetadata;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -18,14 +20,19 @@ import com.reiserx.screenshot.Utils.DataStoreHelper;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class ScreenshotsRepository {
     private final OnGetScreenshotsComplete onGetScreenshotsComplete;
     private final OnGetSilentScreenshotsComplete onGetSilentScreenshotsComplete;
     private final OnGetFilesComplete onGetFilesComplete;
     private final OnGetLabelsComplete onGetLabelsComplete;
+    private final OnGetLocationsComplete onGetLocationsComplete;
 
     DataStoreHelper dataStoreHelper;
     String filepath_parent = null;
@@ -33,11 +40,13 @@ public class ScreenshotsRepository {
     public ScreenshotsRepository(OnGetScreenshotsComplete onGetScreenshotsComplete,
                                  OnGetSilentScreenshotsComplete onGetSilentScreenshotsComplete,
                                  OnGetFilesComplete onGetFilesComplete,
-                                 OnGetLabelsComplete onGetLabelsComplete) {
+                                 OnGetLabelsComplete onGetLabelsComplete,
+                                 OnGetLocationsComplete onGetLocationsComplete) {
         this.onGetScreenshotsComplete = onGetScreenshotsComplete;
         this.onGetSilentScreenshotsComplete = onGetSilentScreenshotsComplete;
         this.onGetFilesComplete = onGetFilesComplete;
         this.onGetLabelsComplete = onGetLabelsComplete;
+        this.onGetLocationsComplete = onGetLocationsComplete;
         dataStoreHelper = new DataStoreHelper();
     }
 
@@ -220,25 +229,87 @@ public class ScreenshotsRepository {
         // Get the public DCIM directory
         File dcimDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
 
-        // Check if the directory exists and is a directory
         if (dcimDirectory.exists() && dcimDirectory.isDirectory()) {
-            // List subdirectories
             File[] subdirectories = dcimDirectory.listFiles();
 
             if (subdirectories != null) {
                 for (File subdirectory : subdirectories) {
-                    // Check if it is a directory
                     if (subdirectory.isDirectory()) {
-                        // Add the directory name to the list
                         dcimDirectories.add(subdirectory.getName());
                     }
                 }
             }
         }
-
-        // Now dcimDirectories contains public DCIM directories
-        // Handle the list as needed
         onGetFilesComplete.onFilesSuccess(dcimDirectories);
+    }
+
+    public void getLocations(Context context) {
+        Map<String, String> uniqueLocationsWithLatestScreenshots = new HashMap<>();
+
+        // Get screenshots from external storage
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = {MediaStore.Images.Media.DATA};
+        String selection = MediaStore.Images.Media.DATA + " like ?";
+        String[] selectionArgs = new String[]{"%/DCIM/" + dataStoreHelper.getStringValue(FileFragment.DEFAULT_STORAGE_KEY, null) + "/%"};
+        String sortOrder = MediaStore.Images.Media.DATE_ADDED + " DESC";
+
+        ContentResolver contentResolver = context.getContentResolver();
+        try (Cursor cursor = contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)) {
+            if (cursor != null) {
+                int dataColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+                while (cursor.moveToNext()) {
+                    String imagePath = cursor.getString(dataColumnIndex);
+                    String location = readLocationMetadata(imagePath, context);
+                    if (location != null && !uniqueLocationsWithLatestScreenshots.containsKey(location)) {
+                        uniqueLocationsWithLatestScreenshots.put(location, imagePath);
+                    }
+                }
+            } else {
+                onGetScreenshotsComplete.onFailure("Failed to get screenshots");
+                return;
+            }
+        } catch (Exception e) {
+            onGetScreenshotsComplete.onFailure("Exception: " + e.getMessage());
+            throw e;
+        }
+
+        // Get screenshots from internal storage directory
+        File directory = new File(context.getFilesDir(), "Screenshots");
+        File[] files = directory.listFiles();
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    String imagePath = file.getAbsolutePath();
+                    String location = readLocationMetadata(imagePath, context);
+                    if (location != null && !uniqueLocationsWithLatestScreenshots.containsKey(location)) {
+                        uniqueLocationsWithLatestScreenshots.put(location, imagePath);
+                    }
+                }
+            }
+        }
+
+        // Create ScreenshotLabels from uniqueLocationsWithLatestScreenshots
+        List<ScreenshotLabels> screenshotLabels = new ArrayList<>();
+        for (Map.Entry<String, String> entry : uniqueLocationsWithLatestScreenshots.entrySet()) {
+            String location = entry.getKey();
+            String latestScreenshotPath = entry.getValue();
+            screenshotLabels.add(new ScreenshotLabels(location, latestScreenshotPath));
+        }
+
+        // Handle the result
+        if (screenshotLabels.isEmpty()) {
+            onGetLocationsComplete.onLocationsFailure("No available screenshots");
+        } else {
+            int numberOfAds = screenshotLabels.size() / 3;
+            onGetLocationsComplete.onLocationsSuccess(screenshotLabels);
+            new Thread(() -> {
+                NativeAds nativeAds = new NativeAds(context);
+                nativeAds.prefetchAds(numberOfAds, () -> {
+                    onGetLocationsComplete.onLocationLoadedAds(nativeAds.getAdList());
+                });
+            }).start();
+        }
     }
 
 
@@ -270,5 +341,13 @@ public class ScreenshotsRepository {
         void onLabelsLoadedAds(List<NativeAd> nativeAdList);
 
         void onLabelsFailure(String error);
+    }
+
+    public interface OnGetLocationsComplete {
+        void onLocationsSuccess(List<ScreenshotLabels> labelsList);
+
+        void onLocationLoadedAds(List<NativeAd> nativeAdList);
+
+        void onLocationsFailure(String error);
     }
 }

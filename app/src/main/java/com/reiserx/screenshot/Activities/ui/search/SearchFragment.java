@@ -3,6 +3,7 @@ package com.reiserx.screenshot.Activities.ui.search;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +15,19 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.reiserx.screenshot.Adapters.LocationsAdapter;
 import com.reiserx.screenshot.Adapters.SearchAdapter;
 import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.DAO.LabelDao;
+import com.reiserx.screenshot.Models.ScreenshotLabels;
 import com.reiserx.screenshot.Models.SearchListModel;
 import com.reiserx.screenshot.Utils.ScheduleWork;
 import com.reiserx.screenshot.ViewModels.LabelsViewModel;
+import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
 import com.reiserx.screenshot.databinding.FragmentSearchBinding;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class SearchFragment extends Fragment {
@@ -32,10 +37,13 @@ public class SearchFragment extends Fragment {
     SearchAdapter adapter;
 
     LabelsViewModel viewModel;
+    ScreenshotsViewModel screenshotsViewModel;
+    String TAG = "SearchFragment";
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSearchBinding.inflate(inflater, container, false);
         viewModel = new ViewModelProvider(this).get(LabelsViewModel.class);
+        screenshotsViewModel = new ViewModelProvider(this).get(ScreenshotsViewModel.class);
 
         return binding.getRoot();
     }
@@ -54,8 +62,35 @@ public class SearchFragment extends Fragment {
         binding.rec.setVisibility(View.GONE);
         binding.progHolder.setVisibility(View.VISIBLE);
         binding.textView9.setVisibility(View.GONE);
+        binding.horzRec.setVisibility(View.GONE);
+
+        binding.horzRec.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        LocationsAdapter locationsAdapter = new LocationsAdapter(getContext());
+        binding.horzRec.setAdapter(locationsAdapter);
 
         data.add(new SearchListModel("SEARCH BY", adapter.HEADER));
+
+        screenshotsViewModel.getLocations(getContext());
+        screenshotsViewModel.getItemLocationsMutableLiveData().observe(getViewLifecycleOwner(), locations -> {
+            locationsAdapter.setItemList(locations);
+            locationsAdapter.notifyDataSetChanged();
+            binding.horzRec.setVisibility(View.VISIBLE);
+        });
+        screenshotsViewModel.getItemLocationNativeAdMutableLiveData().observe(getViewLifecycleOwner(), nativeAds -> {
+            List<ScreenshotLabels> labels = locationsAdapter.getItemList();
+            if (!nativeAds.isEmpty() && !labels.isEmpty()) {
+                Random random = new Random();
+                for (int i = 0; i < nativeAds.size(); i++) {
+                    int randomPosition = random.nextInt(labels.size() - 1) + 1;
+                    labels.add(randomPosition, new ScreenshotLabels(LocationsAdapter.AD_CONTENT, nativeAds.get(i)));
+                    Log.d(TAG, String.valueOf(labels.size()));
+                    locationsAdapter.notifyItemInserted(randomPosition);
+                }
+            }
+        });
+        screenshotsViewModel.getErrorMutableLiveData().observe(getViewLifecycleOwner(), error -> {
+            Log.d(TAG, "onViewCreated: " + error);
+        });
 
         viewModel.getAllLabels().observe(getViewLifecycleOwner(), labelWithImageCountList -> {
             if (labelWithImageCountList.isEmpty()) {

@@ -1,6 +1,7 @@
 package com.reiserx.screenshot.Advertisements;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -187,7 +188,8 @@ public class NativeAds {
                 .forNativeAd(nativeAd -> {
                     adList.add(nativeAd);
                     if (adLoader != null && !adLoader.isLoading()) {
-                        onAdsLoadedCallback.run();
+                        if (context != null)
+                            onAdsLoadedCallback.run();
                     }
                 })
                 .withAdListener(new AdListener() {
@@ -340,6 +342,27 @@ public class NativeAds {
         placeholder.removeAllViews();
 
         // Place the AdView into the parent.
+        placeholder.addView(adView);
+    }
+
+    public static void loadPrefetchedOverlayHeadline(Context context, NativeAd nativeAd, FrameLayout placeholder) {
+        NativeAdView adView;
+        LayoutInflater inflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        adView = (NativeAdView) inflater
+                .inflate(R.layout.native_ad_head_overlay, null);
+        MediaView imageView = adView.findViewById(R.id.media_view);
+        imageView.setMediaContent(nativeAd.getMediaContent());
+        imageView.setImageScaleType(ImageView.ScaleType.CENTER_CROP);
+        adView.setMediaView(imageView);
+
+        TextView headlineView = adView.findViewById(R.id.ad_headline);
+        headlineView.setText(nativeAd.getHeadline());
+        adView.setHeadlineView(headlineView);
+
+        Log.d("TdfdsfdsfdsfdsfAG", "loadPrefetchedOverlayHeadline: " + nativeAd.getHeadline());
+        adView.setNativeAd(nativeAd);
+        placeholder.removeAllViews();
         placeholder.addView(adView);
     }
 

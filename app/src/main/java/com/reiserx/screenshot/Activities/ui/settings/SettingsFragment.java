@@ -179,6 +179,8 @@ public class SettingsFragment extends Fragment {
             binding.switch2.setChecked(!binding.switch2.isChecked());
         });
 
+        binding.switch2.setChecked(dataStoreHelper.getBooleanValue(DOUBLE_TAP_ENABLE, false));
+
         binding.switch2.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b) {
                 if (binding.switch1.isChecked()) {
