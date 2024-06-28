@@ -6,6 +6,7 @@ public class ScreenshotLabels {
     String label, filepath;
     int type;
     NativeAd nativeAd;
+    LocationData location;
 
     public ScreenshotLabels(String label, String filepath) {
         this.label = label;
@@ -23,6 +24,12 @@ public class ScreenshotLabels {
         this.filepath = filepath;
         this.type = type;
         this.nativeAd = nativeAd;
+    }
+
+    public ScreenshotLabels(String label, String filepath, LocationData location) {
+        this.label = label;
+        this.filepath = filepath;
+        this.location = location;
     }
 
     public String getLabel() {
@@ -55,5 +62,13 @@ public class ScreenshotLabels {
 
     public void setNativeAd(NativeAd nativeAd) {
         this.nativeAd = nativeAd;
+    }
+
+    public LocationData getLocation() {
+        return location;
+    }
+
+    public void setLocation(LocationData location) {
+        this.location = location;
     }
 }

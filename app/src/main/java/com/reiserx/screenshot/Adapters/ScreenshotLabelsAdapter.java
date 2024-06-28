@@ -2,6 +2,7 @@ package com.reiserx.screenshot.Adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,12 +76,12 @@ public class ScreenshotLabelsAdapter extends RecyclerView.Adapter {
 
         holder.binding.textView6.setText(screenshots.getLabel());
         holder.binding.imageHolder.setOnClickListener(view -> {
-            DataStoreHelper dataStoreHelper = new DataStoreHelper();
+            Bundle args = new Bundle();
             if (screenshots.getLabel().equals("All screenshots"))
-                dataStoreHelper.putStringValue(GalleryFragment.SCREENSHOT_LABEL, null);
+                args.putString("label", "null");
             else
-                dataStoreHelper.putStringValue(GalleryFragment.SCREENSHOT_LABEL, screenshots.getLabel());
-            navController.navigate(R.id.action_navigation_home_to_navigation_gallery);
+                args.putString("label", screenshots.getLabel());
+            navController.navigate(R.id.action_navigation_home_to_navigation_gallery, args);
         });
 
         } else if (viewHolder.getClass() == AdsViewHolder.class) {

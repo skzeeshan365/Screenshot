@@ -19,4 +19,5 @@
     <color name="button_design_text">#2E2E2E</color>
     <color name="PrimaryBackGround">#FFFFFF</color>
     <color name="PrimaryHeader">#D3009F</color>
+    <color name="overlay_background">#80000000</color>
 </resources>

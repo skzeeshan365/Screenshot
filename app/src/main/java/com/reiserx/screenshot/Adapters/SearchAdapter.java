@@ -3,6 +3,7 @@ package com.reiserx.screenshot.Adapters;
 import static com.reiserx.screenshot.Activities.ui.search.LabelScreenshotsFragment.LABEL_NAME;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,7 +70,11 @@ public class SearchAdapter extends RecyclerView.Adapter {
                 DataStoreHelper dataStoreHelper = new DataStoreHelper();
                 dataStoreHelper.putIntValue(LabelScreenshotsFragment.LABEL_ID, model.getId());
                 dataStoreHelper.putStringValue(LABEL_NAME, model.getName());
-                navController.navigate(R.id.action_navigation_search_to_navigation_labelscreenshots);
+
+                Bundle args = new Bundle();
+                args.putString("label", model.getName());
+                args.putInt("label_id", model.getId());
+                navController.navigate(R.id.action_navigation_search_to_navigation_labelscreenshots, args);
             });
         } else if (holder.getClass() == HeaderViewHolder.class) {
             HeaderViewHolder viewHolder = (HeaderViewHolder) holder;

@@ -35,7 +35,7 @@
         <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
     </style>
 
-    <style name="FullscreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="FullscreenTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowNoTitle">true</item>
     </style>

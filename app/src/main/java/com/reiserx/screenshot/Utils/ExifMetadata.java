@@ -1,21 +1,15 @@
 package com.reiserx.screenshot.Utils;
 
-import static com.reiserx.screenshot.Utils.FusedLocation.geolocateCoordinates;
-
 import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.exifinterface.media.ExifInterface;
 
+import com.reiserx.screenshot.Models.LocationData;
+
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 public class ExifMetadata {
-    public static String readLocationMetadata(String imagePath, Context context) {
+    public static LocationData readLocationMetadata(String imagePath, Context context) {
         try {
             ExifInterface exif = new ExifInterface(imagePath);
             // Read GPS latitude and longitude
@@ -27,7 +21,7 @@ public class ExifMetadata {
                     exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF));
 
             if (latitude != 0 && longitude != 0) {
-                return geolocateCoordinates(latitude, longitude, context);
+                return new LocationData(latitude, longitude);
             } else {
                 return null;
             }

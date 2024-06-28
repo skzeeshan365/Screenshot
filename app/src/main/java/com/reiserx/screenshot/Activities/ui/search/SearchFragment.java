@@ -65,7 +65,7 @@ public class SearchFragment extends Fragment {
         binding.horzRec.setVisibility(View.GONE);
 
         binding.horzRec.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        LocationsAdapter locationsAdapter = new LocationsAdapter(getContext());
+        LocationsAdapter locationsAdapter = new LocationsAdapter(getContext(), NavHostFragment.findNavController(SearchFragment.this));
         binding.horzRec.setAdapter(locationsAdapter);
 
         data.add(new SearchListModel("SEARCH BY", adapter.HEADER));

@@ -183,32 +183,32 @@ public class NativeAds {
     }
 
     public void prefetchAds(int NUMBER_OF_ADS, Runnable onAdsLoadedCallback) {
-        adList = new ArrayList<>();
-        adLoader = new AdLoader.Builder(context, AD_ID)
-                .forNativeAd(nativeAd -> {
-                    adList.add(nativeAd);
-                    if (adLoader != null && !adLoader.isLoading()) {
-                        if (context != null)
-                            onAdsLoadedCallback.run();
-                    }
-                })
-                .withAdListener(new AdListener() {
-                    @Override
-                    public void onAdFailedToLoad(LoadAdError adError) {
+            adList = new ArrayList<>();
+            adLoader = new AdLoader.Builder(context, AD_ID)
+                    .forNativeAd(nativeAd -> {
+                        adList.add(nativeAd);
                         if (adLoader != null && !adLoader.isLoading()) {
-                            onAdsLoadedCallback.run();
+                            if (context != null)
+                                onAdsLoadedCallback.run();
                         }
-                    }
-                })
-                .withNativeAdOptions(new NativeAdOptions.Builder().build())
-                .build();
+                    })
+                    .withAdListener(new AdListener() {
+                        @Override
+                        public void onAdFailedToLoad(LoadAdError adError) {
+                            if (adLoader != null && !adLoader.isLoading()) {
+                                onAdsLoadedCallback.run();
+                            }
+                        }
+                    })
+                    .withNativeAdOptions(new NativeAdOptions.Builder().build())
+                    .build();
 
-        int adsLoaded = 0;
-        while (adsLoaded < NUMBER_OF_ADS) {
-            int adsToLoad = Math.min(NUMBER_OF_ADS - adsLoaded, 5);
-            adLoader.loadAds(new AdRequest.Builder().build(), adsToLoad);
-            adsLoaded += adsToLoad;
-        }
+            int adsLoaded = 0;
+            while (adsLoaded < NUMBER_OF_ADS) {
+                int adsToLoad = Math.min(NUMBER_OF_ADS - adsLoaded, 5);
+                adLoader.loadAds(new AdRequest.Builder().build(), adsToLoad);
+                adsLoaded += adsToLoad;
+            }
     }
 
     public static void loadPrefetchedAds(Context context, NativeAd nativeAd, FrameLayout placeholder) {
@@ -360,7 +360,6 @@ public class NativeAds {
         headlineView.setText(nativeAd.getHeadline());
         adView.setHeadlineView(headlineView);
 
-        Log.d("TdfdsfdsfdsfdsfAG", "loadPrefetchedOverlayHeadline: " + nativeAd.getHeadline());
         adView.setNativeAd(nativeAd);
         placeholder.removeAllViews();
         placeholder.addView(adView);

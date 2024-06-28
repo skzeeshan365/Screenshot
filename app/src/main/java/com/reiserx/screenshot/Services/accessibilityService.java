@@ -75,7 +75,6 @@ public class accessibilityService extends AccessibilityService implements Sensor
     private SensorManager shakeSensorManager;
     private ShakeDetector shakeDetector;
     Sensor accelerometer;
-    LocationCallback locationCallback;
 
     public static String ENABLE_NOTIFICATION = "ENABLE_NOTIFICATION";
     public static String ENABLE_SENSOR_PROXIMITY = "ENABLE_SENSOR_PROXIMITY";
@@ -170,7 +169,6 @@ public class accessibilityService extends AccessibilityService implements Sensor
                     });
 
         } catch (Exception e) {
-            Log.d(TAG, e.toString());
             Toast.makeText(this, "An error occurred: " + e, Toast.LENGTH_SHORT).show();
         }
     }
@@ -184,6 +182,7 @@ public class accessibilityService extends AccessibilityService implements Sensor
                             Bitmap bitmap = Bitmap.wrapHardwareBuffer(screenshotResult.getHardwareBuffer(), screenshotResult.getColorSpace());
 
                             new SaveBitmap(bitmap, accessibilityService.this, saveBitmap -> {
+                                Log.d(TAG, String.valueOf(getCurrentForegroundApp()));
                                 File file = saveBitmap.saveDataLocalDCIM(getLabelFromPackage.getAppLabelFromPackageName(accessibilityService.this, getCurrentForegroundApp()));
                                 if (file != null)
                                     createScreenshotOverlay(file);
@@ -415,7 +414,6 @@ public class accessibilityService extends AccessibilityService implements Sensor
     private String getCurrentForegroundApp() {
         AccessibilityNodeInfo rootInActiveWindow = getRootInActiveWindow();
         if (rootInActiveWindow == null) {
-            Log.d(TAG, "1");
             return null;
         }
         AccessibilityNodeInfo currentNode = rootInActiveWindow;
@@ -502,7 +500,6 @@ public class accessibilityService extends AccessibilityService implements Sensor
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        DataStoreHelper dataStoreHelper = new DataStoreHelper();
         if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
             float proximityValue = event.values[0];
             if (proximityValue == 0) {

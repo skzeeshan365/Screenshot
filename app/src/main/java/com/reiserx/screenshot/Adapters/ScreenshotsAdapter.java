@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.IntentSenderRequest;
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,9 +32,11 @@ import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.BaseApplication;
 import com.reiserx.screenshot.Utils.SaveBitmap;
+import com.reiserx.screenshot.Utils.SystemUI;
 import com.reiserx.screenshot.databinding.ImageLabelAdplaceholderBinding;
 import com.reiserx.screenshot.databinding.ImageLayoutBinding;
 import com.stfalcon.imageviewer.StfalconImageViewer;
+import com.stfalcon.imageviewer.listeners.OnDismissListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +108,7 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter {
                 .into(holder.binding.imageView);
 
         holder.binding.imageHolder.setOnClickListener(view -> {
-            Context materialContext = new ContextThemeWrapper(context, com.google.android.material.R.style.Theme_MaterialComponents);
+            Context materialContext = new ContextThemeWrapper(context, R.style.FullscreenTheme);
             LayoutInflater inflater = LayoutInflater.from(materialContext);
 
             View customView = inflater.inflate(R.layout.image_viewer_overlay, null, false);
@@ -115,12 +119,16 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter {
             })
                     .withStartPosition(position)
                     .withTransitionFrom(holder.binding.imageView)
-                    .withHiddenStatusBar(true)
+                    .withHiddenStatusBar(false)
                     .withOverlayView(customView)
                     .withImageChangeListener(position1 -> {
                         temp = data.get(position1);
                     })
+                    .withDismissListener(() -> {
+                        SystemUI.showSystemUI(customView.getWindowInsetsController());
+                    })
                     .show();
+            SystemUI.hideSystemUI(customView.getWindowInsetsController());
         });
         } else if (viewHolder.getClass() == AdsViewHolder.class) {
             if (screenshots.getNativeAd() != null) {
@@ -178,6 +186,7 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter {
         ocrFAB_Text = view.findViewById(R.id.ocr_image_text);
         aiFAB = view.findViewById(R.id.fab_silent);
         aiFAB_Text = view.findViewById(R.id.ai_image_text);
+        ConstraintLayout overlay_holder = view.findViewById(R.id.overlay_holder);
 
         shareFAB.setVisibility(View.GONE);
         deleteFAB.setVisibility(View.GONE);
@@ -215,6 +224,7 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter {
                 ocrFAB_Text.setVisibility(View.VISIBLE);
                 aiFAB_Text.setVisibility(View.VISIBLE);
 
+                overlay_holder.setBackgroundColor(context.getColor(R.color.overlay_background));
                 mAddFab.extend();
 
                 isAllFabsVisible = true;
@@ -228,6 +238,7 @@ public class ScreenshotsAdapter extends RecyclerView.Adapter {
                 ocrFAB_Text.setVisibility(View.GONE);
                 aiFAB_Text.setVisibility(View.GONE);
 
+                overlay_holder.setBackgroundColor(Color.TRANSPARENT);
                 mAddFab.shrink();
 
                 isAllFabsVisible = false;

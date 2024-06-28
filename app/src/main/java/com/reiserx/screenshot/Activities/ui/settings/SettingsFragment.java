@@ -2,6 +2,7 @@ package com.reiserx.screenshot.Activities.ui.settings;
 
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_AGREE;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_KEY;
+import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.TAG;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -11,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -193,7 +195,8 @@ public class SettingsFragment extends Fragment {
                     alert.setPositiveButton("OK", null);
                     alert.show();
                 }
-            }
+            } else
+                dataStoreHelper.putBooleanValue(DOUBLE_TAP_ENABLE, b);
         });
 
         binding.licenseHolder.setOnClickListener(view110 -> {

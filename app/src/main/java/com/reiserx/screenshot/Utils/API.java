@@ -21,6 +21,7 @@ import com.reiserx.screenshot.Interfaces.RESTAPICallback;
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -75,42 +76,49 @@ public class API {
     }
 
     public void explainImage(Uri uri, String API_KEY) {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .build();
 
         File file = getFileFromUri(uri, context);
+        if (file != null) {
+            RequestBody fileBody = RequestBody.create(file, MediaType.parse("application/octet-stream"));
 
-        RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
+            MultipartBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("image", file.getName(), fileBody)
+                    .addFormDataPart("text", "Please provide a detailed description of the image, including the context, topic, and any identifiable objects or brands. Additionally, offer comprehensive information about the subjects and themes depicted within the image.")
+                    .build();
 
-        MultipartBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("image", file.getName(), fileBody)
-                .addFormDataPart("text", "Please provide a detailed description of the image, including the context, topic, and any identifiable objects or brands. Additionally, offer comprehensive information about the subjects and themes depicted within the image.")
-                .build();
+            Request request = new Request.Builder()
+                    .url("https://reiserx.com/ai/multimodel/")
+                    .post(requestBody)
+                    .addHeader("Authorization", API_KEY)
+                    .build();
 
-        Request request = new Request.Builder()
-                .url("https://reiserx.com/ai/multimodel/")
-                .post(requestBody)
-                .addHeader("Authorization", API_KEY)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseData = response.body().string();
-                    Gson gson = new GsonBuilder().create();
-                    com.reiserx.screenshot.Models.Response data = gson.fromJson(responseData, com.reiserx.screenshot.Models.Response.class);
-                    callback.onSuccess(data);
-                } else {
-                    callback.onFailure(response.body().string());
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String responseData = response.body().string();
+                        Gson gson = new GsonBuilder().create();
+                        com.reiserx.screenshot.Models.Response data = gson.fromJson(responseData, com.reiserx.screenshot.Models.Response.class);
+                        callback.onSuccess(data);
+                    } else {
+                        callback.onFailure(response.body().string());
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call call, IOException e) {
-                callback.onFailure(e.toString());
-            }
-        });
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    callback.onFailure(e.toString());
+                }
+            });
+        } else {
+            callback.onFailure("File not found");
+        }
     }
 
     public static File getFileFromUri(Uri uri, Context context) {

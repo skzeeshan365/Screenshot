@@ -1,5 +1,6 @@
 package com.reiserx.screenshot.Activities;
 
+import static com.reiserx.screenshot.Activities.ui.settings.SettingsFragment.SCREENSHOT;
 import static com.reiserx.screenshot.Activities.ui.settings.SettingsFragment.SCREENSHOT_TYPE_KEY;
 import static com.reiserx.screenshot.Services.accessibilityService.CAPTURE_SNAPSHOT_AI;
 import static com.reiserx.screenshot.Services.accessibilityService.CAPTURE_SNAPSHOT_DEFAULT;
@@ -30,6 +31,7 @@ import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
+import com.reiserx.screenshot.Utils.ScreenshotTrigger;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 import com.reiserx.screenshot.databinding.CaptureDialogBinding;
 
@@ -38,12 +40,16 @@ public class CaptureActivity extends AppCompatActivity {
     NativeAds nativeAds;
     CaptureDialogBinding binding;
     AlertDialog dialog;
+    int REQUEST_CODE;
+    ScreenshotTrigger screenshotTrigger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = CaptureDialogBinding.inflate(getLayoutInflater());
         dialog();
+
+        screenshotTrigger = new ScreenshotTrigger(this);
 
         DataStoreHelper dataStoreHelper = new DataStoreHelper();
         if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.DEFAULT) {
@@ -59,140 +65,75 @@ public class CaptureActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 binding.fabPartial.show();
                 binding.textView19.setVisibility(View.VISIBLE);
-                takeScreenshotOfWindow();
+                binding.fabPartial.setOnClickListener(view -> {
+                    REQUEST_CODE = ScreenshotTrigger.CURRENT_WINDOW;
+                    finish();
+                });
             } else {
                 binding.fabPartial.hide();
                 binding.textView19.setVisibility(View.GONE);
             }
 
             binding.fabFull.setOnClickListener(view -> {
-                takeScreenshots();
+                REQUEST_CODE = ScreenshotTrigger.SCREENSHOT;
+                finish();
             });
 
             binding.fabSilent.setOnClickListener(view -> {
-                takeScreenshotsSilent();
+                REQUEST_CODE = ScreenshotTrigger.SILENT_SCREENSHOT;
+                finish();
             });
 
             binding.fabSnapshot.setOnClickListener(view -> {
-                snapshot(CAPTURE_SNAPSHOT_DEFAULT);
+                REQUEST_CODE = ScreenshotTrigger.SNAPSHOT;
+                finish();
             });
 
             binding.fabCopy.setOnClickListener(view -> {
-                snapshot(CAPTURE_SNAPSHOT_OCR);
+                REQUEST_CODE = ScreenshotTrigger.SNAPSHOT_TYPE_OCR;
+                finish();
             });
 
             binding.fabAi.setOnClickListener(view -> {
-                snapshot(CAPTURE_SNAPSHOT_AI);
+                REQUEST_CODE = ScreenshotTrigger.SNAPSHOT_TYPE_AI;
+                finish();
             });
 
             binding.imageView3.setOnClickListener(view -> finish());
         } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SCREENSHOT) {
-            takeScreenshots();
+            REQUEST_CODE = ScreenshotTrigger.SCREENSHOT;
+            finish();
         } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SILENT_SCREENSHOT) {
-            takeScreenshotsSilent();
+            REQUEST_CODE = ScreenshotTrigger.SILENT_SCREENSHOT;
+            finish();
         } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SNAPSHOT) {
-            snapshot(CAPTURE_SNAPSHOT_DEFAULT);
+            REQUEST_CODE = ScreenshotTrigger.SNAPSHOT;
+            finish();
         } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SNAPSHOT_TYPE_OCR) {
-            snapshot(CAPTURE_SNAPSHOT_OCR);
+            REQUEST_CODE = ScreenshotTrigger.SNAPSHOT_TYPE_OCR;
+            finish();
         } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.SNAPSHOT_TYPE_AI) {
-            snapshot(CAPTURE_SNAPSHOT_AI);
+            REQUEST_CODE = ScreenshotTrigger.SNAPSHOT_TYPE_AI;
+            finish();
+        } else if (dataStoreHelper.getIntValue(SCREENSHOT_TYPE_KEY, 0) == SettingsFragment.CURRENT_WINDOW) {
+            REQUEST_CODE = ScreenshotTrigger.CURRENT_WINDOW;
+            finish();
         }
-    }
-
-    private boolean isSystemAlertWindowPermissionGranted() {
-        return Settings.canDrawOverlays(getApplicationContext());
-    }
-
-    private void requestSystemAlertWindowPermission() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-        intent.setData(Uri.parse("package:" + getPackageName()));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
     }
 
     @Override
     protected void onDestroy() {
-        nativeAds.destroyAd();
+        if (nativeAds != null)
+            nativeAds.destroyAd();
         if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();
         }
+        if (REQUEST_CODE != -1)
+            screenshotTrigger.capture(REQUEST_CODE);
         super.onDestroy();
     }
 
-    void takeScreenshots() {
-        isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
-        if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
-            accessibilityService.instance.closeNotifications();
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(() -> accessibilityService.instance.takeScreenshots());
-        } else {
-            Toast.makeText(this, "Accessibility service is not enabled.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }
-        finish();
-    }
-
-    void takeScreenshotsSilent() {
-        isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
-        if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
-            accessibilityService.instance.closeNotifications();
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(() -> accessibilityService.instance.takeScreenshotsSilent());
-        } else {
-            Toast.makeText(this, "Accessibility service is not enabled", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }
-        finish();
-    }
-
-    void snapshot(int type) {
-        isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
-        if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
-            accessibilityService.instance.closeNotifications();
-            if (isSystemAlertWindowPermissionGranted()) {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(() -> accessibilityService.instance.CreateSelection(type));
-            } else {
-                Toast.makeText(this, "Please grant necessary APPEAR ON TOP permission required for this feature", Toast.LENGTH_LONG).show();
-                requestSystemAlertWindowPermission();
-            }
-        } else {
-            Toast.makeText(this, "Accessibility service is not enabled.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }
-        finish();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    void takeScreenshotOfWindow() {
-        binding.fabPartial.setOnClickListener(view -> {
-            isAccessibilityEnabled isAccessibilityEnabled = new isAccessibilityEnabled(this);
-            if (isAccessibilityEnabled.checkAccessibilityPermission(accessibilityService.class) && accessibilityService.instance != null) {
-                if (isSystemAlertWindowPermissionGranted()) {
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.post(() -> accessibilityService.instance.takeScreenshotOfWindows());
-                } else {
-                    Toast.makeText(this, "Please grant necessary APPEAR ON TOP permission required for this feature", Toast.LENGTH_LONG).show();
-                    requestSystemAlertWindowPermission();
-                }
-            } else {
-                Toast.makeText(this, "Accessibility service is not enabled.", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-            finish();
-        });
-    }
-
     void dialog() {
-        // Create the AlertDialog with the custom view
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(binding.getRoot());
         dialog = builder.create();

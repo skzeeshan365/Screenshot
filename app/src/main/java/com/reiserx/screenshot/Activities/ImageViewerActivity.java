@@ -2,10 +2,15 @@ package com.reiserx.screenshot.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +22,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.WindowCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -56,7 +63,7 @@ public class ImageViewerActivity extends AppCompatActivity {
             List<Uri> data = new ArrayList<>();
             data.add(uri);
 
-            Context materialContext = new ContextThemeWrapper(this, com.google.android.material.R.style.Theme_MaterialComponents);
+            Context materialContext = new ContextThemeWrapper(this, R.style.FullscreenTheme);
             LayoutInflater inflater = LayoutInflater.from(materialContext);
 
             View customView = inflater.inflate(R.layout.image_viewer_overlay, null, false);
@@ -66,6 +73,7 @@ public class ImageViewerActivity extends AppCompatActivity {
                     .withOverlayView(customView)
                     .withDismissListener(this::finish)
                     .show();
+            hideSystemUI(customView.getWindowInsetsController());
         }
     }
 
@@ -79,6 +87,7 @@ public class ImageViewerActivity extends AppCompatActivity {
         ocrFAB_Text = view.findViewById(R.id.ocr_image_text);
         aiFAB = view.findViewById(R.id.fab_silent);
         aiFAB_Text = view.findViewById(R.id.ai_image_text);
+        ConstraintLayout overlay_holder = view.findViewById(R.id.overlay_holder);
 
         shareFAB.setVisibility(View.GONE);
         deleteFAB.setVisibility(View.GONE);
@@ -116,6 +125,8 @@ public class ImageViewerActivity extends AppCompatActivity {
                 ocrFAB_Text.setVisibility(View.VISIBLE);
                 aiFAB_Text.setVisibility(View.VISIBLE);
 
+                overlay_holder.setBackgroundColor(getColor(R.color.overlay_background));
+
                 mAddFab.extend();
 
                 isAllFabsVisible = true;
@@ -128,6 +139,8 @@ public class ImageViewerActivity extends AppCompatActivity {
                 deleteFAB_Text.setVisibility(View.GONE);
                 ocrFAB_Text.setVisibility(View.GONE);
                 aiFAB_Text.setVisibility(View.GONE);
+
+                overlay_holder.setBackgroundColor(Color.TRANSPARENT);
 
                 mAddFab.shrink();
 
@@ -190,4 +203,15 @@ public class ImageViewerActivity extends AppCompatActivity {
                 }
             }
     );
+
+    public static void hideSystemUI(WindowInsetsController controller) {
+
+        if (controller != null) {
+            // Hide both the status bar and the navigation bar
+            controller.hide(WindowInsets.Type.systemBars());
+
+            // Set the behavior to allow the system bars to be shown with a swipe gesture
+            controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        }
+    }
 }

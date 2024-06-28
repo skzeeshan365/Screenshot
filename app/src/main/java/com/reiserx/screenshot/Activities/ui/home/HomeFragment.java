@@ -3,6 +3,7 @@ package com.reiserx.screenshot.Activities.ui.home;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_AGREE;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_KEY;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_REJECT;
+import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.TAG;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,15 +53,15 @@ public class HomeFragment extends Fragment {
 
     public static String[] storage_permissions = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
     };
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public static String[] storage_permissions_33 = {
             Manifest.permission.READ_MEDIA_IMAGES,
-            Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
     };
 
     DataStoreHelper dataStoreHelper;
@@ -118,6 +120,7 @@ public class HomeFragment extends Fragment {
             }
         });
         viewModel.getErrorLabelsMutableLiveData().observe(getViewLifecycleOwner(), error -> {
+            Log.d(TAG, "fdfsdfdsf");
             binding.textView9.setText(error);
             binding.rec.setVisibility(View.GONE);
             binding.progHolder.setVisibility(View.VISIBLE);
@@ -168,6 +171,9 @@ public class HomeFragment extends Fragment {
 
     private boolean isPermissionGranted() {
         for (String permission : permissions()) {
+            if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                continue;
+            }
             if (ActivityCompat.checkSelfPermission(requireContext(), permission)
                     != PackageManager.PERMISSION_GRANTED) {
                 return false;

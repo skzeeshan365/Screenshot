@@ -41,12 +41,22 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_navigation_search_to_fragment_location_screenshots"
+            app:destination="@id/fragment_location_screenshots" />
     </fragment>
 
     <fragment
         android:id="@+id/navigation_labelscreenshots"
         android:name="com.reiserx.screenshot.Activities.ui.search.LabelScreenshotsFragment"
-        tools:layout="@layout/fragment_label_screenshots" />
+        tools:layout="@layout/fragment_label_screenshots">
+        <argument
+            android:name="label"
+            app:argType="string" />
+        <argument
+            android:name="label_id"
+            app:argType="integer" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_settings"
@@ -81,6 +91,10 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <argument
+            android:name="label"
+            app:argType="string" />
+
     </fragment>
 
     <fragment
@@ -101,4 +115,17 @@
         android:name="com.reiserx.screenshot.Activities.ui.settings.FragmentSensor"
         android:label="Capture with sensor"
         tools:layout="@layout/fragment_sensor" />
+
+    <fragment
+        android:id="@+id/fragment_location_screenshots"
+        android:name="com.reiserx.screenshot.Activities.ui.search.LocationScreenshotsFragment"
+        android:label="@string/screenshot_label"
+        tools:layout="@layout/fragment_label_screenshots">
+        <argument
+            android:name="location"
+            app:argType="com.reiserx.screenshot.Models.LocationData" />
+        <argument
+            android:name="label"
+            app:argType="string" />
+    </fragment>
 </navigation>

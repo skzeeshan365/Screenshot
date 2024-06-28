@@ -29,11 +29,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.reiserx.screenshot.Adapters.ScreenshotsAdapter;
 import com.reiserx.screenshot.Models.Screenshots;
+import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
 import com.reiserx.screenshot.databinding.FragmentGalleryBinding;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class GalleryFragment extends Fragment {
@@ -53,7 +55,7 @@ public class GalleryFragment extends Fragment {
             Manifest.permission.READ_MEDIA_IMAGES,
     };
 
-    DataStoreHelper dataStoreHelper;
+    String label;
 
     public static String SCREENSHOT_LABEL = "SCREENSHOT_LABEL";
 
@@ -62,15 +64,17 @@ public class GalleryFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(ScreenshotsViewModel.class);
 
         binding = FragmentGalleryBinding.inflate(inflater, container, false);
-        dataStoreHelper = new DataStoreHelper();
-        if (((AppCompatActivity)requireActivity()).getSupportActionBar() != null) {
-            String title = dataStoreHelper.getStringValue(SCREENSHOT_LABEL, null);
-            if (title.equals("null"))
-                ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("All screenshots");
-            else
-                ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(title);
+
+        if (getArguments() != null) {
+            label = getArguments().getString("label");
+            if (((AppCompatActivity) requireActivity()).getSupportActionBar() != null) {
+                if (Objects.equals(label, "null"))
+                    ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("All screenshots");
+                else
+                    ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(label);
+            }
+            consent_agreed();
         }
-        consent_agreed();
         return binding.getRoot();
     }
 
@@ -116,7 +120,7 @@ public class GalleryFragment extends Fragment {
 
     void consent_agreed() {
         if (isPermissionGranted()) {
-            viewModel.getScreenshots(getContext(), dataStoreHelper.getStringValue(SCREENSHOT_LABEL, null));
+            viewModel.getScreenshots(getContext(), label);
         }
     }
 
@@ -153,7 +157,7 @@ public class GalleryFragment extends Fragment {
                     if (result.getResultCode() == RESULT_OK){
                         Toast.makeText(getContext(), "Screenshot deleted.", Toast.LENGTH_SHORT).show();
                         adapter.closeImageViewer();
-                        viewModel.getScreenshots(getContext(), dataStoreHelper.getStringValue(SCREENSHOT_LABEL, null));
+                        viewModel.getScreenshots(getContext(), label);
                     }
                 }
             }

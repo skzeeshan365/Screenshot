@@ -1,11 +1,13 @@
 package com.reiserx.screenshot.Adapters;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -25,8 +27,11 @@ public class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.View
     public final int DATA_CONTENT = 0;
     public static int AD_CONTENT = 1;
 
-    public LocationsAdapter(Context context) {
+    NavController navController;
+
+    public LocationsAdapter(Context context, NavController navController) {
         this.context = context;
+        this.navController = navController;
     }
 
     public void setItemList(List<ScreenshotLabels> itemList) {
@@ -52,7 +57,11 @@ public class LocationsAdapter extends RecyclerView.Adapter<LocationsAdapter.View
             holder.binding.textView26.setText(item.getLabel());
             Glide.with(context).load(item.getFilepath()).into(holder.binding.imageView5);
             holder.binding.textView26.setOnClickListener(view -> {
+                Bundle args = new Bundle();
+                args.putParcelable("location", item.getLocation());
+                args.putString("label", item.getLabel());
 
+                navController.navigate(R.id.action_navigation_search_to_fragment_location_screenshots, args);
             });
         } else if (item.getNativeAd() != null)
             NativeAds.loadPrefetchedOverlayHeadline(context, item.getNativeAd(), holder.binding.placeHolder);

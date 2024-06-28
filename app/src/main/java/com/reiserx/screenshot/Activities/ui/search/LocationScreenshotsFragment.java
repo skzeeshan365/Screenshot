@@ -4,6 +4,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.reiserx.screenshot.Adapters.ScreenshotsAdapter.DEFAULT_SCREENSHOT;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,31 +23,25 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.google.gson.Gson;
 import com.reiserx.screenshot.Adapters.ScreenshotsAdapter;
-import com.reiserx.screenshot.Models.ImageEntity;
-import com.reiserx.screenshot.Models.LocationData;
-import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.R;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
-import com.reiserx.screenshot.ViewModels.LabelsViewModel;
+import com.reiserx.screenshot.Models.LocationData;
+import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
 import com.reiserx.screenshot.databinding.FragmentLabelScreenshotsBinding;
 
-import java.io.File;
-import java.util.ArrayList;
-
-public class LabelScreenshotsFragment extends Fragment {
+public class LocationScreenshotsFragment extends Fragment {
     private FragmentLabelScreenshotsBinding binding;
-    ArrayList<Screenshots> data;
     ScreenshotsAdapter adapter;
 
-    LabelsViewModel viewModel;
+    ScreenshotsViewModel viewModel;
 
-    public static String LABEL_ID = "LABEL_ID";
-    public static String LABEL_NAME = "LABEL_NAME";
+    String TAG = "dfdfsfdsfs";
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentLabelScreenshotsBinding.inflate(inflater, container, false);
-        viewModel = new ViewModelProvider(this).get(LabelsViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ScreenshotsViewModel.class);
 
         return binding.getRoot();
     }
@@ -54,7 +49,7 @@ public class LabelScreenshotsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        data = new ArrayList<>();
+
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL));
         binding.rec.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         binding.rec.setLayoutManager(new GridLayoutManager(requireContext(), 2));
@@ -63,23 +58,16 @@ public class LabelScreenshotsFragment extends Fragment {
         binding.rec.setAdapter(adapter);
 
         if (getArguments() != null) {
-            int labelId = getArguments().getInt("label_id");
+            LocationData location = getArguments().getParcelable("location");
             String label = getArguments().getString("label");
 
             if (((AppCompatActivity) requireActivity()).getSupportActionBar() != null) {
-                ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(label);
+                    ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(label);
             }
 
-            viewModel.getImagesByLabel(labelId).observe(getViewLifecycleOwner(), imageEntities -> {
-                for (ImageEntity imageEntity : imageEntities) {
-                    File file = new File(imageEntity.getFilePath());
-                    if (file.exists()) {
-                        Screenshots screenshots = new Screenshots(imageEntity.getFilePath());
-                        screenshots.setFile(file);
-                        data.add(screenshots);
-                    }
-                }
-                adapter.setData(data);
+            viewModel.getLocationScreenshots(getContext(), location);
+            viewModel.getItemMutableLiveData().observe(getViewLifecycleOwner(), imageEntities -> {
+                adapter.setData(imageEntities);
                 adapter.notifyItemChanged(0);
             });
         }

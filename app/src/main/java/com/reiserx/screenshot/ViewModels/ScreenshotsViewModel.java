@@ -11,6 +11,7 @@ import com.google.android.gms.ads.nativead.NativeAd;
 import com.reiserx.screenshot.Models.ScreenshotLabels;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.Repositories.ScreenshotsRepository;
+import com.reiserx.screenshot.Models.LocationData;
 
 import java.util.List;
 
@@ -101,7 +102,13 @@ public class ScreenshotsViewModel extends ViewModel implements
     }
 
     public void getLocations(Context context) {
-        screenshotsRepository.getLocations(context);
+        new Thread(() -> {
+            screenshotsRepository.getLocations(context);
+        }).start();
+    }
+
+    public void getLocationScreenshots(Context context, LocationData locationData) {
+        screenshotsRepository.getLocationScreenshots(context, locationData);
     }
 
     @Override
@@ -121,7 +128,7 @@ public class ScreenshotsViewModel extends ViewModel implements
     public void onFailure(String error) {
         Handler mainHandler = new Handler(Looper.getMainLooper());
         mainHandler.post(() -> {
-        ErrorMutableLiveData.setValue(error);
+            ErrorMutableLiveData.setValue(error);
         });
     }
 
@@ -167,13 +174,16 @@ public class ScreenshotsViewModel extends ViewModel implements
     public void onLabelsFailure(String error) {
         Handler mainHandler = new Handler(Looper.getMainLooper());
         mainHandler.post(() -> {
-            ErrorMutableLiveData.setValue(error);
+            ErrorLabelsMutableLiveData.setValue(error);
         });
     }
 
     @Override
     public void onLocationsSuccess(List<ScreenshotLabels> locations) {
-        ItemLocationsMutableLiveData.setValue(locations);
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(() -> {
+            ItemLocationsMutableLiveData.setValue(locations);
+        });
     }
 
     @Override
@@ -183,6 +193,9 @@ public class ScreenshotsViewModel extends ViewModel implements
 
     @Override
     public void onLocationsFailure(String error) {
-        ErrorMutableLiveData.setValue(error);
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(() -> {
+            ErrorMutableLiveData.setValue(error);
+        });
     }
 }
