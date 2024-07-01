@@ -24,18 +24,15 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.reiserx.screenshot.Adapters.ScreenshotsAdapter;
 import com.reiserx.screenshot.Models.ImageEntity;
-import com.reiserx.screenshot.Models.LocationData;
 import com.reiserx.screenshot.Models.Screenshots;
-import com.reiserx.screenshot.R;
-import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.ViewModels.LabelsViewModel;
-import com.reiserx.screenshot.databinding.FragmentLabelScreenshotsBinding;
+import com.reiserx.screenshot.databinding.FragmentScreenshotsRecyclerBinding;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public class LabelScreenshotsFragment extends Fragment {
-    private FragmentLabelScreenshotsBinding binding;
+    private FragmentScreenshotsRecyclerBinding binding;
     ArrayList<Screenshots> data;
     ScreenshotsAdapter adapter;
 
@@ -45,7 +42,7 @@ public class LabelScreenshotsFragment extends Fragment {
     public static String LABEL_NAME = "LABEL_NAME";
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentLabelScreenshotsBinding.inflate(inflater, container, false);
+        binding = FragmentScreenshotsRecyclerBinding.inflate(inflater, container, false);
         viewModel = new ViewModelProvider(this).get(LabelsViewModel.class);
 
         return binding.getRoot();

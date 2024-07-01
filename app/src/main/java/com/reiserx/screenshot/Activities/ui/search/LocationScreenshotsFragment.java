@@ -4,7 +4,6 @@ import static android.app.Activity.RESULT_OK;
 import static com.reiserx.screenshot.Adapters.ScreenshotsAdapter.DEFAULT_SCREENSHOT;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,16 +22,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.google.gson.Gson;
 import com.reiserx.screenshot.Adapters.ScreenshotsAdapter;
-import com.reiserx.screenshot.R;
-import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.Models.LocationData;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
-import com.reiserx.screenshot.databinding.FragmentLabelScreenshotsBinding;
+import com.reiserx.screenshot.databinding.FragmentScreenshotsRecyclerBinding;
 
 public class LocationScreenshotsFragment extends Fragment {
-    private FragmentLabelScreenshotsBinding binding;
+    private FragmentScreenshotsRecyclerBinding binding;
     ScreenshotsAdapter adapter;
 
     ScreenshotsViewModel viewModel;
@@ -40,7 +36,7 @@ public class LocationScreenshotsFragment extends Fragment {
     String TAG = "dfdfsfdsfs";
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentLabelScreenshotsBinding.inflate(inflater, container, false);
+        binding = FragmentScreenshotsRecyclerBinding.inflate(inflater, container, false);
         viewModel = new ViewModelProvider(this).get(ScreenshotsViewModel.class);
 
         return binding.getRoot();

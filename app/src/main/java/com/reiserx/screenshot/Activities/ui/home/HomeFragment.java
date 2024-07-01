@@ -39,14 +39,14 @@ import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
-import com.reiserx.screenshot.databinding.FragmentHomeBinding;
+import com.reiserx.screenshot.databinding.FragmentScreenshotsRecyclerBinding;
 
 import java.util.List;
 import java.util.Random;
 
 public class HomeFragment extends Fragment {
 
-    private FragmentHomeBinding binding;
+    private FragmentScreenshotsRecyclerBinding binding;
     private ScreenshotsViewModel viewModel;
 
     ScreenshotLabelsAdapter adapter;
@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment {
 
         viewModel = new ViewModelProvider((ViewModelStoreOwner) requireActivity()).get(ScreenshotsViewModel.class);
 
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        binding = FragmentScreenshotsRecyclerBinding.inflate(inflater, container, false);
         dataStoreHelper = new DataStoreHelper();
         dataStoreHelper.putBooleanValue("isAccessibility", false);
 

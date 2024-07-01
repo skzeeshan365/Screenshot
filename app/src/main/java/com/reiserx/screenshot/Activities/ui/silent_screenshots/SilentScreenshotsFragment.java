@@ -18,21 +18,21 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.reiserx.screenshot.Adapters.ScreenshotsAdapter;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
-import com.reiserx.screenshot.databinding.FragmentSilentScreenshotsBinding;
+import com.reiserx.screenshot.databinding.FragmentScreenshotsRecyclerBinding;
 
 import java.util.List;
 import java.util.Random;
 
 public class SilentScreenshotsFragment extends Fragment {
 
-    private FragmentSilentScreenshotsBinding binding;
+    private FragmentScreenshotsRecyclerBinding binding;
     private ScreenshotsViewModel viewModel;
     ScreenshotsAdapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         viewModel = new ViewModelProvider((ViewModelStoreOwner) requireContext().getApplicationContext()).get(ScreenshotsViewModel.class);
 
-        binding = FragmentSilentScreenshotsBinding.inflate(inflater, container, false);
+        binding = FragmentScreenshotsRecyclerBinding.inflate(inflater, container, false);
 
         viewModel.getScreenshotsInApp(getContext());
         return binding.getRoot();

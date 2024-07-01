@@ -1,38 +1,25 @@
 package com.reiserx.screenshot.Activities;
 
-import static com.reiserx.screenshot.Activities.ui.settings.SettingsFragment.SCREENSHOT;
 import static com.reiserx.screenshot.Activities.ui.settings.SettingsFragment.SCREENSHOT_TYPE_KEY;
-import static com.reiserx.screenshot.Services.accessibilityService.CAPTURE_SNAPSHOT_AI;
-import static com.reiserx.screenshot.Services.accessibilityService.CAPTURE_SNAPSHOT_DEFAULT;
-import static com.reiserx.screenshot.Services.accessibilityService.CAPTURE_SNAPSHOT_OCR;
 
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.reiserx.screenshot.Activities.ui.TextDrawable;
 import com.reiserx.screenshot.Activities.ui.settings.SettingsFragment;
 import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.R;
-import com.reiserx.screenshot.Services.accessibilityService;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.Utils.ScreenshotTrigger;
-import com.reiserx.screenshot.Utils.isAccessibilityEnabled;
 import com.reiserx.screenshot.databinding.CaptureDialogBinding;
 
 public class CaptureActivity extends AppCompatActivity {

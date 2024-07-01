@@ -75,7 +75,7 @@ public class API {
         }
     }
 
-    public void explainImage(Uri uri, String API_KEY) {
+    public void explainImage(Uri uri, String API_KEY, String language) {
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
@@ -89,7 +89,7 @@ public class API {
             MultipartBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("image", file.getName(), fileBody)
-                    .addFormDataPart("text", "Please provide a detailed description of the image, including the context, topic, and any identifiable objects or brands. Additionally, offer comprehensive information about the subjects and themes depicted within the image.")
+                    .addFormDataPart("text", "Please provide a detailed description of the image in "+language+" language, including the context, topic, and any identifiable objects or brands. Additionally, offer comprehensive information about the subjects and themes depicted within the image.")
                     .build();
 
             Request request = new Request.Builder()

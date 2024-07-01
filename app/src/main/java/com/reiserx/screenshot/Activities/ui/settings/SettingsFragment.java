@@ -2,7 +2,6 @@ package com.reiserx.screenshot.Activities.ui.settings;
 
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_AGREE;
 import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.CONSENT_KEY;
-import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.TAG;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -12,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

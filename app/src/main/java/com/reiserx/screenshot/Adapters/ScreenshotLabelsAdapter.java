@@ -12,11 +12,9 @@ import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.reiserx.screenshot.Activities.ui.home.GalleryFragment;
 import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.Models.ScreenshotLabels;
 import com.reiserx.screenshot.R;
-import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.databinding.ImageLabelAdplaceholderBinding;
 import com.reiserx.screenshot.databinding.ImageLabelLayoutBinding;
 

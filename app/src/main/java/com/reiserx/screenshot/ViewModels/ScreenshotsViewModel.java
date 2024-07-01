@@ -8,10 +8,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.ads.nativead.NativeAd;
+import com.reiserx.screenshot.Models.LocationData;
 import com.reiserx.screenshot.Models.ScreenshotLabels;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.Repositories.ScreenshotsRepository;
-import com.reiserx.screenshot.Models.LocationData;
 
 import java.util.List;
 

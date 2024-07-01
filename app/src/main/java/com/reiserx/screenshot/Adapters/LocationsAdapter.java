@@ -14,7 +14,6 @@ import com.bumptech.glide.Glide;
 import com.reiserx.screenshot.Advertisements.NativeAds;
 import com.reiserx.screenshot.Models.ScreenshotLabels;
 import com.reiserx.screenshot.R;
-import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
 import com.reiserx.screenshot.databinding.LocationListLayoutBinding;
 
 import java.util.List;

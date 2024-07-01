@@ -45,7 +45,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import com.google.android.gms.location.LocationCallback;
 import com.reiserx.screenshot.Activities.AIActivity;
 import com.reiserx.screenshot.Activities.CaptureActivity;
 import com.reiserx.screenshot.Activities.ImageViewerActivity;
@@ -92,11 +91,10 @@ public class accessibilityService extends AccessibilityService implements Sensor
         super.onServiceConnected();
         AccessibilityServiceInfo info = new AccessibilityServiceInfo();
         info.eventTypes = AccessibilityEvent.TYPE_VIEW_CLICKED;
-        info.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
+        info.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS | AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
         info.notificationTimeout = 100;
         setServiceInfo(info);
         instance = this;
-        Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
         DataStoreHelper dataStoreHelper = new DataStoreHelper();
         if (dataStoreHelper.getBooleanValue(ENABLE_NOTIFICATION, false) && !isNotificationActive(8724))
             sendNotification("Capture", "Click to capture screenshot", 8724);
@@ -111,13 +109,6 @@ public class accessibilityService extends AccessibilityService implements Sensor
         if (accessibilityEvent.getEventType() == AccessibilityEvent.TYPE_VIEW_CLICKED) {
             if (isDoubleTap(accessibilityEvent)) {
                 handleDoubleTap();
-            }
-        }
-        if (String.valueOf(accessibilityEvent.getPackageName()).equals("com.android.systemui")) {
-            if (String.valueOf(accessibilityEvent.getContentDescription()).trim().equals("Back")) {
-                closeSelection();
-            } else if (String.valueOf(accessibilityEvent.getContentDescription()).trim().equals("Home")) {
-                closeSelection();
             }
         }
     }

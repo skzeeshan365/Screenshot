@@ -48,6 +48,7 @@
             android:theme="@style/Theme.AppCompat.DayNight" />
         <activity
             android:name=".Activities.AIActivity"
+            android:theme="@style/Base.Theme.AppAccessibility"
             android:exported="true" />
         <activity
             android:name=".Activities.OCRActivity"

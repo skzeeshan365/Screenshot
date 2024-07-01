@@ -63,4 +63,7 @@ Your trust is important to us. Our app is designed to enhance your screenshot ex
     <string name="artificial_intelligence_ai">Artificial Intelligence - AI</string>
     <string name="current_app">Current app</string>
     <string name="ai_disclaimer">This may display inaccurate info, including about people, so double-check its responses.</string>
+    <string name="language">Language</string>
+    <string name="languages">Languages</string>
+    <string name="language_desc">Select a language</string>
 </resources>

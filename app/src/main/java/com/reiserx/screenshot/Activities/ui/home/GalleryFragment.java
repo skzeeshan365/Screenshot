@@ -29,10 +29,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.reiserx.screenshot.Adapters.ScreenshotsAdapter;
 import com.reiserx.screenshot.Models.Screenshots;
-import com.reiserx.screenshot.R;
-import com.reiserx.screenshot.Utils.DataStoreHelper;
 import com.reiserx.screenshot.ViewModels.ScreenshotsViewModel;
-import com.reiserx.screenshot.databinding.FragmentGalleryBinding;
+import com.reiserx.screenshot.databinding.FragmentScreenshotsRecyclerBinding;
 
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +38,7 @@ import java.util.Random;
 
 public class GalleryFragment extends Fragment {
 
-    private FragmentGalleryBinding binding;
+    private FragmentScreenshotsRecyclerBinding binding;
     private ScreenshotsViewModel viewModel;
 
 
@@ -63,7 +61,7 @@ public class GalleryFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(ScreenshotsViewModel.class);
 
-        binding = FragmentGalleryBinding.inflate(inflater, container, false);
+        binding = FragmentScreenshotsRecyclerBinding.inflate(inflater, container, false);
 
         if (getArguments() != null) {
             label = getArguments().getString("label");

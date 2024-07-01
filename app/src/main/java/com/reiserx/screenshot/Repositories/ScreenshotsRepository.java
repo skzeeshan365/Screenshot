@@ -1,6 +1,5 @@
 package com.reiserx.screenshot.Repositories;
 
-import static com.reiserx.screenshot.Activities.ui.settings.FragmentConsent.TAG;
 import static com.reiserx.screenshot.Utils.ExifMetadata.readLocationMetadata;
 import static com.reiserx.screenshot.Utils.FusedLocation.geolocateCoordinates;
 
@@ -12,15 +11,14 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.reiserx.screenshot.Activities.ui.settings.FileFragment;
 import com.reiserx.screenshot.Advertisements.NativeAds;
+import com.reiserx.screenshot.Models.LocationData;
 import com.reiserx.screenshot.Models.ScreenshotLabels;
 import com.reiserx.screenshot.Models.Screenshots;
 import com.reiserx.screenshot.Utils.DataStoreHelper;
-import com.reiserx.screenshot.Models.LocationData;
 
 import java.io.File;
 import java.util.ArrayList;

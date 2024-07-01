@@ -36,7 +36,6 @@ import com.reiserx.screenshot.Utils.SystemUI;
 import com.reiserx.screenshot.databinding.ImageLabelAdplaceholderBinding;
 import com.reiserx.screenshot.databinding.ImageLayoutBinding;
 import com.stfalcon.imageviewer.StfalconImageViewer;
-import com.stfalcon.imageviewer.listeners.OnDismissListener;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,5 @@
 package com.reiserx.screenshot.Utils;
 
-import static com.reiserx.screenshot.Activities.ui.settings.SettingsFragment.SCREENSHOT_TYPE_KEY;
 import static com.reiserx.screenshot.Services.accessibilityService.CAPTURE_SNAPSHOT_AI;
 import static com.reiserx.screenshot.Services.accessibilityService.CAPTURE_SNAPSHOT_DEFAULT;
 import static com.reiserx.screenshot.Services.accessibilityService.CAPTURE_SNAPSHOT_OCR;
