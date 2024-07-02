@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -49,6 +50,7 @@ public class AIActivity extends AppCompatActivity implements APICallback, Langua
     boolean temp;
     Dialog dialog;
     RewardedAds rewardedAds;
+    String TAG = "fsdfdsfsdfsfsf";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,30 +77,40 @@ public class AIActivity extends AppCompatActivity implements APICallback, Langua
         if (intent != null && intent.getData() != null) {
             uri = intent.getData();
             temp = intent.getBooleanExtra("temp", false);
-
-            binding.img.setImageURI(uri);
-            API api = new API(this, this);
-            try {
-                api.getAPI(api1 -> {
-                    if (api1 != null)
-                        api.explainImage(uri, api1.getAPI_KEY(), "English");
-                    else {
-                        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                        alert.setTitle("Alert");
-                        alert.setMessage("An error occurred, please try again later");
-                        alert.setPositiveButton("OK", (dialog, which) -> finish());
-                        alert.setCancelable(false);
-                        alert.show();
-                    }
-                });
-            } catch (GeneralSecurityException | IOException e) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setTitle("Alert");
-                alert.setMessage("An error occurred: "+e.toString());
-                alert.setPositiveButton("OK", (dialog, which) -> finish());
-                alert.setCancelable(false);
-                alert.show();
+            init();
+        } else if (intent != null && Intent.ACTION_SEND.equals(intent.getAction()) && intent.getType() != null) {
+            if (intent.getType().startsWith("image/")) {
+                 uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                if (uri != null) {
+                    init();
+                }
             }
+        }
+    }
+
+    void init() {
+        binding.img.setImageURI(uri);
+        API api = new API(this, this);
+        try {
+            api.getAPI(api1 -> {
+                if (api1 != null)
+                    api.explainImage(uri, api1.getAPI_KEY(), "English");
+                else {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                    alert.setTitle("Alert");
+                    alert.setMessage("An error occurred, please try again later");
+                    alert.setPositiveButton("OK", (dialog, which) -> finish());
+                    alert.setCancelable(false);
+                    alert.show();
+                }
+            });
+        } catch (GeneralSecurityException | IOException e) {
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("Alert");
+            alert.setMessage("An error occurred: "+e.toString());
+            alert.setPositiveButton("OK", (dialog, which) -> finish());
+            alert.setCancelable(false);
+            alert.show();
         }
     }
 

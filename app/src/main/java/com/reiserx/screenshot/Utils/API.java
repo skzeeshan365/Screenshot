@@ -2,8 +2,11 @@ package com.reiserx.screenshot.Utils;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -18,8 +21,10 @@ import com.google.gson.GsonBuilder;
 import com.reiserx.screenshot.Interfaces.APICallback;
 import com.reiserx.screenshot.Interfaces.RESTAPICallback;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +40,7 @@ import okhttp3.Response;
 public class API {
     Context context;
     APICallback callback;
+    String TAG = "APITAGS";
 
     public API(Context context, APICallback callback) {
         this.context = context;
@@ -82,13 +88,11 @@ public class API {
                 .readTimeout(30, TimeUnit.SECONDS)
                 .build();
 
-        File file = getFileFromUri(uri, context);
-        if (file != null) {
-            RequestBody fileBody = RequestBody.create(file, MediaType.parse("application/octet-stream"));
-
+        RequestBody fileBody = compressImageAndCreateRequestBody(uri, context);
+        if (fileBody != null) {
             MultipartBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("image", file.getName(), fileBody)
+                    .addFormDataPart("image", "image.jpeg", fileBody)
                     .addFormDataPart("text", "Please provide a detailed description of the image in "+language+" language, including the context, topic, and any identifiable objects or brands. Additionally, offer comprehensive information about the subjects and themes depicted within the image.")
                     .build();
 
@@ -156,6 +160,34 @@ public class API {
             }
         }
 
+        return null;
+    }
+
+    public RequestBody compressImageAndCreateRequestBody(Uri uri, Context context) {
+        Bitmap bitmap = getBitmapFromUri(uri, context);
+        if (bitmap != null) {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream); // Adjust quality
+
+            byte[] byteArray = stream.toByteArray();
+            bitmap.recycle();
+
+            return RequestBody.create(MediaType.parse("image/jpeg"), byteArray);
+        }
+        return null;
+    }
+
+    private Bitmap getBitmapFromUri(Uri uri, Context context) {
+        try {
+            InputStream inputStream = context.getContentResolver().openInputStream(uri);
+            if (inputStream != null) {
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                inputStream.close();
+                return bitmap;
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Error getting bitmap from Uri: " + e.getMessage());
+        }
         return null;
     }
 }
